@@ -46,7 +46,7 @@ export default class ExtractData extends LightningElement {
     }
 
     async getContext(event) {
-        this.config = event;
+        this.config = event.detail;
 
         if (this.config.entryEventDefinitionKey) {
             this.eventDefinitionKey = this.config.entryEventDefinitionKey;
