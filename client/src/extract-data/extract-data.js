@@ -133,23 +133,22 @@ export default class ExtractData extends LightningElement {
             return obj;
         }, {});
 
+        let newInArguments = [];
         this.fields.forEach((field) => {
-            let indexOfArg = newPayload.arguments.execute.inArguments.indexOf(
-                newPayload.arguments.execute.inArguments.find(
-                    (arg) => arg.id == field.id
-                )
+            let indexOfArg = newInArguments.indexOf(
+                newInArguments.find((arg) => arg.id == field.id)
             );
 
             console.log('indexOfArg', indexOfArg);
 
             if (indexOfArg > -1) {
-                newPayload.arguments.execute.inArguments[indexOfArg] = {
+                newInArguments[indexOfArg] = {
                     id: field.id,
                     name: field.name,
                     value: field.value
                 };
             } else {
-                newPayload.arguments.execute.inArguments.push({
+                newInArguments.push({
                     id: field.id,
                     name: field.name,
                     value: field.value
@@ -157,13 +156,14 @@ export default class ExtractData extends LightningElement {
             }
         });
 
+        newPayload.arguments.execute.inArguments = newInArguments;
+
         newPayload.configurationArguments.params = argfields;
 
         // check if no empty field
         newPayload.metaData.isConfigured =
             this.fields.filter((field) => !field.value).length === 0;
 
-        console.log('[newPayload]', newPayload);
         this.activity.update(newPayload);
     }
 }
