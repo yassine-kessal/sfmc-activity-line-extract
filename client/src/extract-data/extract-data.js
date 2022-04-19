@@ -77,7 +77,7 @@ export default class ExtractData extends LightningElement {
         console.log(`[fields] Remove field ID : ${fieldId}`);
 
         let indexOfField = this.fields.indexOf(
-            this.fields.find((field) => field.id === fieldId)
+            this.fields.find((field) => field.id == fieldId)
         );
 
         this.fields.splice(indexOfField, 1);
@@ -108,25 +108,15 @@ export default class ExtractData extends LightningElement {
 
             this.config.payload.arguments.execute.inArguments.forEach(
                 (arg, index) => {
-                    let indexOfField = newFields.indexOf(
-                        newFields.find((field) => field.id == arg.id)
-                    );
-
-                    if (indexOfField > -1) {
-                        newFields[indexOfField] = {
-                            id: index,
-                            name: arg.name,
-                            value: arg.value
-                        };
-                    } else {
-                        newFields.push({
-                            id: index,
-                            name: arg.name,
-                            value: arg.value
-                        });
-                    }
+                    newFields.push({
+                        id: index,
+                        name: arg.name,
+                        value: arg.value
+                    });
                 }
             );
+
+            this.fields = newFields;
         }
 
         console.log('[context]', event);
@@ -144,7 +134,14 @@ export default class ExtractData extends LightningElement {
         }, {});
 
         this.fields.forEach((field) => {
+            let indexOfArg = newPayload.arguments.execute.inArguments.indexOf(
+                newPayload.arguments.execute.inArguments.find(
+                    (arg) => arg.id == field.id
+                )
+            );
+
             newPayload.arguments.execute.inArguments.push({
+                id: field.id,
                 name: field.name,
                 value: field.value
             });

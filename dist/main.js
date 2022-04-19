@@ -12895,7 +12895,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     if (indexOfField > -1) {
       if (fieldType == 'name') {
         this.fields[indexOfField].name = event.target.value;
-      } else if (fieldType == 'label') {
+      } else if (fieldType == 'value') {
         this.fields[indexOfField].value = event.target.value;
       }
     }
@@ -12929,7 +12929,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     // We save field id in name property of button icon lws el
     let fieldId = parseInt(event.target.dataset.id, 10);
     console.log(`[fields] Remove field ID : ${fieldId}`);
-    let indexOfField = this.fields.indexOf(this.fields.find(field => field.id === fieldId));
+    let indexOfField = this.fields.indexOf(this.fields.find(field => field.id == fieldId));
     this.fields.splice(indexOfField, 1);
     this.updateActivity();
   }
@@ -12956,6 +12956,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
           value: arg.value
         });
       });
+      this.fields = newFields;
     }
 
     console.log('[context]', event);
@@ -12972,7 +12973,9 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
       return obj;
     }, {});
     this.fields.forEach(field => {
+      let indexOfArg = newPayload.arguments.execute.inArguments.indexOf(newPayload.arguments.execute.inArguments.find(arg => arg.id == field.id));
       newPayload.arguments.execute.inArguments.push({
+        id: field.id,
         name: field.name,
         value: field.value
       });
