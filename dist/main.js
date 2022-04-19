@@ -12939,12 +12939,23 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
    */
 
 
-  async getContext(event) {
-    this.activity = this.template.querySelector('common-activity');
+  getContext(event) {
+    this.activity = this.template.querySelector('components-activity');
     this.config = event.detail;
 
     if (this.config.entryEventDefinitionKey) {
       this.eventDefinitionKey = this.config.entryEventDefinitionKey;
+    }
+
+    if (this.config.payload && this.config.payload.arguments && this.config.payload.arguments.execute && this.config.payload.arguments.execute.inArguments && this.config.payload.arguments.execute.inArguments.length > 0) {
+      let newFields = [];
+      this.config.payload.arguments.execute.inArguments.forEach((arg, index) => {
+        newFields.push({
+          id: index,
+          name: arg.name,
+          value: arg.value
+        });
+      });
     }
 
     console.log('[context]', event);

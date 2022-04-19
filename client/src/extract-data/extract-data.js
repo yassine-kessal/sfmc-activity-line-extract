@@ -89,8 +89,8 @@ export default class ExtractData extends LightningElement {
      *
      * @param {*} event
      */
-    async getContext(event) {
-        this.activity = this.template.querySelector('common-activity');
+    getContext(event) {
+        this.activity = this.template.querySelector('components-activity');
         this.config = event.detail;
 
         if (this.config.entryEventDefinitionKey) {
