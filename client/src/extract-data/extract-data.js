@@ -140,11 +140,21 @@ export default class ExtractData extends LightningElement {
                 )
             );
 
-            newPayload.arguments.execute.inArguments.push({
-                id: field.id,
-                name: field.name,
-                value: field.value
-            });
+            console.log('indexOfArg', indexOfArg);
+
+            if (indexOfArg > -1) {
+                newPayload.arguments.execute.inArguments[indexOfArg] = {
+                    id: field.id,
+                    name: field.name,
+                    value: field.value
+                };
+            } else {
+                newPayload.arguments.execute.inArguments.push({
+                    id: field.id,
+                    name: field.name,
+                    value: field.value
+                });
+            }
         });
 
         newPayload.configurationArguments.params = argfields;
