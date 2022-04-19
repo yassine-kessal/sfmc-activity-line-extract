@@ -46,6 +46,6 @@ export default class ExtractData extends LightningElement {
     }
 
     getContext(event) {
-        console.log('context', event.entryEventDefinitionKey);
+        console.log('context', event);
     }
 }
