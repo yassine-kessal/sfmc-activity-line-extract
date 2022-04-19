@@ -38,7 +38,7 @@ export default class ExtractData extends LightningElement {
         if (indexOfField > -1) {
             if (fieldType == 'name') {
                 this.fields[indexOfField].name = event.target.value;
-            } else if (fieldType == 'label') {
+            } else if (fieldType == 'value') {
                 this.fields[indexOfField].value = event.target.value;
             }
         }
@@ -108,11 +108,23 @@ export default class ExtractData extends LightningElement {
 
             this.config.payload.arguments.execute.inArguments.forEach(
                 (arg, index) => {
-                    newFields.push({
-                        id: index,
-                        name: arg.name,
-                        value: arg.value
-                    });
+                    let indexOfField = newFields.indexOf(
+                        newFields.find((field) => field.id == arg.id)
+                    );
+
+                    if (indexOfField > -1) {
+                        newFields[indexOfField] = {
+                            id: index,
+                            name: arg.name,
+                            value: arg.value
+                        };
+                    } else {
+                        newFields.push({
+                            id: index,
+                            name: arg.name,
+                            value: arg.value
+                        });
+                    }
                 }
             );
         }
