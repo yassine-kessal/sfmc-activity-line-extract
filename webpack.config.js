@@ -12,6 +12,7 @@ const config = {
         filename: './[name].js'
     },
     plugins: [
+        new CleanWebpackPlugin(),
         new LwcWebpackPlugin({
             modules: [
                 { dir: 'client/src' },
@@ -22,15 +23,7 @@ const config = {
             template: 'client/assets/index.html',
             filename: './index.html',
             title: 'main'
-        })
-    ],
-    stats: { assets: false }
-};
-
-// production only
-if (process.env.NODE_ENV !== 'production') {
-    config.plugins.push(new CleanWebpackPlugin());
-    config.plugins.push(
+        }),
         new CopyPlugin({
             patterns: [
                 {
@@ -51,8 +44,9 @@ if (process.env.NODE_ENV !== 'production') {
                 }
             ]
         })
-    );
-}
+    ],
+    stats: { assets: false }
+};
 
 // development only
 if (process.env.NODE_ENV !== 'production') {
