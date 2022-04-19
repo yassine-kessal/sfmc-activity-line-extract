@@ -11,7 +11,7 @@ export default class ExtractData extends LightningElement {
     ];
     @track eventDefinitionKey = 'loading...';
 
-    events = ['dataSources', 'contactsSchema'];
+    events = ['dataSources', 'contactsSchema', 'entryEventDefinitionKey'];
 
     renderedCallback() {
         this.hasFields = this.fields.length > 0;
@@ -46,6 +46,6 @@ export default class ExtractData extends LightningElement {
     }
 
     getContext(event) {
-        console.log(event.detail);
+        console.log('context', event.entryEventDefinitionKey);
     }
 }
