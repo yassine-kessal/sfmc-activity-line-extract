@@ -45,7 +45,13 @@ export default class ExtractData extends LightningElement {
         this.fields.splice(indexOfField, 1);
     }
 
-    getContext(event) {
-        console.log('context', event);
+    async getContext(event) {
+        this.config = event;
+
+        if (this.config.entryEventDefinitionKey) {
+            this.eventDefinitionKey = this.config.entryEventDefinitionKey;
+        }
+
+        console.log('[context]', event);
     }
 }

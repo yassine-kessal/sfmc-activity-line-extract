@@ -18,12 +18,12 @@
         <footer class="activityfooter">
             <div class="slds-grid slds-var-p-around_x-small slds-grid_align-spread">
                 <div class="slds-col">
-                    <lightning-button label="Cancel" variant="base"></lightning-button>
+                    <lightning-button label="Cancel" onclick={cancel} variant="base"></lightning-button>
                 </div>
 
                 <template if:true={canNext}>
                     <div class="slds-col">
-                        <lightning-button label={nextValue} variant="brand"></lightning-button>
+                        <lightning-button label={nextValue} onclick={done} variant="brand"></lightning-button>
                     </div>
                 </template>
 
