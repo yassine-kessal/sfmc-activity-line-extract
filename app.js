@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const express = require('express');
+const bodyParser = require('body-parser');
 const path = require('path');
 const activityConfig = require('./activity-config');
 
@@ -12,8 +13,15 @@ const DIST_DIR = './dist';
 
 const app = express();
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.raw({ type: 'application/jwt' }));
+
 app.use(express.static(DIST_DIR));
 
+/**
+ * Fronted application
+ */
 app.get('/', function (req, res) {
     return res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
@@ -21,6 +29,10 @@ app.get('/', function (req, res) {
 app.get('/config.json', function (req, res) {
     return res.status(200).json(activityConfig(req));
 });
+
+/**
+ * Backend application
+ */
 
 if (process.env.NODE_ENV !== 'production') {
     app.listen(process.env.PORT, () =>

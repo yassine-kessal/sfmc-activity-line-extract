@@ -16,8 +16,11 @@
     "author": "Yassine Kessal <yassine.kessal@lineup7.fr>",
     "license": "ISC",
     "dependencies": {
+        "body-parser": "^1.20.0",
         "express": "^4.17.3",
-        "postmonger": "0.0.16"
+        "jsonwebtoken": "^8.5.1",
+        "postmonger": "0.0.16",
+        "winston": "^3.7.2"
     },
     "devDependencies": {
         "@lwc/compiler": "^2.13.0",

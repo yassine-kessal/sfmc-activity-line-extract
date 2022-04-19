@@ -17,7 +17,9 @@
         <template iterator:it={fields}>
             <lightning-layout key={it.value.id} vertical-align="end">
                 <lightning-layout-item flexibility="auto">
-                    <lightning-input label="Name"></lightning-input>
+                    <lightning-input label="Name" data-fieldid={it.value.id} data-fieldtype="name"
+                        onchange={onFieldChange}>
+                    </lightning-input>
                 </lightning-layout-item>
                 <lightning-layout-item flexibility="shrink" class="slds-text-heading_medium slds-p-horizontal_medium">
                     <lightning-button-icon icon-name="utility:chevronright" alternative-text="Map"
@@ -25,10 +27,11 @@
                     </lightning-button-icon>
                 </lightning-layout-item>
                 <lightning-layout-item flexibility="auto">
-                    <lightning-input label="Value"></lightning-input>
+                    <lightning-input label="Value" data-fieldid={it.value.id} data-fieldtype="value"
+                        onchange={onFieldChange}></lightning-input>
                 </lightning-layout-item>
                 <lightning-layout-item flexibility="shrink" class="slds-p-horizontal_medium">
-                    <lightning-button-icon name={it.value.id} onclick={removeField} icon-name="utility:close"
+                    <lightning-button-icon data-id={it.value.id} onclick={removeField} icon-name="utility:close"
                         alternative-text="Remove" variant="border-filled">
                     </lightning-button-icon>
                 </lightning-layout-item>
