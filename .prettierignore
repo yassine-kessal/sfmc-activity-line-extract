@@ -1,0 +1,5 @@
+# Default dist folder
+dist/
+
+# Default resources folder
+client/assets
