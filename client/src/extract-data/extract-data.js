@@ -5,7 +5,7 @@ export default class ExtractData extends LightningElement {
     @track fields = [
         {
             id: 0,
-            label: '',
+            name: '',
             value: ''
         }
     ];
@@ -27,7 +27,7 @@ export default class ExtractData extends LightningElement {
 
         this.fields.push({
             id: lastFieldId + 1,
-            label: '',
+            name: '',
             value: ''
         });
     }

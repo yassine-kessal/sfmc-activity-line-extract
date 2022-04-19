@@ -4,9 +4,9 @@
 
         <div class="slds-m-vertical_small">
             <dl class="slds-list_horizontal slds-wrap">
-                <dt class="slds-item_label slds-text-color_weak slds-truncate slds-text-title_bold" title="First Label">
+                <dt class="slds-item_label slds-text-color_weak slds-truncate slds-text-title_bold">
                     Event Definition Key :</dt>
-                <dd class="slds-item_detail slds-truncate" title="Description for first label">{eventDefinitionKey}</dd>
+                <dd class="slds-item_detail slds-truncate">{eventDefinitionKey}</dd>
             </dl>
         </div>
 
@@ -17,7 +17,7 @@
         <template iterator:it={fields}>
             <lightning-layout key={it.value.id} vertical-align="end">
                 <lightning-layout-item flexibility="auto">
-                    <lightning-input label="Label"></lightning-input>
+                    <lightning-input label="Name"></lightning-input>
                 </lightning-layout-item>
                 <lightning-layout-item flexibility="shrink" class="slds-text-heading_medium slds-p-horizontal_medium">
                     <lightning-button-icon icon-name="utility:chevronright" alternative-text="Map"
