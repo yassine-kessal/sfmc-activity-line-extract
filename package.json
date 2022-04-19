@@ -4,8 +4,6 @@
     "description": "Journey activity to extract data to a file on the sftp salesforce marketing cloud",
     "main": "app.js",
     "scripts": {
-        "heroku-prebuild": "npm install --dev",
-        "heroku-postbuild": "npm run build:client",
         "build:client": "webpack --config webpack.config.js",
         "watch:client": "webpack --watch --config webpack.config.js --progress",
         "watch:server": "nodemon",
@@ -20,9 +18,7 @@
         "express": "^4.17.3",
         "jsonwebtoken": "^8.5.1",
         "postmonger": "0.0.16",
-        "winston": "^3.7.2"
-    },
-    "devDependencies": {
+        "winston": "^3.7.2",
         "@lwc/compiler": "^2.13.0",
         "@lwc/engine-dom": "^2.13.0",
         "@lwc/module-resolver": "^2.13.0",
