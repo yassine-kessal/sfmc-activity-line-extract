@@ -4,6 +4,7 @@
     "description": "Journey activity to extract data to a file on the sftp salesforce marketing cloud",
     "main": "app.js",
     "scripts": {
+        "heroku-prebuild": "npm install --dev",
         "heroku-postbuild": "npm install && npm run build:client",
         "build:client": "webpack --config webpack.config.js",
         "watch:client": "webpack --watch --config webpack.config.js --progress",
