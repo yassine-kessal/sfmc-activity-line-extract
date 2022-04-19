@@ -5,12 +5,12 @@
     "main": "app.js",
     "scripts": {
         "heroku-postbuild": "npm update && npm run build:client",
-        "build:client": "webpack --config webpack.config.js",
-        "watch:client": "webpack --watch --config webpack.config.js --progress",
-        "watch:server": "nodemon",
-        "watch": "run-p watch:client watch:server",
+        "build:client": "./node_modules/.bin/webpack --config webpack.config.js",
+        "watch:client": "./node_modules/.bin/webpack --watch --config webpack.config.js --progress",
+        "watch:server": "./node_modules/.bin/nodemon",
+        "watch": "./node_modules/.bin/run-p watch:client watch:server",
         "start:server": "node app.js",
-        "prettier": "prettier --write \"**/*.js\""
+        "prettier": "./node_modules/.bin/prettier --write \"**/*.js\""
     },
     "author": "Yassine Kessal <yassine.kessal@lineup7.fr>",
     "license": "ISC",
