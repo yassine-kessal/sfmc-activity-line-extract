@@ -139,8 +139,6 @@ export default class ExtractData extends LightningElement {
                 newInArguments.find((arg) => arg.id == field.id)
             );
 
-            console.log('indexOfArg', indexOfArg);
-
             if (indexOfArg > -1) {
                 newInArguments[indexOfArg] = {
                     id: field.id,
