@@ -11,19 +11,26 @@ module.exports = function configJSON(req) {
         arguments: {
             execute: {
                 // See: https://developer.salesforce.com/docs/atlas.en-us.mc-apis.meta/mc-apis/how-data-binding-works.htm
-                inArguments: [],
+                inArguments: [{
+                    file: {
+
+                    },
+                    fields: [
+
+                    ]
+                }],
                 outArguments: [],
                 // Fill in the host with the host that this is running on.
                 // It must run under HTTPS
                 url: `https://${req.headers.host}/execute`,
                 // The amount of time we want Journey Builder to wait before cancel the request. Default is 60000, Minimal is 1000
-                timeout: 10000,
+                // timeout: 10000,
                 // how many retrys if the request failed with 5xx error or network error. default is 0
                 retryCount: 3,
                 // wait in ms between retry.
                 retryDelay: 1000,
                 // The number of concurrent requests Journey Builder will send all together
-                concurrentRequests: 5
+                // concurrentRequests: 5
             }
         },
         configurationArguments: {
@@ -38,10 +45,10 @@ module.exports = function configJSON(req) {
             }
         },
         userInterfaces: {
-            configurationSupportsReadOnlyMode: true,
+            // configurationSupportsReadOnlyMode: true,
             configInspector: {
                 size: 'scm-lg',
-                emptyIframe: true
+                // emptyIframe: true
             }
         },
         schema: {

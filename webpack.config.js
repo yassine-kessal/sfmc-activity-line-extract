@@ -1,6 +1,8 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const {
+    CleanWebpackPlugin
+} = require('clean-webpack-plugin');
 const LwcWebpackPlugin = require('lwc-webpack-plugin');
 const path = require('path');
 
@@ -14,9 +16,12 @@ const config = {
     plugins: [
         new CleanWebpackPlugin(),
         new LwcWebpackPlugin({
-            modules: [
-                { dir: 'client/src' },
-                { npm: 'lightning-base-components' }
+            modules: [{
+                    dir: 'client/src'
+                },
+                {
+                    npm: 'lightning-base-components'
+                }
             ]
         }),
         new HtmlWebpackPlugin({
@@ -25,8 +30,7 @@ const config = {
             title: 'main'
         }),
         new CopyPlugin({
-            patterns: [
-                {
+            patterns: [{
                     from: 'client/assets',
                     to: 'assets/'
                 },
@@ -45,7 +49,9 @@ const config = {
             ]
         })
     ],
-    stats: { assets: false }
+    stats: {
+        assets: false
+    }
 };
 
 // development only
@@ -55,7 +61,7 @@ if (process.env.NODE_ENV !== 'production') {
     config.devtool = 'source-map';
     config.watchOptions = {
         ignored: /node_modules/,
-        aggregateTimeout: 5000
+        // aggregateTimeout: 5000
     };
 }
 

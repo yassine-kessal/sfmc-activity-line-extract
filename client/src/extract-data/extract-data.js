@@ -1,20 +1,35 @@
-import { LightningElement, track } from 'lwc';
+import setupTestMock from './../test/testMock';
+import {
+    LightningElement,
+    track
+} from 'lwc';
+import Postmonger from 'postmonger';
+const connection = new Postmonger.Session();
+
 
 export default class ExtractData extends LightningElement {
     @track hasFields;
-    @track fields = [
-        {
-            id: 0,
-            name: '',
-            value: ''
-        }
-    ];
+    @track fields = [{
+        id: 0,
+        name: '',
+        value: ''
+    }];
     @track eventDefinitionKey = 'loading...';
 
-    //to communicate with framework
-    activity;
+    // events = ['dataSources', 'contactsSchema', 'entryEventDefinitionKey'];
 
-    events = ['dataSources', 'contactsSchema', 'entryEventDefinitionKey'];
+    connectedCallback() {
+        setupTestMock(connection);
+
+        connection.trigger('ready');
+        connection.trigger('requestDataSources');
+        connection.trigger('requestContactsSchema');
+        connection.trigger('requestTriggerEventDefinition');
+
+        connection.on('requestedTriggerEventDefinition', (payload) => {
+            console.log("definition key", payload);
+        });
+    }
 
     /**
      *
@@ -43,7 +58,7 @@ export default class ExtractData extends LightningElement {
             }
         }
 
-        this.updateActivity();
+        // this.updateActivity();
     }
 
     /**
@@ -63,7 +78,7 @@ export default class ExtractData extends LightningElement {
             value: ''
         });
 
-        this.updateActivity();
+        // this.updateActivity();
     }
 
     /**
@@ -82,7 +97,7 @@ export default class ExtractData extends LightningElement {
 
         this.fields.splice(indexOfField, 1);
 
-        this.updateActivity();
+        // this.updateActivity();
     }
 
     /**
@@ -90,7 +105,6 @@ export default class ExtractData extends LightningElement {
      * @param {*} event
      */
     getContext(event) {
-        this.activity = this.template.querySelector('components-activity');
         this.config = event.detail;
 
         if (this.config.entryEventDefinitionKey) {
@@ -162,6 +176,5 @@ export default class ExtractData extends LightningElement {
         newPayload.metaData.isConfigured =
             this.fields.filter((field) => !field.value).length === 0;
 
-        this.activity.update(newPayload);
     }
 }
