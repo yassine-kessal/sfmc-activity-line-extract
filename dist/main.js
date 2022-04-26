@@ -12648,12 +12648,11 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
 
     if (payload.arguments && payload.arguments.execute && payload.arguments.execute.inArguments && payload.arguments.execute.inArguments.length > 0) {
       let args = payload.arguments.execute.inArguments[0];
-      this.file = _objectSpread({}, args.file);
-      console.log('fields', args.fields); //this.fields = [...args.fields];
+      if (args.file) this.file = _objectSpread({}, args.file);
+      if (args.fields) this.fields = [...args.fields];
     }
 
     console.log('[Init Activity]');
-    console.log('file', this.file);
     console.log(payload);
   }
 
@@ -12667,7 +12666,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
       file: this.file,
       fields: this.fields
     };
-    newPayload.arguments.execute.inArguments[0] = newInArguments; // check if no empty field
+    newPayload.arguments.execute.inArguments = [newInArguments]; // check if no empty field
 
     newPayload.metaData.isConfigured = this.fields.filter(field => !field.value).length === 0;
     connection.trigger('updateActivity', newPayload);

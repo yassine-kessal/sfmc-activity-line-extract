@@ -124,14 +124,12 @@ export default class ExtractData extends LightningElement {
         ) {
             let args = payload.arguments.execute.inArguments[0];
 
-            this.file = { ...args.file };
-            console.log('fields', args.fields);
+            if (args.file) this.file = { ...args.file };
 
-            //this.fields = [...args.fields];
+            if (args.fields) this.fields = [...args.fields];
         }
 
         console.log('[Init Activity]');
-        console.log('file', this.file);
         console.log(payload);
     }
 
@@ -147,7 +145,7 @@ export default class ExtractData extends LightningElement {
             fields: this.fields
         };
 
-        newPayload.arguments.execute.inArguments[0] = newInArguments;
+        newPayload.arguments.execute.inArguments = [newInArguments];
 
         // check if no empty field
         newPayload.metaData.isConfigured =
