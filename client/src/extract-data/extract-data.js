@@ -125,12 +125,12 @@ export default class ExtractData extends LightningElement {
             let args = payload.arguments.execute.inArguments[0];
 
             this.file = { ...args.file };
+            console.log('fields', args.fields);
 
-            this.fields = [...args.fields];
+            //this.fields = [...args.fields];
         }
 
         console.log('[Init Activity]');
-        console.log('fields', this.fields);
         console.log('file', this.file);
         console.log(payload);
     }
