@@ -12644,15 +12644,19 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
 
 
   init(payload) {
-    this.payload = payload;
-
-    if (payload.arguments && payload.arguments.execute && payload.arguments.execute.inArguments && payload.arguments.execute.inArguments.length > 0) {
-      let args = payload.arguments.execute.inArguments[0];
-      this.file = _objectSpread({}, args.file);
-      this.fields = [...args.fields];
-    }
-
+    /*this.payload = payload;
+      if (
+        payload.arguments &&
+        payload.arguments.execute &&
+        payload.arguments.execute.inArguments &&
+        payload.arguments.execute.inArguments.length > 0
+    ) {
+        let args = payload.arguments.execute.inArguments[0];
+          this.file = { ...args.file };
+          this.fields = [...args.fields];
+    }*/
     console.log('[Init Activity]');
+    console.log(payload);
   }
 
   clickedNext() {
