@@ -145,6 +145,10 @@ export default class ExtractData extends LightningElement {
 
         newPayload.arguments.execute.inArguments = [newInArguments];
 
+        newPayload.configurationArguments.params = {
+            file: this.file
+        };
+
         // check if no empty field
         newPayload.metaData.isConfigured =
             this.fields.filter((field) => !field.value).length === 0;

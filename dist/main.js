@@ -12453,9 +12453,6 @@ const stc14 = {
   },
   key: 16
 };
-const stc15 = {
-  "label": "Filename"
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {t: api_text, h: api_element, d: api_dynamic_text, k: api_key, b: api_bind, c: api_custom_element, i: api_iterator, f: api_flatten} = $api;
   const {_m0, _m1, _m2, _m3, _m4} = $ctx;
@@ -12512,7 +12509,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "click": _m3 || ($ctx._m3 = api_bind($cmp.addField))
     }
   })]), api_element("div", stc14, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_2__["default"], {
-    props: stc15,
+    props: {
+      "label": "Filename",
+      "value": $cmp.file.filename
+    },
     key: 17,
     on: {
       "change": _m4 || ($ctx._m4 = api_bind($cmp.onFilenameChange))
@@ -12684,7 +12684,10 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
       file: this.file,
       fields: this.fields
     };
-    newPayload.arguments.execute.inArguments = [newInArguments]; // check if no empty field
+    newPayload.arguments.execute.inArguments = [newInArguments];
+    newPayload.configurationArguments.params = {
+      file: this.file
+    }; // check if no empty field
 
     newPayload.metaData.isConfigured = this.fields.filter(field => !field.value).length === 0;
     console.log('[Save activity]', JSON.stringify(newPayload));
