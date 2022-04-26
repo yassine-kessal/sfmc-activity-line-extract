@@ -145,9 +145,7 @@ export default class ExtractData extends LightningElement {
 
         newPayload.arguments.execute.inArguments = [newInArguments];
 
-        newPayload.configurationArguments.params = {
-            ...this.file
-        };
+        newPayload.configurationArguments.publish.url = `${newPayload.configurationArguments.publish.url}?filename=${this.file.filename}`;
 
         // check if no empty field
         newPayload.metaData.isConfigured =
