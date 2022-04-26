@@ -12685,9 +12685,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
       fields: this.fields
     };
     newPayload.arguments.execute.inArguments = [newInArguments];
-    newPayload.configurationArguments.params = {
-      file: this.file
-    }; // check if no empty field
+    newPayload.configurationArguments.params = _objectSpread({}, this.file); // check if no empty field
 
     newPayload.metaData.isConfigured = this.fields.filter(field => !field.value).length === 0;
     console.log('[Save activity]', JSON.stringify(newPayload));
