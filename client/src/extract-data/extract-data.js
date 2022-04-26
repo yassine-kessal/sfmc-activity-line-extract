@@ -122,7 +122,7 @@ export default class ExtractData extends LightningElement {
             payload.arguments.execute.inArguments &&
             payload.arguments.execute.inArguments.length > 0
         ) {
-            let args = { ...payload.arguments.execute.inArguments[0] };
+            let args = payload.arguments.execute.inArguments[0];
 
             this.file = args.file;
 
