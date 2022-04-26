@@ -12541,6 +12541,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
 
 const connection = new (postmonger__WEBPACK_IMPORTED_MODULE_3___default().Session)();
 
@@ -12548,23 +12555,28 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
   constructor(...args) {
     super(...args);
     this.hasFields = void 0;
+    this.payload = void 0;
     this.fields = [{
       id: 0,
       name: '',
       value: ''
     }];
+    this.file = {
+      filename: 'test.csv'
+    };
     this.eventDefinitionKey = 'loading...';
   }
 
-  // events = ['dataSources', 'contactsSchema', 'entryEventDefinitionKey'];
   connectedCallback() {
     (0,_test_testMock__WEBPACK_IMPORTED_MODULE_2__["default"])(connection);
-    connection.trigger('ready');
-    connection.trigger('requestDataSources');
-    connection.trigger('requestContactsSchema');
-    connection.trigger('requestTriggerEventDefinition');
-    connection.on('requestedTriggerEventDefinition', payload => {
-      console.log("definition key", payload);
+    connection.trigger('ready'); //connection.trigger('requestDataSources');
+    //connection.trigger('requestContactsSchema');
+
+    connection.trigger('requestEntryEventDefinitionKey');
+    connection.on('initActivity', payload => this.init(payload));
+    connection.on('clickedNext', () => this.clickedNext());
+    connection.on('requestedEntryEventDefinitionKey', payload => {
+      this.eventDefinitionKey = payload.entryEventDefinitionKey;
     });
   }
   /**
@@ -12625,31 +12637,39 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     this.fields.splice(indexOfField, 1); // this.updateActivity();
   }
   /**
+   * Init Activity
    *
-   * @param {*} event
+   * @param {*} payload
    */
 
 
-  getContext(event) {
-    this.config = event.detail;
+  init(payload) {
+    this.payload = payload;
 
-    if (this.config.entryEventDefinitionKey) {
-      this.eventDefinitionKey = this.config.entryEventDefinitionKey;
+    if (payload.arguments && payload.arguments.execute && payload.arguments.execute.inArguments && payload.arguments.execute.inArguments.length > 0) {
+      let args = payload.arguments.execute.inArguments[0];
+      this.file = _objectSpread({}, args.file);
+      this.fields = [...args.fields];
     }
 
-    if (this.config.payload && this.config.payload.arguments && this.config.payload.arguments.execute && this.config.payload.arguments.execute.inArguments && this.config.payload.arguments.execute.inArguments.length > 0) {
-      let newFields = [];
-      this.config.payload.arguments.execute.inArguments.forEach((arg, index) => {
-        newFields.push({
-          id: index,
-          name: arg.name,
-          value: arg.value
-        });
-      });
-      this.fields = newFields;
-    }
+    console.log('[Init Activity]');
+  }
 
-    console.log('[context]', event);
+  clickedNext() {
+    this.save();
+  }
+
+  save() {
+    const newPayload = _objectSpread({}, this.payload);
+
+    const newInArguments = {
+      file: _objectSpread({}, this.file),
+      fields: [...this.fields]
+    };
+    newPayload.arguments.execute.inArguments = newInArguments; // check if no empty field
+
+    newPayload.metaData.isConfigured = this.fields.filter(field => !field.value).length === 0;
+    connection.trigger('updateActivity', newPayload);
   }
   /**
    *
@@ -12693,7 +12713,9 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
 (0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerDecorators)(ExtractData, {
   track: {
     hasFields: 1,
+    payload: 1,
     fields: 1,
+    file: 1,
     eventDefinitionKey: 1
   }
 });
@@ -12731,7 +12753,7 @@ function setupTestMock(jbSession) {
   const jb = {};
   window.jb = jb; //standard responses
 
-  const events = ['requestContactsSchema', 'requestSchema', 'requestTriggerEventDefinition', 'requestDataSources', 'requestTokens'];
+  const events = ['requestContactsSchema', 'requestSchema', 'requestTriggerEventDefinition', 'requestDataSources', 'requestTokens', 'requestEntryEventDefinitionKey'];
 
   for (const e of events) {
     try {
@@ -38144,7 +38166,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"","id":"b58d71b3-66ef-4d3a-b549-2a4cdf8902b8","key":"REST-2","type":"REST","arguments":{"executionMode":"{{Context.ExecutionMode}}","definitionId":"{{Context.DefinitionId}}","activityId":"{{Activity.Id}}","contactKey":"{{Context.ContactKey}}","execute":{"inArguments":[{"type":"0ML5J000000PBVKWA4","content":"Hi Doug","recipient":"0055J000000lCFWQA2","target":"0055J000000lCFWQA2","mid":7330184}],"outArguments":[],"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/execute","timeout":10000,"retryCount":3,"retryDelay":1000,"concurrentRequests":5,"useJwt":true},"testExecute":"","startActivityKey":"{{Context.StartActivityKey}}","definitionInstanceId":"{{Context.DefinitionInstanceId}}","requestObjectId":"{{Context.RequestObjectId}}"},"configurationArguments":{"save":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/save","useJwt":true},"testSave":"","publish":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/publish","useJwt":true},"testPublish":"","unpublish":"","stop":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/stop","useJwt":true},"testStop":"","testUnpublish":"","partnerActivityId":"","validate":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/validate","useJwt":true},"testValidate":"","outArgumentSchema":{}},"metaData":{"icon":"https://sfmc-lwcactivity.herokuapp.com/assets/notification.png","category":"messaging","backgroundColor":"#032e61","expressionBuilderPrefix":"sfnotif","iconSmall":"","statsContactIcon":"","original_icon":"https://sfmc-lwcactivity.herokuapp.com/assets/notification.png","isConfigured":true},"schema":{"arguments":{"execute":{"inArguments":[],"outArguments":[]}}},"editable":false,"outcomes":[{"key":"43d99f6f-e29f-454b-93ce-9163d065b5de","next":"WAITBYDURATION-6","arguments":{},"metaData":{"invalid":false}}],"errors":null}');
+module.exports = JSON.parse('{"name":"","id":"b58d71b3-66ef-4d3a-b549-2a4cdf8902b8","key":"REST-2","type":"REST","arguments":{"executionMode":"{{Context.ExecutionMode}}","definitionId":"{{Context.DefinitionId}}","activityId":"{{Activity.Id}}","contactKey":"{{Context.ContactKey}}","execute":{"inArguments":[{"file":{"filename":"test.csv"},"fields":[{"id":0,"name":"firstName","value":"hello"}]}],"outArguments":[],"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/execute","timeout":10000,"retryCount":3,"retryDelay":1000,"concurrentRequests":5,"useJwt":true},"testExecute":"","startActivityKey":"{{Context.StartActivityKey}}","definitionInstanceId":"{{Context.DefinitionInstanceId}}","requestObjectId":"{{Context.RequestObjectId}}"},"configurationArguments":{"save":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/save","useJwt":true},"testSave":"","publish":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/publish","useJwt":true},"testPublish":"","unpublish":"","stop":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/stop","useJwt":true},"testStop":"","testUnpublish":"","partnerActivityId":"","validate":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/validate","useJwt":true},"testValidate":"","outArgumentSchema":{}},"metaData":{"icon":"https://sfmc-lwcactivity.herokuapp.com/assets/notification.png","category":"messaging","backgroundColor":"#032e61","expressionBuilderPrefix":"sfnotif","iconSmall":"","statsContactIcon":"","original_icon":"https://sfmc-lwcactivity.herokuapp.com/assets/notification.png","isConfigured":true},"schema":{"arguments":{"execute":{"inArguments":[],"outArguments":[]}}},"editable":false,"outcomes":[{"key":"43d99f6f-e29f-454b-93ce-9163d065b5de","next":"WAITBYDURATION-6","arguments":{},"metaData":{"invalid":false}}],"errors":null}');
 
 /***/ }),
 

@@ -1,33 +1,41 @@
 import setupTestMock from './../test/testMock';
-import {
-    LightningElement,
-    track
-} from 'lwc';
+import { LightningElement, track } from 'lwc';
 import Postmonger from 'postmonger';
 const connection = new Postmonger.Session();
 
-
 export default class ExtractData extends LightningElement {
     @track hasFields;
-    @track fields = [{
-        id: 0,
-        name: '',
-        value: ''
-    }];
-    @track eventDefinitionKey = 'loading...';
 
-    // events = ['dataSources', 'contactsSchema', 'entryEventDefinitionKey'];
+    @track payload;
+
+    @track fields = [
+        {
+            id: 0,
+            name: '',
+            value: ''
+        }
+    ];
+
+    @track file = {
+        filename: 'test.csv'
+    };
+
+    @track eventDefinitionKey = 'loading...';
 
     connectedCallback() {
         setupTestMock(connection);
 
         connection.trigger('ready');
-        connection.trigger('requestDataSources');
-        connection.trigger('requestContactsSchema');
-        connection.trigger('requestTriggerEventDefinition');
+        //connection.trigger('requestDataSources');
+        //connection.trigger('requestContactsSchema');
+        connection.trigger('requestEntryEventDefinitionKey');
 
-        connection.on('requestedTriggerEventDefinition', (payload) => {
-            console.log("definition key", payload);
+        connection.on('initActivity', (payload) => this.init(payload));
+
+        connection.on('clickedNext', () => this.clickedNext());
+
+        connection.on('requestedEntryEventDefinitionKey', (payload) => {
+            this.eventDefinitionKey = payload.entryEventDefinitionKey;
         });
     }
 
@@ -101,39 +109,48 @@ export default class ExtractData extends LightningElement {
     }
 
     /**
+     * Init Activity
      *
-     * @param {*} event
+     * @param {*} payload
      */
-    getContext(event) {
-        this.config = event.detail;
-
-        if (this.config.entryEventDefinitionKey) {
-            this.eventDefinitionKey = this.config.entryEventDefinitionKey;
-        }
+    init(payload) {
+        this.payload = payload;
 
         if (
-            this.config.payload &&
-            this.config.payload.arguments &&
-            this.config.payload.arguments.execute &&
-            this.config.payload.arguments.execute.inArguments &&
-            this.config.payload.arguments.execute.inArguments.length > 0
+            payload.arguments &&
+            payload.arguments.execute &&
+            payload.arguments.execute.inArguments &&
+            payload.arguments.execute.inArguments.length > 0
         ) {
-            let newFields = [];
+            let args = payload.arguments.execute.inArguments[0];
 
-            this.config.payload.arguments.execute.inArguments.forEach(
-                (arg, index) => {
-                    newFields.push({
-                        id: index,
-                        name: arg.name,
-                        value: arg.value
-                    });
-                }
-            );
+            this.file = { ...args.file };
 
-            this.fields = newFields;
+            this.fields = [...args.fields];
         }
 
-        console.log('[context]', event);
+        console.log('[Init Activity]');
+    }
+
+    clickedNext() {
+        this.save();
+    }
+
+    save() {
+        const newPayload = { ...this.payload };
+
+        const newInArguments = {
+            file: { ...this.file },
+            fields: [...this.fields]
+        };
+
+        newPayload.arguments.execute.inArguments = newInArguments;
+
+        // check if no empty field
+        newPayload.metaData.isConfigured =
+            this.fields.filter((field) => !field.value).length === 0;
+
+        connection.trigger('updateActivity', newPayload);
     }
 
     /**
@@ -175,6 +192,5 @@ export default class ExtractData extends LightningElement {
         // check if no empty field
         newPayload.metaData.isConfigured =
             this.fields.filter((field) => !field.value).length === 0;
-
     }
 }

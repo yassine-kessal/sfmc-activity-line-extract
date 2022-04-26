@@ -11,11 +11,16 @@
         "execute": {
             "inArguments": [
                 {
-                    "type": "0ML5J000000PBVKWA4",
-                    "content": "Hi Doug",
-                    "recipient": "0055J000000lCFWQA2",
-                    "target": "0055J000000lCFWQA2",
-                    "mid": 7330184
+                    "file": {
+                        "filename": "test.csv"
+                    },
+                    "fields": [
+                        {
+                            "id": 0,
+                            "name": "firstName",
+                            "value": "hello"
+                        }
+                    ]
                 }
             ],
             "outArguments": [],
