@@ -7,6 +7,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const activityConfig = require('./activity-config');
+const logger = require('./server/utils/logger');
 
 // static vars
 const DIST_DIR = './dist';
@@ -33,6 +34,10 @@ app.get('/config.json', function (req, res) {
 /**
  * Backend application
  */
+app.post('/publish', function (req, res) {
+    logger(JSON.stringify(req.body));
+    logger(JSON.stringify(req.query));
+});
 
 if (process.env.NODE_ENV !== 'production') {
     app.listen(process.env.PORT, () =>

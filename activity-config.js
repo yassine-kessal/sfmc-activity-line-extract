@@ -16,15 +16,13 @@ module.exports = function configJSON(req) {
                     }
                 ],
                 url: 'https://eogropaqow7rzxc.m.pipedream.net',
-                verb: 'POST',
-                useJwt: true
+                verb: 'POST'
             }
         },
         configurationArguments: {
             publish: {
                 url: 'https://eogropaqow7rzxc.m.pipedream.net',
-                verb: 'POST',
-                useJwt: true
+                verb: 'POST'
             }
         },
         userInterfaces: {
