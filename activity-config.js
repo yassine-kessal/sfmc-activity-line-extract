@@ -21,7 +21,7 @@ module.exports = function configJSON(req) {
         },
         configurationArguments: {
             publish: {
-                url: 'https://eogropaqow7rzxc.m.pipedream.net',
+                url: 'https://${req.headers.host}/publish',
                 verb: 'POST'
             }
         },
