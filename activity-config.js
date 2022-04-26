@@ -21,7 +21,7 @@ module.exports = function configJSON(req) {
         },
         configurationArguments: {
             publish: {
-                url: `https://${req.headers.host}/publish`,
+                url: 'https://sfmc-activity-extract-data.herokuapp.com/publish',
                 verb: 'POST'
             }
         },

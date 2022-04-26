@@ -35,8 +35,10 @@ app.get('/config.json', function (req, res) {
  * Backend application
  */
 app.post('/publish', function (req, res) {
-    logger(JSON.stringify(req.body));
-    logger(JSON.stringify(req.query));
+    logger.info(JSON.stringify(req.body));
+    logger.info(JSON.stringify(req.query));
+
+    return res.status(200).json({});
 });
 
 if (process.env.NODE_ENV !== 'production') {
