@@ -12644,7 +12644,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
 
 
   init(payload) {
-    this.payload = payload;
+    this.payload = JSON.parse(JSON.stringify(payload));
 
     if (payload.arguments && payload.arguments.execute && payload.arguments.execute.inArguments && payload.arguments.execute.inArguments.length > 0) {
       let args = payload.arguments.execute.inArguments[0];
@@ -12661,8 +12661,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
   }
 
   save() {
-    const newPayload = _objectSpread({}, this.payload);
-
+    const newPayload = JSON.parse(JSON.stringify(this.payload));
     const newInArguments = {
       file: this.file,
       fields: this.fields

@@ -114,7 +114,7 @@ export default class ExtractData extends LightningElement {
      * @param {*} payload
      */
     init(payload) {
-        this.payload = payload;
+        this.payload = JSON.parse(JSON.stringify(payload));
 
         if (
             payload.arguments &&
@@ -130,6 +130,8 @@ export default class ExtractData extends LightningElement {
         }
 
         console.log('[Init Activity]');
+        console.log('fields', this.fields);
+        console.log('file', this.file);
         console.log(payload);
     }
 
@@ -138,7 +140,7 @@ export default class ExtractData extends LightningElement {
     }
 
     save() {
-        const newPayload = { ...this.payload };
+        const newPayload = JSON.parse(JSON.stringify(this.payload));
 
         const newInArguments = {
             file: this.file,
