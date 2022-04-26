@@ -21,7 +21,7 @@ module.exports = function configJSON(req) {
         },
         configurationArguments: {
             publish: {
-                url: 'https://${req.headers.host}/publish',
+                url: `https://${req.headers.host}/publish`,
                 verb: 'POST'
             }
         },
