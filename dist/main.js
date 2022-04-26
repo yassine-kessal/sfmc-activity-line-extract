@@ -12569,9 +12569,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
 
   connectedCallback() {
     (0,_test_testMock__WEBPACK_IMPORTED_MODULE_2__["default"])(connection);
-    connection.trigger('ready'); //connection.trigger('requestDataSources');
-    //connection.trigger('requestContactsSchema');
-
+    connection.trigger('ready');
     connection.trigger('requestEntryEventDefinitionKey');
     connection.on('initActivity', payload => this.init(payload));
     connection.on('clickedNext', () => this.clickedNext());
@@ -12604,8 +12602,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
       } else if (fieldType == 'value') {
         this.fields[indexOfField].value = event.target.value;
       }
-    } // this.updateActivity();
-
+    }
   }
   /**
    *
@@ -12621,7 +12618,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
       id: lastFieldId + 1,
       name: '',
       value: ''
-    }); // this.updateActivity();
+    });
   }
   /**
    *
@@ -12634,7 +12631,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     let fieldId = parseInt(event.target.dataset.id, 10);
     console.log(`[fields] Remove field ID : ${fieldId}`);
     let indexOfField = this.fields.indexOf(this.fields.find(field => field.id == fieldId));
-    this.fields.splice(indexOfField, 1); // this.updateActivity();
+    this.fields.splice(indexOfField, 1);
   }
   /**
    * Init Activity
@@ -12670,40 +12667,6 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
 
     newPayload.metaData.isConfigured = this.fields.filter(field => !field.value).length === 0;
     connection.trigger('updateActivity', newPayload);
-  }
-  /**
-   *
-   */
-
-
-  updateActivity() {
-    const newPayload = JSON.parse(JSON.stringify(this.config.payload));
-    const argfields = this.fields.reduce((obj, field) => {
-      obj[field.name] = field.value;
-      return obj;
-    }, {});
-    let newInArguments = [];
-    this.fields.forEach(field => {
-      let indexOfArg = newInArguments.indexOf(newInArguments.find(arg => arg.id == field.id));
-
-      if (indexOfArg > -1) {
-        newInArguments[indexOfArg] = {
-          id: field.id,
-          name: field.name,
-          value: field.value
-        };
-      } else {
-        newInArguments.push({
-          id: field.id,
-          name: field.name,
-          value: field.value
-        });
-      }
-    });
-    newPayload.arguments.execute.inArguments = newInArguments;
-    newPayload.configurationArguments.params = argfields; // check if no empty field
-
-    newPayload.metaData.isConfigured = this.fields.filter(field => !field.value).length === 0;
   }
   /*LWC compiler v2.13.0*/
 

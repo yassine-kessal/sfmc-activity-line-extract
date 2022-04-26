@@ -26,8 +26,6 @@ export default class ExtractData extends LightningElement {
         setupTestMock(connection);
 
         connection.trigger('ready');
-        //connection.trigger('requestDataSources');
-        //connection.trigger('requestContactsSchema');
         connection.trigger('requestEntryEventDefinitionKey');
 
         connection.on('initActivity', (payload) => this.init(payload));
@@ -65,8 +63,6 @@ export default class ExtractData extends LightningElement {
                 this.fields[indexOfField].value = event.target.value;
             }
         }
-
-        // this.updateActivity();
     }
 
     /**
@@ -85,8 +81,6 @@ export default class ExtractData extends LightningElement {
             name: '',
             value: ''
         });
-
-        // this.updateActivity();
     }
 
     /**
@@ -104,8 +98,6 @@ export default class ExtractData extends LightningElement {
         );
 
         this.fields.splice(indexOfField, 1);
-
-        // this.updateActivity();
     }
 
     /**
@@ -152,46 +144,5 @@ export default class ExtractData extends LightningElement {
             this.fields.filter((field) => !field.value).length === 0;
 
         connection.trigger('updateActivity', newPayload);
-    }
-
-    /**
-     *
-     */
-    updateActivity() {
-        const newPayload = JSON.parse(JSON.stringify(this.config.payload));
-
-        const argfields = this.fields.reduce((obj, field) => {
-            obj[field.name] = field.value;
-            return obj;
-        }, {});
-
-        let newInArguments = [];
-        this.fields.forEach((field) => {
-            let indexOfArg = newInArguments.indexOf(
-                newInArguments.find((arg) => arg.id == field.id)
-            );
-
-            if (indexOfArg > -1) {
-                newInArguments[indexOfArg] = {
-                    id: field.id,
-                    name: field.name,
-                    value: field.value
-                };
-            } else {
-                newInArguments.push({
-                    id: field.id,
-                    name: field.name,
-                    value: field.value
-                });
-            }
-        });
-
-        newPayload.arguments.execute.inArguments = newInArguments;
-
-        newPayload.configurationArguments.params = argfields;
-
-        // check if no empty field
-        newPayload.metaData.isConfigured =
-            this.fields.filter((field) => !field.value).length === 0;
     }
 }

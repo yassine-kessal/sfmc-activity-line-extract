@@ -41,6 +41,10 @@ module.exports = function configJSON(req) {
                 size: 'medium'
             }
         },
+        metaData: {
+            isConfigured: true
+        },
+        editable: true,
         schema: {
             arguments: {
                 execute: {
