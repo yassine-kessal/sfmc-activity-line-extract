@@ -44,6 +44,12 @@ export default class ExtractData extends LightningElement {
         this.hasFields = this.fields.length > 0;
     }
 
+    onFilenameChange(event) {
+        this.file = {
+            filename: event.target.value
+        };
+    }
+
     /**
      *
      * @param {*} event
@@ -122,7 +128,7 @@ export default class ExtractData extends LightningElement {
         }
 
         console.log('[Init Activity]');
-        console.log(payload);
+        console.log(JSON.stringify(payload));
     }
 
     clickedNext() {

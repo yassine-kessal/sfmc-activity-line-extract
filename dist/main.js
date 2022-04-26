@@ -12447,9 +12447,18 @@ const stc13 = {
   "label": "Add field",
   "variant": "brand"
 };
+const stc14 = {
+  classMap: {
+    "slds-m-top_medium": true
+  },
+  key: 16
+};
+const stc15 = {
+  "label": "Filename"
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {t: api_text, h: api_element, d: api_dynamic_text, k: api_key, b: api_bind, c: api_custom_element, i: api_iterator, f: api_flatten} = $api;
-  const {_m0, _m1, _m2, _m3} = $ctx;
+  const {_m0, _m1, _m2, _m3, _m4} = $ctx;
   return api_flatten([api_element("div", stc0, [api_element("dl", stc1, [api_element("dt", stc2, [api_text("Event Definition Key :")]), api_element("dd", stc3, [api_text(api_dynamic_text($cmp.eventDefinitionKey))])])]), !$cmp.hasFields ? api_element("div", stc4, [api_text("Please start by adding field.")]) : null, api_iterator($cmp.fields, function (itValue, itIndex, itFirst, itLast) {
     const it = {
       value: itValue,
@@ -12501,6 +12510,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     key: 15,
     on: {
       "click": _m3 || ($ctx._m3 = api_bind($cmp.addField))
+    }
+  })]), api_element("div", stc14, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    props: stc15,
+    key: 17,
+    on: {
+      "change": _m4 || ($ctx._m4 = api_bind($cmp.onFilenameChange))
     }
   })])]);
   /*LWC compiler v2.13.0*/
@@ -12585,6 +12600,12 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
   renderedCallback() {
     this.hasFields = this.fields.length > 0;
   }
+
+  onFilenameChange(event) {
+    this.file = {
+      filename: event.target.value
+    };
+  }
   /**
    *
    * @param {*} event
@@ -12650,7 +12671,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     }
 
     console.log('[Init Activity]');
-    console.log(payload);
+    console.log(JSON.stringify(payload));
   }
 
   clickedNext() {
