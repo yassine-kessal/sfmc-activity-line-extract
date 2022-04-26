@@ -34,6 +34,12 @@ app.get('/config.json', function (req, res) {
 /**
  * Backend application
  */
+app.post('/execute', function (req, res) {
+    logger.info(JSON.stringify(req.body));
+
+    return res.status(200).json({});
+});
+
 app.post('/publish', function (req, res) {
     logger.info(JSON.stringify(req.body));
     logger.info(JSON.stringify(req.query));

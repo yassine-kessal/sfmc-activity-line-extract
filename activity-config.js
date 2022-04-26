@@ -15,7 +15,7 @@ module.exports = function configJSON(req) {
                         fields: []
                     }
                 ],
-                url: 'https://eogropaqow7rzxc.m.pipedream.net',
+                url: 'https://sfmc-activity-extract-data.herokuapp.com/execute',
                 verb: 'POST'
             }
         },
