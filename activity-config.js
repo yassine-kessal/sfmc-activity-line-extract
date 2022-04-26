@@ -11,44 +11,34 @@ module.exports = function configJSON(req) {
         arguments: {
             execute: {
                 // See: https://developer.salesforce.com/docs/atlas.en-us.mc-apis.meta/mc-apis/how-data-binding-works.htm
-                inArguments: [{
-                    file: {
-
-                    },
-                    fields: [
-
-                    ]
-                }],
+                inArguments: [
+                    {
+                        file: {},
+                        fields: []
+                    }
+                ],
                 outArguments: [],
                 // Fill in the host with the host that this is running on.
                 // It must run under HTTPS
-                url: `https://${req.headers.host}/execute`,
+                url: `https://eohtbshjgqwkb9b.m.pipedream.net`,
                 // The amount of time we want Journey Builder to wait before cancel the request. Default is 60000, Minimal is 1000
                 // timeout: 10000,
                 // how many retrys if the request failed with 5xx error or network error. default is 0
                 retryCount: 3,
                 // wait in ms between retry.
-                retryDelay: 1000,
+                retryDelay: 1000
                 // The number of concurrent requests Journey Builder will send all together
                 // concurrentRequests: 5
             }
         },
         configurationArguments: {
             publish: {
-                url: `https://${req.headers.host}/publish`
-            },
-            validate: {
-                url: `https://${req.headers.host}/validate`
-            },
-            stop: {
-                url: `https://${req.headers.host}/stop`
+                url: `https://eohtbshjgqwkb9b.m.pipedream.net`
             }
         },
         userInterfaces: {
-            // configurationSupportsReadOnlyMode: true,
             configInspector: {
-                size: 'scm-lg',
-                // emptyIframe: true
+                size: 'medium'
             }
         },
         schema: {
