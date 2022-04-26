@@ -144,6 +144,6 @@ export default class ExtractData extends LightningElement {
             this.fields.filter((field) => !field.value).length === 0;
 
         console.log('[Save activity]', newPayload);
-        connection.trigger('updateActivity', newPayload);
+        //connection.trigger('updateActivity', newPayload);
     }
 }

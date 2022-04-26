@@ -12666,8 +12666,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     newPayload.arguments.execute.inArguments = [newInArguments]; // check if no empty field
 
     newPayload.metaData.isConfigured = this.fields.filter(field => !field.value).length === 0;
-    console.log('[Save activity]', newPayload);
-    connection.trigger('updateActivity', newPayload);
+    console.log('[Save activity]', newPayload); //connection.trigger('updateActivity', newPayload);
   }
   /*LWC compiler v2.13.0*/
 

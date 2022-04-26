@@ -3,7 +3,8 @@ module.exports = function configJSON(req) {
         workflowApiVersion: '1.1',
         metaData: {
             icon: 'assets/icon.png',
-            category: 'flow'
+            category: 'flow',
+            isConfigured: true
         },
         type: 'REST',
         arguments: {
@@ -14,7 +15,6 @@ module.exports = function configJSON(req) {
                         fields: []
                     }
                 ],
-                outArguments: [],
                 url: 'https://eogropaqow7rzxc.m.pipedream.net'
             }
         },
@@ -27,9 +27,6 @@ module.exports = function configJSON(req) {
             configInspector: {
                 size: 'medium'
             }
-        },
-        metaData: {
-            isConfigured: true
         },
         editable: true,
         errors: []
