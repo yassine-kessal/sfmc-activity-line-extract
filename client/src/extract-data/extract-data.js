@@ -1,5 +1,8 @@
 import setupTestMock from './../test/testMock';
-import { LightningElement, track } from 'lwc';
+import {
+    LightningElement,
+    track
+} from 'lwc';
 import Postmonger from 'postmonger';
 const connection = new Postmonger.Session();
 
@@ -8,13 +11,11 @@ export default class ExtractData extends LightningElement {
 
     @track payload;
 
-    @track fields = [
-        {
-            id: 0,
-            name: '',
-            value: ''
-        }
-    ];
+    @track fields = [{
+        id: 0,
+        name: '',
+        value: ''
+    }];
 
     @track file = {
         filename: 'test.csv'
@@ -33,6 +34,7 @@ export default class ExtractData extends LightningElement {
         connection.on('clickedNext', () => this.clickedNext());
 
         connection.on('requestedEntryEventDefinitionKey', (payload) => {
+            console.log(payload);
             this.eventDefinitionKey = payload.entryEventDefinitionKey;
         });
     }
@@ -122,9 +124,11 @@ export default class ExtractData extends LightningElement {
         ) {
             let args = payload.arguments.execute.inArguments[0];
 
-            if (args.file) this.file = { ...args.file };
+            if (args.file) this.file = {
+                ...args.file
+            };
 
-            if (args.fields) this.fields = [...args.fields];
+            if (args.fields && args.fields.length > 0) this.fields = [...args.fields];
         }
 
         console.log('[Init Activity]');
