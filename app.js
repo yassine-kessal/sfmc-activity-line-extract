@@ -44,6 +44,7 @@ app.post('/execute', function (req, res) {
 
     const file = req.body.inArguments[0].file,
         fields = req.body.inArguments[0].fields,
+        defId = req.body.definitionInstanceId,
         activityId = req.body.activityObjectID;
 
     const filename = file.filename;
@@ -51,13 +52,13 @@ app.post('/execute', function (req, res) {
     // insert field with activityId link to activity
     db.serialize(function () {
         let sqlString =
-            'INSERT INTO fields (name, value, fileActivityId) VALUES';
+            'INSERT INTO fields (name, value, fileActivityId, defId) VALUES';
 
         var i = 0;
         fields.forEach(function (field) {
             if (i != 0) sqlString += ', ';
 
-            sqlString += `('${field.name}', '${field.value}', '${activityId}')`;
+            sqlString += `('${field.name}', '${field.value}', '${activityId}', '${defId}')`;
 
             i++;
         });

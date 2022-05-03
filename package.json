@@ -10,6 +10,7 @@
         "watch:server": "nodemon --watch ./app.js",
         "watch": "run-p watch:client watch:server",
         "start:server": "node app.js",
+        "start:worker": "node worker.js",
         "prettier": "prettier --write \"**/*.js\""
     },
     "author": "Yassine Kessal <yassine.kessal@lineup7.fr>",
@@ -24,6 +25,7 @@
         "body-parser": "^1.20.0",
         "clean-webpack-plugin": "^4.0.0",
         "copy-webpack-plugin": "^10.2.4",
+        "csv-stringify": "^6.0.5",
         "dotenv": "^16.0.0",
         "express": "^4.17.3",
         "html-webpack-plugin": "^5.5.0",
