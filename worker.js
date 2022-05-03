@@ -17,11 +17,7 @@ db.get('PRAGMA foreign_keys = ON');
 db.serialize(function () {
     db.all(
         `SELECT fields.name, fields.value, files.activityId, fields.defId FROM fields
-        INNER JOIN files ON files.activityId = fields.fileActivityId
-        WHERE (
-            SELECT CAST(strftime('%s', datetime('now', 'localtime')) as integer)  - CAST(strftime('%s', MAX(createdAt)) as integer)
-            FROM fields as subFields WHERE subFields.fileActivityId = files.activityId
-        ) >= 0`,
+        INNER JOIN files ON files.activityId = fields.fileActivityId`,
         function (err, rows) {
             if (err) {
                 console.log(err);
