@@ -96,7 +96,7 @@ app.post('/publish', function (req, res) {
 app.get('/get-data', function (req, res) {
     db.serialize(function () {
         db.all(
-            'SELECT fields.id, fields.name, fields.value, fields.createdAt, files.filename, files.activityId, files.tsLastUpdate FROM fields INNER JOIN files ON files.activityId = fields.fileActivityId',
+            'SELECT fields.id, fields.name, fields.value, fields.createdAt, files.filename, files.activityId FROM fields INNER JOIN files ON files.activityId = fields.fileActivityId',
             function (err, rows) {
                 if (!err) {
                     res.send(rows);
