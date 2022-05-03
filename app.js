@@ -101,6 +101,7 @@ app.get('/get-data', function (req, res) {
                 if (!err) {
                     res.send(rows);
                 } else {
+                    console.log(err);
                     res.status(200).json({});
                 }
             }
