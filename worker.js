@@ -24,6 +24,8 @@ db.serialize(function () {
                 return;
             }
 
+            console.log(rows);
+
             let groupedRows = groupBy(rows, 'defId'),
                 formattedRows = [];
 
