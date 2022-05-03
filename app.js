@@ -98,6 +98,8 @@ app.get('/get-data', function (req, res) {
             function (err, rows) {
                 if (!err) {
                     res.send(rows);
+                } else {
+                    res.status(200).json({});
                 }
             }
         );
