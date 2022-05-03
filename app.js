@@ -50,17 +50,19 @@ app.post('/execute', function (req, res) {
 
     // insert field with activityId link to activity
     db.serialize(function () {
-        let sqlString = 'INSERT INTO fields (name, value, fileActivityId) ';
+        let sqlString =
+            'INSERT INTO fields (name, value, fileActivityId) VALUES';
 
         var i = 0;
         fields.forEach(function (field) {
             if (i != 0) sqlString += ', ';
 
-            sqlString += `VALUES('${field.name}', '${field.value}', '${activityId}')`;
+            sqlString += `('${field.name}', '${field.value}', '${activityId}')`;
 
             i++;
         });
 
+        console.log(sqlString);
         db.run(sqlString);
     });
 
