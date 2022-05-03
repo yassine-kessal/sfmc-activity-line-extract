@@ -85,6 +85,7 @@ app.post('/publish', function (req, res) {
     // purge file with fields and recreate file
     db.serialize(function () {
         db.run(`DELETE FROM files WHERE activityId='${activityId}'`);
+        db.run(`DELETE FROM fields WHERE fileActivityId='${activityId}'`);
 
         db.run(
             `INSERT INTO files(filename, activityId) VALUES('${filename}', '${activityId}')`
