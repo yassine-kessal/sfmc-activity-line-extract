@@ -12589,6 +12589,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     connection.on('initActivity', payload => this.init(payload));
     connection.on('clickedNext', () => this.clickedNext());
     connection.on('requestedEntryEventDefinitionKey', payload => {
+      console.log(payload);
       this.eventDefinitionKey = payload.entryEventDefinitionKey;
     });
   }
@@ -12667,7 +12668,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     if (payload.arguments && payload.arguments.execute && payload.arguments.execute.inArguments && payload.arguments.execute.inArguments.length > 0) {
       let args = payload.arguments.execute.inArguments[0];
       if (args.file) this.file = _objectSpread({}, args.file);
-      if (args.fields) this.fields = [...args.fields];
+      if (args.fields && args.fields.length > 0) this.fields = [...args.fields];
     }
 
     console.log('[Init Activity]');
