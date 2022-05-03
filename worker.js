@@ -39,6 +39,8 @@ db.serialize(function () {
                 formattedRows.push(v);
             });
 
+            console.log(formattedRows);
+
             stringify(
                 formattedRows,
                 {
@@ -55,7 +57,11 @@ db.serialize(function () {
                     fs.writeFile(
                         __dirname + '/exported/test.csv',
                         data,
-                        (err, data) => {}
+                        (err, data) => {
+                            if (err) {
+                                console.log(err);
+                            }
+                        }
                     );
                 }
             );
