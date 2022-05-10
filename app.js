@@ -218,15 +218,15 @@ app.get('/generate', function (req, res) {
 });
 
 if (process.env.NODE_ENV !== 'production') {
-    app.listen(process.env.APP_PORT, () =>
+    app.listen(process.env.PORT, () =>
         console.log(
-            `✅  Production Server started: http(s)://localhost:${process.env.APP_PORT}/`
+            `✅  Production Server started: http(s)://localhost:${process.env.PORT}/`
         )
     );
 } else {
-    app.listen(process.env.APP_PORT, () =>
+    app.listen(process.env.PORT, () =>
         console.log(
-            `✅  Production Server started: http(s)://${process.env.HEROKU_APP_NAME}.herokuapp.com:${process.env.APP_PORT}/`
+            `✅  Production Server started: http(s)://${process.env.HEROKU_APP_NAME}.herokuapp.com:${process.env.PORT}/`
         )
     );
 }
