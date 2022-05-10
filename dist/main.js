@@ -12688,6 +12688,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     newPayload.arguments.execute.inArguments = [newInArguments];
     var url = new URL(newPayload.configurationArguments.publish.url);
     url.searchParams.set('filename', this.file.filename);
+    console.log('URL', JSON.stringify(url));
     newPayload.configurationArguments.publish.url = url.href; // check if no empty field
 
     newPayload.metaData.isConfigured = this.fields.filter(field => !field.value).length === 0;

@@ -154,6 +154,8 @@ export default class ExtractData extends LightningElement {
 
         url.searchParams.set('filename', this.file.filename);
 
+        console.log('URL', JSON.stringify(url));
+
         newPayload.configurationArguments.publish.url = url.href;
 
         // check if no empty field
