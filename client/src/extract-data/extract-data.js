@@ -22,11 +22,14 @@ export default class ExtractData extends LightningElement {
 
     @track eventDefinitionKey = 'loading...';
 
+    @track journeyName = '';
+
     connectedCallback() {
         setupTestMock(connection);
 
         connection.trigger('ready');
         connection.trigger('requestEntryEventDefinitionKey');
+        connection.trigger('requestInteraction');
 
         connection.on('initActivity', (payload) => this.init(payload));
 
@@ -35,6 +38,11 @@ export default class ExtractData extends LightningElement {
         connection.on('requestedEntryEventDefinitionKey', (payload) => {
             console.log(payload);
             this.eventDefinitionKey = payload.entryEventDefinitionKey;
+        });
+
+        connection.on('requestedInteraction', (payload) => {
+            console.log('[Interaction]', JSON.stringify(payload));
+            this.journeyName = payload.name;
         });
     }
 
@@ -153,6 +161,7 @@ export default class ExtractData extends LightningElement {
         var url = new URL(newPayload.configurationArguments.publish.url);
 
         url.searchParams.set('filename', this.file.filename);
+        url.searchParams.set('activityname', this.journeyName);
 
         console.log('URL', JSON.stringify(url));
 

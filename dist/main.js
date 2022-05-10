@@ -12580,17 +12580,23 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
       filename: 'test.csv'
     };
     this.eventDefinitionKey = 'loading...';
+    this.journeyName = '';
   }
 
   connectedCallback() {
     (0,_test_testMock__WEBPACK_IMPORTED_MODULE_2__["default"])(connection);
     connection.trigger('ready');
     connection.trigger('requestEntryEventDefinitionKey');
+    connection.trigger('requestInteraction');
     connection.on('initActivity', payload => this.init(payload));
     connection.on('clickedNext', () => this.clickedNext());
     connection.on('requestedEntryEventDefinitionKey', payload => {
       console.log(payload);
       this.eventDefinitionKey = payload.entryEventDefinitionKey;
+    });
+    connection.on('requestedInteraction', payload => {
+      console.log('[Interaction]', JSON.stringify(payload));
+      this.journeyName = payload.name;
     });
   }
   /**
@@ -12688,6 +12694,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     newPayload.arguments.execute.inArguments = [newInArguments];
     var url = new URL(newPayload.configurationArguments.publish.url);
     url.searchParams.set('filename', this.file.filename);
+    url.searchParams.set('activityname', this.journeyName);
     console.log('URL', JSON.stringify(url));
     newPayload.configurationArguments.publish.url = url.href; // check if no empty field
 
@@ -12706,7 +12713,8 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     payload: 1,
     fields: 1,
     file: 1,
-    eventDefinitionKey: 1
+    eventDefinitionKey: 1,
+    journeyName: 1
   }
 });
 
@@ -12743,7 +12751,7 @@ function setupTestMock(jbSession) {
   const jb = {};
   window.jb = jb; //standard responses
 
-  const events = ['requestContactsSchema', 'requestSchema', 'requestTriggerEventDefinition', 'requestDataSources', 'requestTokens', 'requestEntryEventDefinitionKey'];
+  const events = ['requestContactsSchema', 'requestSchema', 'requestTriggerEventDefinition', 'requestDataSources', 'requestTokens', 'requestEntryEventDefinitionKey', 'requestInteraction'];
 
   for (const e of events) {
     try {

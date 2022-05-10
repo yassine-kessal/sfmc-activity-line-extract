@@ -96,7 +96,8 @@ app.post('/publish', function (req, res) {
 
     const isPublished = req.body.isPublished,
         activityId = req.body.activityObjectID,
-        filename = req.query.filename;
+        filename = req.query.filename,
+        activityname = req.query.activityname;
 
     if (!isPublished) {
         return res.status(200).json({});
@@ -110,7 +111,7 @@ app.post('/publish', function (req, res) {
         // db.query(`DELETE FROM fields WHERE activityId='${activityId}'`);
 
         db.query(
-            `INSERT INTO activities(filename, activityId) VALUES('${filename}', '${activityId}')`
+            `INSERT INTO activities(filename, activityname, activityId) VALUES('${filename}', '${activityname}', '${activityId}')`
         );
     });
 

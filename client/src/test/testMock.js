@@ -23,7 +23,8 @@ export default function setupTestMock(jbSession) {
         'requestTriggerEventDefinition',
         'requestDataSources',
         'requestTokens',
-        'requestEntryEventDefinitionKey'
+        'requestEntryEventDefinitionKey',
+        'requestInteraction'
     ];
 
     for (const e of events) {
