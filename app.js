@@ -153,7 +153,9 @@ app.get('/generate', async function (req, res) {
         if (err) logger.error(err);
 
         db.query(
-            'SELECT activities.activityId, activities.activityname, activities.filename FROM activities',
+            `SELECT activities.activityId, activities.activityname, activities.filename FROM activities WHERE activities.activityId IN (
+                SELECT activityId FROM fields WHERE TIMESTAMPDIFF(SECOND, createdAt, NOW()) > 900
+            )`,
             function (errActivities, activities) {
                 if (errActivities) {
                     logger.error(errActivities);
@@ -207,6 +209,14 @@ app.get('/generate', async function (req, res) {
                                         );
 
                                         console.log('sftp', result);
+
+                                        db.connect(function (err) {
+                                            if (err) logger.error(err);
+
+                                            db.query(
+                                                `DELETE FROM activities WHERE activityId='${activity.activityId}'`
+                                            );
+                                        });
                                     } catch (err) {
                                         logger.error('sftp error', err);
                                     }
