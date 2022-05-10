@@ -8,7 +8,8 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const activityConfig = require('./activity-config');
 const logger = require('./server/utils/logger');
-const sqlite3 = require('sqlite3').verbose();
+const mysql = require('mysql2');
+const sftpClient = require('ssh2-sftp-client');
 const { stringify } = require('csv-stringify');
 var fs = require('fs');
 
@@ -19,9 +20,15 @@ var groupBy = function (xs, key) {
     }, {});
 };
 
-const db = new sqlite3.Database('./database.sqlite3');
+const db = mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    port: process.env.MYSQL_PORT,
+    user: process.env.MYSQL_USERNAME,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE
+});
 
-db.get('PRAGMA foreign_keys = ON');
+const sftp = new sftpClient();
 
 // static vars
 const DIST_DIR = './dist';
@@ -53,27 +60,31 @@ app.post('/execute', function (req, res) {
 
     const file = req.body.inArguments[0].file,
         fields = req.body.inArguments[0].fields,
-        defId = req.body.definitionInstanceId,
+        definitionId = req.body.definitionInstanceId,
         activityId = req.body.activityObjectID;
 
     const filename = file.filename;
 
     // insert field with activityId link to activity
-    db.serialize(function () {
+    db.connect(function (err) {
+        if (err) logger.error(err);
+
         let sqlString =
-            'INSERT INTO fields (name, value, fileActivityId, defId) VALUES';
+            'INSERT INTO fields (name, value, activityId, definitionId) VALUES';
 
         var i = 0;
         fields.forEach(function (field) {
             if (i != 0) sqlString += ', ';
 
-            sqlString += `('${field.name}', '${field.value}', '${activityId}', '${defId}')`;
+            sqlString += `('${field.name}', '${field.value}', '${activityId}', '${definitionId}')`;
 
             i++;
         });
 
         console.log(sqlString);
-        db.run(sqlString);
+        db.query(sqlString, function (err) {
+            if (err) logger.error(err);
+        });
     });
 
     return res.status(200).json({});
@@ -92,12 +103,14 @@ app.post('/publish', function (req, res) {
     }
 
     // purge file with fields and recreate file
-    db.serialize(function () {
-        db.run(`DELETE FROM files WHERE activityId='${activityId}'`);
-        db.run(`DELETE FROM fields WHERE fileActivityId='${activityId}'`);
+    db.connect(function (err) {
+        if (err) logger.error(err);
 
-        db.run(
-            `INSERT INTO files(filename, activityId) VALUES('${filename}', '${activityId}')`
+        db.query(`DELETE FROM activities WHERE activityId='${activityId}'`);
+        // db.query(`DELETE FROM fields WHERE activityId='${activityId}'`);
+
+        db.query(
+            `INSERT INTO activities(filename, activityId) VALUES('${filename}', '${activityId}')`
         );
     });
 
@@ -105,9 +118,11 @@ app.post('/publish', function (req, res) {
 });
 
 app.get('/get-data', function (req, res) {
-    db.serialize(function () {
-        db.all(
-            'SELECT fields.id, fields.name, fields.value, fields.createdAt, files.filename, files.activityId FROM fields INNER JOIN files ON files.activityId = fields.fileActivityId',
+    db.connect(function (err) {
+        if (err) logger.error(err);
+
+        db.query(
+            'SELECT fields.id, fields.name, fields.value, fields.createdAt, activities.filename, activities.activityId FROM fields INNER JOIN activities ON activities.activityId = fields.activityId',
             function (err, rows) {
                 if (!err) {
                     res.send(rows);
@@ -122,55 +137,79 @@ app.get('/get-data', function (req, res) {
 
 app.get('/generate', function (req, res) {
     // TODO for now 0s, after change to 900s = 15m
-    db.serialize(function () {
-        db.all(
-            `SELECT fields.name, fields.value, files.activityId, fields.defId FROM fields
-        INNER JOIN files ON files.activityId = fields.fileActivityId`,
-            function (err, rows) {
-                if (err) {
-                    console.log(err);
+    db.connect(function (err) {
+        if (err) logger.error(err);
+
+        db.query(
+            'SELECT activities.activityId, activities.filename FROM activities',
+            function (errActivities, activities) {
+                if (errActivities) {
+                    logger.error(errActivities);
                     return;
                 }
 
-                console.log(rows);
-
-                let groupedRows = groupBy(rows, 'defId'),
-                    formattedRows = [];
-
-                Object.keys(groupedRows).forEach((keyRow) => {
-                    let v = {};
-                    groupedRows[keyRow].forEach((row) => {
-                        v[row.name] = row.value;
-                    });
-                    formattedRows.push(v);
-                });
-
-                console.log(formattedRows);
-
-                stringify(
-                    formattedRows,
-                    {
-                        header: true,
-                        delimiter: ';'
-                    },
-                    function (err, data) {
-                        if (err) {
-                            console.log(err);
-                            return;
-                        }
-
-                        console.log(data);
-                        fs.writeFile(
-                            __dirname + '/exported/test.csv',
-                            data,
-                            (err, data) => {
-                                if (err) {
-                                    console.log(err);
-                                }
+                activities.forEach(function (activity) {
+                    db.query(
+                        `SELECT fields.name, fields.value, fields.definitionId FROM fields WHERE fields.activityId = '${activity.activityId}'`,
+                        function (errFields, fields) {
+                            if (errFields) {
+                                logger.error(errFields);
+                                return;
                             }
-                        );
-                    }
-                );
+
+                            let groupedFields = groupBy(fields, 'definitionId'),
+                                formattedFields = [];
+
+                            Object.keys(groupedFields).forEach((keyRow) => {
+                                let v = {};
+                                groupedFields[keyRow].forEach((row) => {
+                                    v[row.name] = row.value;
+                                });
+                                formattedFields.push(v);
+                            });
+
+                            console.log(formattedFields);
+
+                            stringify(
+                                formattedFields,
+                                {
+                                    header: true,
+                                    delimiter: ';'
+                                },
+                                async function (err, data) {
+                                    if (err) {
+                                        console.log(err);
+                                        return;
+                                    }
+
+                                    console.log(data);
+
+                                    try {
+                                        await sftp.connect({
+                                            host: process.env.FTP_HOST,
+                                            port: process.env.FTP_PORT,
+                                            user: process.env.FTP_USERNAME,
+                                            password: process.env.FTP_PASSWORD
+                                        });
+
+                                        await sftp.mkdir(
+                                            `/out/salesforce/journey-customactivity/extract-data/${activity.activityId}`,
+                                            true
+                                        );
+                                        const result = await sftp.put(
+                                            Buffer.from(data),
+                                            `/out/salesforce/journey-customactivity/extract-data/${activity.activityId}/${activity.filename}`
+                                        );
+
+                                        console.log('sftp', result);
+                                    } catch (err) {
+                                        logger.error('sftp error', err);
+                                    }
+                                }
+                            );
+                        }
+                    );
+                });
             }
         );
     });
@@ -179,15 +218,15 @@ app.get('/generate', function (req, res) {
 });
 
 if (process.env.NODE_ENV !== 'production') {
-    app.listen(process.env.PORT, () =>
+    app.listen(process.env.APP_PORT, () =>
         console.log(
-            `✅  Production Server started: http(s)://localhost:${process.env.PORT}/`
+            `✅  Production Server started: http(s)://localhost:${process.env.APP_PORT}/`
         )
     );
 } else {
-    app.listen(process.env.PORT, () =>
+    app.listen(process.env.APP_PORT, () =>
         console.log(
-            `✅  Production Server started: http(s)://${process.env.HEROKU_APP_NAME}.herokuapp.com:${process.env.PORT}/`
+            `✅  Production Server started: http(s)://${process.env.HEROKU_APP_NAME}.herokuapp.com:${process.env.APP_PORT}/`
         )
     );
 }
