@@ -135,8 +135,19 @@ app.get('/get-data', function (req, res) {
     });
 });
 
-app.get('/generate', function (req, res) {
+app.get('/generate', async function (req, res) {
     // TODO for now 0s, after change to 900s = 15m
+    try {
+        await sftp.connect({
+            host: process.env.FTP_HOST,
+            port: process.env.FTP_PORT,
+            user: process.env.FTP_USERNAME,
+            password: process.env.FTP_PASSWORD
+        });
+    } catch (err) {
+        logger.error('sftp error', err);
+    }
+
     db.connect(function (err) {
         if (err) logger.error(err);
 
@@ -185,20 +196,13 @@ app.get('/generate', function (req, res) {
                                     console.log(data);
 
                                     try {
-                                        await sftp.connect({
-                                            host: process.env.FTP_HOST,
-                                            port: process.env.FTP_PORT,
-                                            user: process.env.FTP_USERNAME,
-                                            password: process.env.FTP_PASSWORD
-                                        });
-
                                         await sftp.mkdir(
-                                            `/out/salesforce/journey-customactivity/extract-data/${activity.activityId}`,
+                                            `/ftp_lineup/LineUp7/salesforce/journey-customactivity/extract-data/${activity.activityId}`,
                                             true
                                         );
                                         const result = await sftp.put(
                                             Buffer.from(data),
-                                            `/out/salesforce/journey-customactivity/extract-data/${activity.activityId}/${activity.filename}`
+                                            `/ftp_lineup/LineUp7/salesforce/journey-customactivity/extract-data/${activity.activityId}/${activity.filename}`
                                         );
 
                                         console.log('sftp', result);
