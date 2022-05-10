@@ -153,7 +153,7 @@ app.get('/generate', async function (req, res) {
         if (err) logger.error(err);
 
         db.query(
-            'SELECT activities.activityId, activities.filename FROM activities',
+            'SELECT activities.activityId, activities.activityname, activities.filename FROM activities',
             function (errActivities, activities) {
                 if (errActivities) {
                     logger.error(errActivities);
@@ -198,12 +198,12 @@ app.get('/generate', async function (req, res) {
 
                                     try {
                                         await sftp.mkdir(
-                                            `/ftp_lineup/LineUp7/salesforce/journey-customactivity/extract-data/${activity.activityId}`,
+                                            `/ftp_lineup/LineUp7/salesforce/journey-customactivity/extract-data/${activity.activityname}`,
                                             true
                                         );
                                         const result = await sftp.put(
                                             Buffer.from(data),
-                                            `/ftp_lineup/LineUp7/salesforce/journey-customactivity/extract-data/${activity.activityId}/${activity.filename}`
+                                            `/ftp_lineup/LineUp7/salesforce/journey-customactivity/extract-data/${activity.activityname}/${activity.filename}`
                                         );
 
                                         console.log('sftp', result);
