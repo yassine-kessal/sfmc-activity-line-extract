@@ -10,7 +10,9 @@ const activityConfig = require('./activity-config');
 const logger = require('./server/utils/logger');
 const mysql = require('mysql2');
 const sftpClient = require('ssh2-sftp-client');
-const { stringify } = require('csv-stringify');
+const {
+    stringify
+} = require('csv-stringify');
 var fs = require('fs');
 
 var groupBy = function (xs, key) {
@@ -35,9 +37,13 @@ const DIST_DIR = './dist';
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(bodyParser.json());
-app.use(bodyParser.raw({ type: 'application/jwt' }));
+app.use(bodyParser.raw({
+    type: 'application/jwt'
+}));
 
 app.use(express.static(DIST_DIR));
 
@@ -154,7 +160,7 @@ app.get('/generate', async function (req, res) {
 
         db.query(
             `SELECT activities.activityId, activities.activityname, activities.filename FROM activities WHERE activities.activityId IN (
-                SELECT activityId FROM fields WHERE TIMESTAMPDIFF(SECOND, createdAt, NOW()) > 900
+                SELECT activityId FROM fields WHERE TIMESTAMPDIFF(SECOND, createdAt, NOW()) > 1
             )`,
             function (errActivities, activities) {
                 if (errActivities) {
@@ -185,8 +191,7 @@ app.get('/generate', async function (req, res) {
                             console.log(formattedFields);
 
                             stringify(
-                                formattedFields,
-                                {
+                                formattedFields, {
                                     header: true,
                                     delimiter: ';'
                                 },
