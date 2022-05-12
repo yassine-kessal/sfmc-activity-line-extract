@@ -142,25 +142,13 @@ app.get('/get-data', function (req, res) {
     });
 });
 
-app.get('/generate', async function (req, res) {
-    // TODO for now 0s, after change to 900s = 15m
-    try {
-        await sftp.connect({
-            host: process.env.FTP_HOST,
-            port: process.env.FTP_PORT,
-            user: process.env.FTP_USERNAME,
-            password: process.env.FTP_PASSWORD
-        });
-    } catch (err) {
-        logger.error('sftp error', err);
-    }
-
+app.get('/generate', function (req, res) {
     db.connect(function (err) {
         if (err) logger.error(err);
 
         db.query(
             `SELECT activities.activityId, activities.activityname, activities.filename FROM activities WHERE activities.activityId IN (
-                SELECT activityId FROM fields WHERE TIMESTAMPDIFF(SECOND, createdAt, NOW()) > 1
+                SELECT activityId FROM fields WHERE TIMESTAMPDIFF(SECOND, createdAt, NOW()) > 900
             )`,
             function (errActivities, activities) {
                 if (errActivities) {
@@ -204,6 +192,12 @@ app.get('/generate', async function (req, res) {
                                     console.log(data);
 
                                     try {
+                                        await sftp.connect({
+                                            host: process.env.FTP_HOST,
+                                            port: process.env.FTP_PORT,
+                                            user: process.env.FTP_USERNAME,
+                                            password: process.env.FTP_PASSWORD
+                                        });
                                         await sftp.mkdir(
                                             `/ftp_lineup/LineUp7/salesforce/journey-customactivity/extract-data/${activity.activityname}`,
                                             true
@@ -215,6 +209,7 @@ app.get('/generate', async function (req, res) {
 
                                         console.log('sftp', result);
 
+                                        await sftp.end();
                                         db.connect(function (err) {
                                             if (err) logger.error(err);
 
