@@ -4,7 +4,6 @@ module.exports = function configJSON(req) {
         metaData: {
             icon: 'assets/icon.png',
             category: 'flow',
-            backgroundColor: "#fff",
             isConfigured: true
         },
         type: 'REST',
