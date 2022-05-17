@@ -12573,7 +12573,19 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     this.payload = void 0;
     this.fields = [{
       id: 0,
-      name: '',
+      name: 'broadLogId',
+      value: ''
+    }, {
+      id: 1,
+      name: 'LineId',
+      value: ''
+    }, {
+      id: 2,
+      name: 'ActivityId',
+      value: ''
+    }, {
+      id: 3,
+      name: 'ActivityName',
       value: ''
     }];
     this.file = {
@@ -12592,7 +12604,10 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     connection.on('clickedNext', () => this.clickedNext());
     connection.on('requestedEntryEventDefinitionKey', payload => {
       console.log(payload);
-      this.eventDefinitionKey = payload.entryEventDefinitionKey;
+      this.eventDefinitionKey = payload;
+      this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = `Event.${payload}.ContactId`;
+      this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = `Event.${payload}.Line_ID`;
+      console.log(JSON.stringify(this.fields));
     });
     connection.on('requestedInteraction', payload => {
       console.log('[Interaction]', JSON.stringify(payload));
@@ -12629,6 +12644,16 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
         this.fields[indexOfField].name = event.target.value;
       } else if (fieldType == 'value') {
         this.fields[indexOfField].value = event.target.value;
+        let activityId = this.fields.find(f => f.name == 'ActivityId') ? this.fields[this.fields.findIndex(f => f.name == 'ActivityId')].value : false;
+        console.log(this.fields[this.fields.findIndex(f => f.name == 'ActivityId')].value);
+
+        if (activityId) {
+          var date = new Date();
+          this.file = {
+            filename: `ACTION_${activityId}_${date.toISOString().replace('-', '').split('T')[0].replace('-', '')}.csv`
+          };
+          console.log(this.file);
+        }
       }
     }
   }

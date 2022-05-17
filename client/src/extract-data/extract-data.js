@@ -11,7 +11,22 @@ export default class ExtractData extends LightningElement {
     @track fields = [
         {
             id: 0,
-            name: '',
+            name: 'broadLogId',
+            value: ''
+        },
+        {
+            id: 1,
+            name: 'LineId',
+            value: ''
+        },
+        {
+            id: 2,
+            name: 'ActivityId',
+            value: ''
+        },
+        {
+            id: 3,
+            name: 'ActivityName',
             value: ''
         }
     ];
@@ -37,7 +52,16 @@ export default class ExtractData extends LightningElement {
 
         connection.on('requestedEntryEventDefinitionKey', (payload) => {
             console.log(payload);
-            this.eventDefinitionKey = payload.entryEventDefinitionKey;
+            this.eventDefinitionKey = payload;
+
+            this.fields[
+                this.fields.findIndex((f) => f.name == 'broadLogId')
+            ].value = `Event.${payload}.ContactId`;
+
+            this.fields[
+                this.fields.findIndex((f) => f.name == 'LineId')
+            ].value = `Event.${payload}.Line_ID`;
+            console.log(JSON.stringify(this.fields));
         });
 
         connection.on('requestedInteraction', (payload) => {
@@ -76,6 +100,30 @@ export default class ExtractData extends LightningElement {
                 this.fields[indexOfField].name = event.target.value;
             } else if (fieldType == 'value') {
                 this.fields[indexOfField].value = event.target.value;
+
+                let activityId = this.fields.find((f) => f.name == 'ActivityId')
+                    ? this.fields[
+                          this.fields.findIndex((f) => f.name == 'ActivityId')
+                      ].value
+                    : false;
+
+                console.log(
+                    this.fields[
+                        this.fields.findIndex((f) => f.name == 'ActivityId')
+                    ].value
+                );
+                if (activityId) {
+                    var date = new Date();
+                    this.file = {
+                        filename: `ACTION_${activityId}_${date
+                            .toISOString()
+                            .replace('-', '')
+                            .split('T')[0]
+                            .replace('-', '')}.csv`
+                    };
+
+                    console.log(this.file);
+                }
             }
         }
     }

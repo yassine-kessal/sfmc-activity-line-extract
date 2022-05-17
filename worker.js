@@ -7,11 +7,8 @@ const cron = require('node-cron');
 const logger = require('./server/utils/logger');
 const mysql = require('mysql2');
 const sftpClient = require('ssh2-sftp-client');
-const {
-    stringify
-} = require('csv-stringify');
+const { stringify } = require('csv-stringify');
 var fs = require('fs');
-
 
 var groupBy = function (xs, key) {
     return xs.reduce(function (rv, x) {
@@ -69,9 +66,11 @@ cron.schedule('* * * * *', function () {
                             console.log(formattedFields);
 
                             stringify(
-                                formattedFields, {
+                                formattedFields,
+                                {
                                     header: true,
-                                    delimiter: ';'
+                                    quote: true,
+                                    delimiter: ','
                                 },
                                 async function (err, data) {
                                     if (err) {
@@ -118,4 +117,4 @@ cron.schedule('* * * * *', function () {
             }
         );
     });
-})
+});
