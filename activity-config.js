@@ -16,7 +16,8 @@ module.exports = function configJSON(req) {
                     }
                 ],
                 url: 'https://sfmc-activity-extract-data.herokuapp.com/execute',
-                verb: 'POST'
+                verb: 'POST',
+                timeout: 20000
             }
         },
         configurationArguments: {
