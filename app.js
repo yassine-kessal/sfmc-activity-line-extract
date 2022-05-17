@@ -203,12 +203,12 @@ app.get('/generate', function (req, res) {
                                             password: process.env.FTP_PASSWORD
                                         });
                                         await sftp.mkdir(
-                                            `/ftp_lineup/LineUp7/salesforce/journey-customactivity/extract-data/${activity.activityname}`,
+                                            `${process.env.FTP_BASEPATH}${activity.activityname}`,
                                             true
                                         );
                                         const result = await sftp.put(
                                             Buffer.from(data),
-                                            `/ftp_lineup/LineUp7/salesforce/journey-customactivity/extract-data/${activity.activityname}/${activity.filename}`
+                                            `${process.env.FTP_BASEPATH}${activity.activityname}/${activity.filename}`
                                         );
 
                                         console.log('sftp', result);
