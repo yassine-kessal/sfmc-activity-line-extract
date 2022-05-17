@@ -56,8 +56,9 @@ export default class ExtractData extends LightningElement {
             console.log(payload);
             this.eventDefinitionKey = payload;
 
-            this.updateBroadLogIdAndLineIdField(payload);
             console.log(JSON.stringify(this.fields));
+
+            this.updateBroadLogIdAndLineIdField(payload);
         });
 
         connection.on('requestedInteraction', (payload) => {
@@ -192,28 +193,36 @@ export default class ExtractData extends LightningElement {
     }
 
     updateBroadLogIdAndLineIdField(edk) {
+        let newFields = JSON.parse(JSON.stringify(this.fields));
+
         let broadLogId =
-            this.fields[this.fields.findIndex((f) => f.name == 'broadLogId')].value;
+            newFields[newFields.findIndex((f) => f.name == 'broadLogId')] ? newFields[newFields.findIndex((f) => f.name == 'broadLogId')].value : false;
 
         let lineId =
-            this.fields[this.fields.findIndex((f) => f.name == 'LineId')].value;
+            newFields[newFields.findIndex((f) => f.name == 'LineId')] ? newFields[newFields.findIndex((f) => f.name == 'LineId')].value : false;
 
         if (broadLogId) {
             this.fields[
-                this.fields.findIndex((f) => f.name == 'broadLogId')
-            ].value = broadLogId.trim() != "" ? broadLogId.replace(
-                /{{Event.([^.]+).([^.{}]+)}}/,
-                '{{Event.' + edk + '.$2}}'
-            ) : `{{Event.${edk}.ContactId}}`;
+                    this.fields.findIndex((f) => f.name == 'broadLogId')
+                ].value =
+                broadLogId.trim() != '' ?
+                broadLogId.replace(
+                    /{{Event.([^.]+).([^.{}]+)}}/,
+                    '{{Event.' + edk + '.$2}}'
+                ) :
+                `{{Event.${edk}.ContactId}}`;
         }
 
         if (lineId) {
             this.fields[
-                this.fields.findIndex((f) => f.name == 'LineId')
-            ].value = lineId.trim() != "" ? lineId.replace(
-                /{{Event.([^.]+).([^.{}]+)}}/,
-                '{{Event.' + edk + '.$2}}'
-            ) : `{{Event.${edk}.Line_ID}}`;
+                    this.fields.findIndex((f) => f.name == 'LineId')
+                ].value =
+                lineId.trim() != '' ?
+                lineId.replace(
+                    /{{Event.([^.]+).([^.{}]+)}}/,
+                    '{{Event.' + edk + '.$2}}'
+                ) :
+                `{{Event.${edk}.Line_ID}}`;
         }
     }
 

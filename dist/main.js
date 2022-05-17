@@ -12611,8 +12611,8 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     connection.on('requestedEntryEventDefinitionKey', payload => {
       console.log(payload);
       this.eventDefinitionKey = payload;
-      this.updateBroadLogIdAndLineIdField(payload);
       console.log(JSON.stringify(this.fields));
+      this.updateBroadLogIdAndLineIdField(payload);
     });
     connection.on('requestedInteraction', payload => {
       console.log('[Interaction]', JSON.stringify(payload));
@@ -12718,15 +12718,16 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
   }
 
   updateBroadLogIdAndLineIdField(edk) {
-    let broadLogId = this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value;
-    let lineId = this.fields[this.fields.findIndex(f => f.name == 'LineId')].value;
+    let newFields = JSON.parse(JSON.stringify(this.fields));
+    let broadLogId = newFields[newFields.findIndex(f => f.name == 'broadLogId')] ? newFields[newFields.findIndex(f => f.name == 'broadLogId')].value : false;
+    let lineId = newFields[newFields.findIndex(f => f.name == 'LineId')] ? newFields[newFields.findIndex(f => f.name == 'LineId')].value : false;
 
     if (broadLogId) {
-      this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = broadLogId.trim() != "" ? broadLogId.replace(/{{Event.([^.]+).([^.{}]+)}}/, '{{Event.' + edk + '.$2}}') : `{{Event.${edk}.ContactId}}`;
+      this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = broadLogId.trim() != '' ? broadLogId.replace(/{{Event.([^.]+).([^.{}]+)}}/, '{{Event.' + edk + '.$2}}') : `{{Event.${edk}.ContactId}}`;
     }
 
     if (lineId) {
-      this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = lineId.trim() != "" ? lineId.replace(/{{Event.([^.]+).([^.{}]+)}}/, '{{Event.' + edk + '.$2}}') : `{{Event.${edk}.Line_ID}}`;
+      this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = lineId.trim() != '' ? lineId.replace(/{{Event.([^.]+).([^.{}]+)}}/, '{{Event.' + edk + '.$2}}') : `{{Event.${edk}.Line_ID}}`;
     }
   }
 

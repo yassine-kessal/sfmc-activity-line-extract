@@ -9,17 +9,15 @@ module.exports = function configJSON(req) {
         type: 'REST',
         arguments: {
             execute: {
-                inArguments: [
-                    {
-                        file: {},
-                        fields: []
-                    }
-                ],
+                inArguments: [{
+                    file: {},
+                    fields: []
+                }],
                 url: 'https://sfmc-activity-extract-data.herokuapp.com/execute',
                 verb: 'POST',
                 timeout: 100000,
                 retryCount: 3,
-                retryDelay: 10000,
+                retryDelay: 20000,
                 concurrentRequests: 3
             }
         },
