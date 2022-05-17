@@ -12611,8 +12611,15 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     connection.on('requestedEntryEventDefinitionKey', payload => {
       console.log(payload);
       this.eventDefinitionKey = payload;
-      this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = `{{Event.${payload}.ContactId}}`;
-      this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = `{{Event.${payload}.Line_ID}}`;
+
+      if (this.fields[this.fields.findIndex(f => f.name == 'broadLogId')]) {
+        this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = `{{Event.${payload}.ContactId}}`;
+      }
+
+      if (this.fields[this.fields.findIndex(f => f.name == 'LineId')]) {
+        this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = `{{Event.${payload}.Line_ID}}`;
+      }
+
       console.log(JSON.stringify(this.fields));
     });
     connection.on('requestedInteraction', payload => {
@@ -12706,8 +12713,16 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
 
       if (args.fields && args.fields.length > 0) {
         this.fields = [...args.fields];
-        this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = `{{Event.${this.eventDefinitionKey}.ContactId}}`;
-        this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = `{{Event.${this.eventDefinitionKey}.Line_ID}}`;
+        let broadLogIdValue = this.fields[this.fields.findIndex(f => f.name == 'broadLogId')]?.value;
+        let lineIdValue = this.fields[this.fields.findIndex(f => f.name == 'LineId')]?.value;
+
+        if (broadLogIdValue) {
+          this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = broadLogIdValue.replace('{{Event.([^.]+).([^.{}]+)}}', '{{Event.' + this.eventDefinitionKey + '.$2}}');
+        }
+
+        if (lineIdValue) {
+          this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = lineIdValue.replace(/{{Event.([^.]+).([^.{}]+)}}/, ['{{Event.' + this.eventDefinitionKey + '.$2}}']);
+        }
       }
     }
 
