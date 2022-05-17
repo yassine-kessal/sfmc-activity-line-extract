@@ -12611,8 +12611,8 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     connection.on('requestedEntryEventDefinitionKey', payload => {
       console.log(payload);
       this.eventDefinitionKey = payload;
-      this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = `Event.${payload}.ContactId`;
-      this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = `Event.${payload}.Line_ID`;
+      this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = `{{Event.${payload}.ContactId}}`;
+      this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = `{{Event.${payload}.Line_ID}}`;
       console.log(JSON.stringify(this.fields));
     });
     connection.on('requestedInteraction', payload => {

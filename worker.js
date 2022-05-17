@@ -35,7 +35,7 @@ cron.schedule('* * * * *', function () {
 
         db.query(
             `SELECT activities.activityId, activities.activityname, activities.filename FROM activities WHERE activities.activityId IN (
-                SELECT activityId FROM fields WHERE TIMESTAMPDIFF(SECOND, createdAt, NOW()) > 900
+                SELECT activityId FROM fields WHERE TIMESTAMPDIFF(SECOND, MAX(createdAt), NOW()) > 900
             )`,
             function (errActivities, activities) {
                 if (errActivities) {

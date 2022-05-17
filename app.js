@@ -202,27 +202,28 @@ app.get('/generate', function (req, res) {
                                             user: process.env.FTP_USERNAME,
                                             password: process.env.FTP_PASSWORD
                                         });
-                                        await sftp.mkdir(
-                                            `${process.env.FTP_BASEPATH}${activity.activityname}`,
-                                            true
-                                        );
+                                        // await sftp.mkdir(
+                                        //     `${process.env.FTP_BASEPATH}${activity.activityname}`,
+                                        //     true
+                                        // );
                                         const result = await sftp.put(
                                             Buffer.from(data),
-                                            `${process.env.FTP_BASEPATH}${activity.activityname}/${activity.filename}`
+                                            `${process.env.FTP_BASEPATH}/${activity.filename}`
                                         );
 
                                         console.log('sftp', result);
 
-                                        await sftp.end();
                                         db.connect(function (err) {
                                             if (err) logger.error(err);
 
-                                            db.query(
-                                                `DELETE FROM activities WHERE activityId='${activity.activityId}'`
-                                            );
+                                            // db.query(
+                                            //     `DELETE FROM activities WHERE activityId='${activity.activityId}'`
+                                            // );
                                         });
                                     } catch (err) {
                                         logger.error('sftp error', err);
+                                    } finally {
+                                        await sftp.end();
                                     }
                                 }
                             );

@@ -56,11 +56,11 @@ export default class ExtractData extends LightningElement {
 
             this.fields[
                 this.fields.findIndex((f) => f.name == 'broadLogId')
-            ].value = `Event.${payload}.ContactId`;
+            ].value = `{{Event.${payload}.ContactId}}`;
 
             this.fields[
                 this.fields.findIndex((f) => f.name == 'LineId')
-            ].value = `Event.${payload}.Line_ID`;
+            ].value = `{{Event.${payload}.Line_ID}}`;
             console.log(JSON.stringify(this.fields));
         });
 
