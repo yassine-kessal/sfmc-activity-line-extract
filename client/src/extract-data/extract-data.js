@@ -198,6 +198,7 @@ export default class ExtractData extends LightningElement {
                         this.fields.findIndex((f) => f.name == 'LineId')
                     ]?.value;
 
+                console.log('br', broadLogIdValue);
                 if (broadLogIdValue) {
                     this.fields[
                         this.fields.findIndex((f) => f.name == 'broadLogId')
@@ -206,6 +207,8 @@ export default class ExtractData extends LightningElement {
                         '{{Event.' + this.eventDefinitionKey + '.$2}}'
                     );
                 }
+
+                console.log('ln', lineIdValue);
 
                 if (lineIdValue) {
                     this.fields[
