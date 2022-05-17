@@ -190,27 +190,25 @@ export default class ExtractData extends LightningElement {
     }
 
     updateBroadLogIdAndLineIdField(edk) {
-        let broadLogIdValue =
-            this.fields[this.fields.findIndex((f) => f.name == 'broadLogId')]
-                ?.value;
+        let broadLogId =
+            this.fields[this.fields.findIndex((f) => f.name == 'broadLogId')];
 
-        let lineIdValue =
-            this.fields[this.fields.findIndex((f) => f.name == 'LineId')]
-                ?.value;
+        let lineId =
+            this.fields[this.fields.findIndex((f) => f.name == 'LineId')];
 
-        if (broadLogIdValue) {
+        if (broadLogId) {
             this.fields[
                 this.fields.findIndex((f) => f.name == 'broadLogId')
-            ].value = broadLogIdValue.replace(
+            ].value = broadLogId.value.replace(
                 /{{Event.([^.]+).([^.{}]+)}}/,
                 '{{Event.' + edk + '.$2}}'
             );
         }
 
-        if (lineIdValue) {
+        if (lineId) {
             this.fields[
                 this.fields.findIndex((f) => f.name == 'LineId')
-            ].value = lineIdValue.replace(
+            ].value = lineId.value.replace(
                 /{{Event.([^.]+).([^.{}]+)}}/,
                 '{{Event.' + edk + '.$2}}'
             );
