@@ -202,7 +202,7 @@ export default class ExtractData extends LightningElement {
                     this.fields[
                         this.fields.findIndex((f) => f.name == 'broadLogId')
                     ].value = broadLogIdValue.replace(
-                        '{{Event.([^.]+).([^.{}]+)}}',
+                        /{{Event.([^.]+).([^.{}]+)}}/,
                         '{{Event.' + this.eventDefinitionKey + '.$2}}'
                     );
                 }
@@ -212,7 +212,7 @@ export default class ExtractData extends LightningElement {
                         this.fields.findIndex((f) => f.name == 'LineId')
                     ].value = lineIdValue.replace(
                         /{{Event.([^.]+).([^.{}]+)}}/,
-                        ['{{Event.' + this.eventDefinitionKey + '.$2}}']
+                        '{{Event.' + this.eventDefinitionKey + '.$2}}'
                     );
                 }
             }
