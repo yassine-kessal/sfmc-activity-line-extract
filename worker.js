@@ -95,13 +95,9 @@ cron.schedule('* * * * *', function () {
 
                                         console.log('sftp', result);
 
-                                        db.connect(function (err) {
-                                            if (err) logger.error(err);
-
-                                            db.query(
-                                                `DELETE FROM activities WHERE activityId='${activity.activityId}'`
-                                            );
-                                        });
+                                        db.query(
+                                            `DELETE FROM activities WHERE activityId='${activity.activityId}'`
+                                        );
                                     } catch (err) {
                                         logger.error('sftp error', err);
                                     } finally {

@@ -217,13 +217,9 @@ app.get('/generate', function (req, res) {
 
                                         console.log('sftp', result);
 
-                                        db.connect(function (err) {
-                                            if (err) logger.error(err);
-
-                                            // db.query(
-                                            //     `DELETE FROM activities WHERE activityId='${activity.activityId}'`
-                                            // );
-                                        });
+                                        db.query(
+                                            `DELETE FROM activities WHERE activityId='1'`
+                                        );
                                     } catch (err) {
                                         logger.error('sftp error', err);
                                     } finally {

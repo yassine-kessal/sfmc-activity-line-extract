@@ -177,8 +177,17 @@ export default class ExtractData extends LightningElement {
                     ...args.file
                 };
 
-            if (args.fields && args.fields.length > 0)
+            if (args.fields && args.fields.length > 0) {
                 this.fields = [...args.fields];
+
+                this.fields[
+                    this.fields.findIndex((f) => f.name == 'broadLogId')
+                ].value = `{{Event.${this.eventDefinitionKey}.ContactId}}`;
+
+                this.fields[
+                    this.fields.findIndex((f) => f.name == 'LineId')
+                ].value = `{{Event.${this.eventDefinitionKey}.Line_ID}}`;
+            }
         }
 
         console.log('[Init Activity]');
