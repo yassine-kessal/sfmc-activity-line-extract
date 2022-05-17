@@ -12718,15 +12718,15 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
   }
 
   updateBroadLogIdAndLineIdField(edk) {
-    let broadLogId = this.fields[this.fields.findIndex(f => f.name == 'broadLogId')];
-    let lineId = this.fields[this.fields.findIndex(f => f.name == 'LineId')];
+    let broadLogId = this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value;
+    let lineId = this.fields[this.fields.findIndex(f => f.name == 'LineId')].value;
 
     if (broadLogId) {
-      this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = broadLogId.value.replace(/{{Event.([^.]+).([^.{}]+)}}/, '{{Event.' + edk + '.$2}}');
+      this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = broadLogId.trim() != "" ? broadLogId.replace(/{{Event.([^.]+).([^.{}]+)}}/, '{{Event.' + edk + '.$2}}') : `{{Event.${edk}.ContactId}}`;
     }
 
     if (lineId) {
-      this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = lineId.value.replace(/{{Event.([^.]+).([^.{}]+)}}/, '{{Event.' + edk + '.$2}}');
+      this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = lineId.trim() != "" ? lineId.replace(/{{Event.([^.]+).([^.{}]+)}}/, '{{Event.' + edk + '.$2}}') : `{{Event.${edk}.Line_ID}}`;
     }
   }
 
