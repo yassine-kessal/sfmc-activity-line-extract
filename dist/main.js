@@ -12355,51 +12355,57 @@ __webpack_require__.r(__webpack_exports__);
 
 const stc0 = {
   classMap: {
-    "slds-m-vertical_small": true
+    "slds-p-around_medium": true
   },
   key: 0
 };
 const stc1 = {
   classMap: {
-    "slds-list_horizontal": true,
-    "slds-wrap": true
+    "slds-m-vertical_small": true
   },
   key: 1
 };
 const stc2 = {
+  classMap: {
+    "slds-list_horizontal": true,
+    "slds-wrap": true
+  },
+  key: 2
+};
+const stc3 = {
   classMap: {
     "slds-item_label": true,
     "slds-text-color_weak": true,
     "slds-truncate": true,
     "slds-text-title_bold": true
   },
-  key: 2
+  key: 3
 };
-const stc3 = {
+const stc4 = {
   classMap: {
     "slds-item_detail": true,
     "slds-truncate": true
   },
-  key: 3
+  key: 4
 };
-const stc4 = {
+const stc5 = {
   classMap: {
     "slds-text-color_error": true,
     "slds-text-title_bold": true,
     "slds-text-align_center": true
   },
-  key: 4
-};
-const stc5 = {
-  "verticalAlign": "end"
+  key: 5
 };
 const stc6 = {
+  "verticalAlign": "end"
+};
+const stc7 = {
   props: {
     "flexibility": "auto"
   },
-  key: 6
+  key: 7
 };
-const stc7 = {
+const stc8 = {
   classMap: {
     "slds-text-heading_medium": true,
     "slds-p-horizontal_medium": true
@@ -12407,56 +12413,56 @@ const stc7 = {
   props: {
     "flexibility": "shrink"
   },
-  key: 8
+  key: 9
 };
-const stc8 = {
+const stc9 = {
   props: {
     "iconName": "utility:chevronright",
     "alternativeText": "Map",
     "variant": "border-filled"
   },
-  key: 9
-};
-const stc9 = {
-  props: {
-    "flexibility": "auto"
-  },
   key: 10
 };
 const stc10 = {
+  props: {
+    "flexibility": "auto"
+  },
+  key: 11
+};
+const stc11 = {
   classMap: {
     "slds-p-horizontal_medium": true
   },
   props: {
     "flexibility": "shrink"
   },
-  key: 12
+  key: 13
 };
-const stc11 = {
+const stc12 = {
   "iconName": "utility:close",
   "alternativeText": "Remove",
   "variant": "border-filled"
 };
-const stc12 = {
+const stc13 = {
   classMap: {
     "slds-m-top_medium": true
   },
-  key: 14
+  key: 15
 };
-const stc13 = {
+const stc14 = {
   "label": "Add field",
   "variant": "brand"
 };
-const stc14 = {
+const stc15 = {
   classMap: {
     "slds-m-top_medium": true
   },
-  key: 16
+  key: 17
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {t: api_text, h: api_element, d: api_dynamic_text, k: api_key, b: api_bind, c: api_custom_element, i: api_iterator, f: api_flatten} = $api;
   const {_m0, _m1, _m2, _m3, _m4} = $ctx;
-  return api_flatten([api_element("div", stc0, [api_element("dl", stc1, [api_element("dt", stc2, [api_text("Event Definition Key :")]), api_element("dd", stc3, [api_text(api_dynamic_text($cmp.eventDefinitionKey))])])]), !$cmp.hasFields ? api_element("div", stc4, [api_text("Please start by adding field.")]) : null, api_iterator($cmp.fields, function (itValue, itIndex, itFirst, itLast) {
+  return [api_element("div", stc0, api_flatten([api_element("div", stc1, [api_element("dl", stc2, [api_element("dt", stc3, [api_text("Event Definition Key :")]), api_element("dd", stc4, [api_text(api_dynamic_text($cmp.eventDefinitionKey))])])]), !$cmp.hasFields ? api_element("div", stc5, [api_text("Please start by adding field.")]) : null, api_iterator($cmp.fields, function (itValue, itIndex, itFirst, itLast) {
     const it = {
       value: itValue,
       index: itIndex,
@@ -12464,9 +12470,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       last: itLast
     };
     return api_custom_element("lightning-layout", lightning_layout__WEBPACK_IMPORTED_MODULE_5__["default"], {
-      props: stc5,
-      key: api_key(5, it.value.id)
-    }, [api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__["default"], stc6, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      props: stc6,
+      key: api_key(6, it.value.id)
+    }, [api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__["default"], stc7, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_2__["default"], {
       attrs: {
         "data-fieldid": it.value.id,
         "data-fieldtype": "name"
@@ -12475,11 +12481,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         "label": "Name",
         "value": it.value.name
       },
-      key: 7,
+      key: 8,
       on: {
         "change": _m0 || ($ctx._m0 = api_bind($cmp.onFieldChange))
       }
-    })]), api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__["default"], stc7, [api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_4__["default"], stc8)]), api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__["default"], stc9, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    })]), api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__["default"], stc8, [api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_4__["default"], stc9)]), api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__["default"], stc10, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_2__["default"], {
       attrs: {
         "data-fieldid": it.value.id,
         "data-fieldtype": "value"
@@ -12488,36 +12494,36 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         "label": "Value",
         "value": it.value.value
       },
-      key: 11,
+      key: 12,
       on: {
         "change": _m1 || ($ctx._m1 = api_bind($cmp.onFieldChange))
       }
-    })]), api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__["default"], stc10, [api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    })]), api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__["default"], stc11, [api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_4__["default"], {
       attrs: {
         "data-id": it.value.id
       },
-      props: stc11,
-      key: 13,
+      props: stc12,
+      key: 14,
       on: {
         "click": _m2 || ($ctx._m2 = api_bind($cmp.removeField))
       }
     })])]);
-  }), api_element("div", stc12, [api_custom_element("lightning-button", lightning_button__WEBPACK_IMPORTED_MODULE_6__["default"], {
-    props: stc13,
-    key: 15,
+  }), api_element("div", stc13, [api_custom_element("lightning-button", lightning_button__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    props: stc14,
+    key: 16,
     on: {
       "click": _m3 || ($ctx._m3 = api_bind($cmp.addField))
     }
-  })]), api_element("div", stc14, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  })]), api_element("div", stc15, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_2__["default"], {
     props: {
       "label": "Filename",
       "value": $cmp.file.filename
     },
-    key: 17,
+    key: 18,
     on: {
       "change": _m4 || ($ctx._m4 = api_bind($cmp.onFilenameChange))
     }
-  })])]);
+  })])]))];
   /*LWC compiler v2.13.0*/
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_7__.registerTemplate)(tmpl));
@@ -12645,14 +12651,12 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
       } else if (fieldType == 'value') {
         this.fields[indexOfField].value = event.target.value;
         let activityId = this.fields.find(f => f.name == 'ActivityId') ? this.fields[this.fields.findIndex(f => f.name == 'ActivityId')].value : false;
-        console.log(this.fields[this.fields.findIndex(f => f.name == 'ActivityId')].value);
 
         if (activityId) {
           var date = new Date();
           this.file = {
             filename: `ACTION_${activityId}_${date.toISOString().replace('-', '').split('T')[0].replace('-', '')}.csv`
           };
-          console.log(this.file);
         }
       }
     }

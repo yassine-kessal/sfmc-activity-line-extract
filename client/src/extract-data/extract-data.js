@@ -107,11 +107,6 @@ export default class ExtractData extends LightningElement {
                       ].value
                     : false;
 
-                console.log(
-                    this.fields[
-                        this.fields.findIndex((f) => f.name == 'ActivityId')
-                    ].value
-                );
                 if (activityId) {
                     var date = new Date();
                     this.file = {
@@ -121,8 +116,6 @@ export default class ExtractData extends LightningElement {
                             .split('T')[0]
                             .replace('-', '')}.csv`
                     };
-
-                    console.log(this.file);
                 }
             }
         }
