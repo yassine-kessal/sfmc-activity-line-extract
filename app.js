@@ -150,7 +150,7 @@ app.get('/generate', function (req, res) {
 
         db.query(
             `SELECT activities.activityId, activities.activityname, activities.filename FROM activities WHERE activities.activityId IN (
-                SELECT activityId FROM fields WHERE TIMESTAMPDIFF(SECOND, createdAt, NOW()) > 900
+                SELECT activityId FROM fields
             )`,
             function (errActivities, activities) {
                 if (errActivities) {
