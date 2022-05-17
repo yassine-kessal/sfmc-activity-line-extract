@@ -193,15 +193,14 @@ export default class ExtractData extends LightningElement {
     }
 
     updateBroadLogIdAndLineIdField(edk) {
-        let newFields = JSON.parse(JSON.stringify(this.fields));
-
         let broadLogId =
-            newFields[newFields.findIndex((f) => f.name == 'broadLogId')] ? newFields[newFields.findIndex((f) => f.name == 'broadLogId')].value : false;
+            this.fields[this.fields.findIndex((f) => f.name == 'broadLogId')] ? this.fields[this.fields.findIndex((f) => f.name == 'broadLogId')].value : false;
 
         let lineId =
-            newFields[newFields.findIndex((f) => f.name == 'LineId')] ? newFields[newFields.findIndex((f) => f.name == 'LineId')].value : false;
+            this.fields[this.fields.findIndex((f) => f.name == 'LineId')] ? this.fields[this.fields.findIndex((f) => f.name == 'LineId')].value : false;
 
-        if (broadLogId) {
+        if (broadLogId || broadLogId.trim() == "") {
+
             this.fields[
                     this.fields.findIndex((f) => f.name == 'broadLogId')
                 ].value =
@@ -213,7 +212,7 @@ export default class ExtractData extends LightningElement {
                 `{{Event.${edk}.ContactId}}`;
         }
 
-        if (lineId) {
+        if (lineId || lineId.trim() == "") {
             this.fields[
                     this.fields.findIndex((f) => f.name == 'LineId')
                 ].value =

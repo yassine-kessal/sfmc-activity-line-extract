@@ -12718,15 +12718,14 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
   }
 
   updateBroadLogIdAndLineIdField(edk) {
-    let newFields = JSON.parse(JSON.stringify(this.fields));
-    let broadLogId = newFields[newFields.findIndex(f => f.name == 'broadLogId')] ? newFields[newFields.findIndex(f => f.name == 'broadLogId')].value : false;
-    let lineId = newFields[newFields.findIndex(f => f.name == 'LineId')] ? newFields[newFields.findIndex(f => f.name == 'LineId')].value : false;
+    let broadLogId = this.fields[this.fields.findIndex(f => f.name == 'broadLogId')] ? this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value : false;
+    let lineId = this.fields[this.fields.findIndex(f => f.name == 'LineId')] ? this.fields[this.fields.findIndex(f => f.name == 'LineId')].value : false;
 
-    if (broadLogId) {
+    if (broadLogId || broadLogId.trim() == "") {
       this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = broadLogId.trim() != '' ? broadLogId.replace(/{{Event.([^.]+).([^.{}]+)}}/, '{{Event.' + edk + '.$2}}') : `{{Event.${edk}.ContactId}}`;
     }
 
-    if (lineId) {
+    if (lineId || lineId.trim() == "") {
       this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = lineId.trim() != '' ? lineId.replace(/{{Event.([^.]+).([^.{}]+)}}/, '{{Event.' + edk + '.$2}}') : `{{Event.${edk}.Line_ID}}`;
     }
   }
@@ -38210,7 +38209,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"","id":"b58d71b3-66ef-4d3a-b549-2a4cdf8902b8","key":"REST-2","type":"REST","arguments":{"executionMode":"{{Context.ExecutionMode}}","definitionId":"{{Context.DefinitionId}}","activityId":"{{Activity.Id}}","contactKey":"{{Context.ContactKey}}","execute":{"inArguments":[{"file":{"filename":"test.csv"},"fields":[{"id":0,"name":"firstName","value":"hello"}]}],"outArguments":[],"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/execute","timeout":10000,"retryCount":3,"retryDelay":1000,"concurrentRequests":5,"useJwt":true},"testExecute":"","startActivityKey":"{{Context.StartActivityKey}}","definitionInstanceId":"{{Context.DefinitionInstanceId}}","requestObjectId":"{{Context.RequestObjectId}}"},"configurationArguments":{"save":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/save","useJwt":true},"testSave":"","publish":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/publish","useJwt":true},"testPublish":"","unpublish":"","stop":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/stop","useJwt":true},"testStop":"","testUnpublish":"","partnerActivityId":"","validate":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/validate","useJwt":true},"testValidate":"","outArgumentSchema":{}},"metaData":{"icon":"https://sfmc-lwcactivity.herokuapp.com/assets/notification.png","category":"messaging","backgroundColor":"#032e61","expressionBuilderPrefix":"sfnotif","iconSmall":"","statsContactIcon":"","original_icon":"https://sfmc-lwcactivity.herokuapp.com/assets/notification.png","isConfigured":true},"schema":{"arguments":{"execute":{"inArguments":[],"outArguments":[]}}},"editable":false,"outcomes":[{"key":"43d99f6f-e29f-454b-93ce-9163d065b5de","next":"WAITBYDURATION-6","arguments":{},"metaData":{"invalid":false}}],"errors":null}');
+module.exports = JSON.parse('{"name":"","id":"b58d71b3-66ef-4d3a-b549-2a4cdf8902b8","key":"REST-2","type":"REST","arguments":{"executionMode":"{{Context.ExecutionMode}}","definitionId":"{{Context.DefinitionId}}","activityId":"{{Activity.Id}}","contactKey":"{{Context.ContactKey}}","execute":{"inArguments":[{"file":{"filename":"test.csv"},"fields":[]}],"outArguments":[],"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/execute","timeout":10000,"retryCount":3,"retryDelay":1000,"concurrentRequests":5,"useJwt":true},"testExecute":"","startActivityKey":"{{Context.StartActivityKey}}","definitionInstanceId":"{{Context.DefinitionInstanceId}}","requestObjectId":"{{Context.RequestObjectId}}"},"configurationArguments":{"save":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/save","useJwt":true},"testSave":"","publish":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/publish","useJwt":true},"testPublish":"","unpublish":"","stop":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/stop","useJwt":true},"testStop":"","testUnpublish":"","partnerActivityId":"","validate":{"url":"https://sfmc-lwcactivity.herokuapp.com/salesforcenotification/validate","useJwt":true},"testValidate":"","outArgumentSchema":{}},"metaData":{"icon":"https://sfmc-lwcactivity.herokuapp.com/assets/notification.png","category":"messaging","backgroundColor":"#032e61","expressionBuilderPrefix":"sfnotif","iconSmall":"","statsContactIcon":"","original_icon":"https://sfmc-lwcactivity.herokuapp.com/assets/notification.png","isConfigured":true},"schema":{"arguments":{"execute":{"inArguments":[],"outArguments":[]}}},"editable":false,"outcomes":[{"key":"43d99f6f-e29f-454b-93ce-9163d065b5de","next":"WAITBYDURATION-6","arguments":{},"metaData":{"invalid":false}}],"errors":null}');
 
 /***/ }),
 

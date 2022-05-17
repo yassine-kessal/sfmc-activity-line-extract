@@ -14,13 +14,7 @@
                     "file": {
                         "filename": "test.csv"
                     },
-                    "fields": [
-                        {
-                            "id": 0,
-                            "name": "firstName",
-                            "value": "hello"
-                        }
-                    ]
+                    "fields": []
                 }
             ],
             "outArguments": [],
