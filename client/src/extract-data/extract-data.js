@@ -54,21 +54,7 @@ export default class ExtractData extends LightningElement {
             console.log(payload);
             this.eventDefinitionKey = payload;
 
-            if (
-                this.fields[
-                    this.fields.findIndex((f) => f.name == 'broadLogId')
-                ]
-            ) {
-                this.fields[
-                    this.fields.findIndex((f) => f.name == 'broadLogId')
-                ].value = `{{Event.${payload}.ContactId}}`;
-            }
-
-            if (this.fields[this.fields.findIndex((f) => f.name == 'LineId')]) {
-                this.fields[
-                    this.fields.findIndex((f) => f.name == 'LineId')
-                ].value = `{{Event.${payload}.Line_ID}}`;
-            }
+            this.updateBroadLogIdAndLineIdField(payload);
             console.log(JSON.stringify(this.fields));
         });
 
@@ -188,36 +174,7 @@ export default class ExtractData extends LightningElement {
             if (args.fields && args.fields.length > 0) {
                 this.fields = [...args.fields];
 
-                let broadLogIdValue =
-                    this.fields[
-                        this.fields.findIndex((f) => f.name == 'broadLogId')
-                    ]?.value;
-
-                let lineIdValue =
-                    this.fields[
-                        this.fields.findIndex((f) => f.name == 'LineId')
-                    ]?.value;
-
-                console.log('br', broadLogIdValue);
-                if (broadLogIdValue) {
-                    this.fields[
-                        this.fields.findIndex((f) => f.name == 'broadLogId')
-                    ].value = broadLogIdValue.replace(
-                        /{{Event.([^.]+).([^.{}]+)}}/,
-                        '{{Event.' + this.eventDefinitionKey + '.$2}}'
-                    );
-                }
-
-                console.log('ln', lineIdValue);
-
-                if (lineIdValue) {
-                    this.fields[
-                        this.fields.findIndex((f) => f.name == 'LineId')
-                    ].value = lineIdValue.replace(
-                        /{{Event.([^.]+).([^.{}]+)}}/,
-                        '{{Event.' + this.eventDefinitionKey + '.$2}}'
-                    );
-                }
+                this.updateBroadLogIdAndLineIdField(this.eventDefinitionKey);
             }
         }
 
@@ -227,6 +184,34 @@ export default class ExtractData extends LightningElement {
 
     clickedNext() {
         this.save();
+    }
+
+    updateBroadLogIdAndLineIdField(edk) {
+        let broadLogIdValue =
+            this.fields[this.fields.findIndex((f) => f.name == 'broadLogId')]
+                ?.value;
+
+        let lineIdValue =
+            this.fields[this.fields.findIndex((f) => f.name == 'LineId')]
+                ?.value;
+
+        if (broadLogIdValue) {
+            this.fields[
+                this.fields.findIndex((f) => f.name == 'broadLogId')
+            ].value = broadLogIdValue.replace(
+                /{{Event.([^.]+).([^.{}]+)}}/,
+                '{{Event.' + edk + '.$2}}'
+            );
+        }
+
+        if (lineIdValue) {
+            this.fields[
+                this.fields.findIndex((f) => f.name == 'LineId')
+            ].value = lineIdValue.replace(
+                /{{Event.([^.]+).([^.{}]+)}}/,
+                '{{Event.' + edk + '.$2}}'
+            );
+        }
     }
 
     save() {
