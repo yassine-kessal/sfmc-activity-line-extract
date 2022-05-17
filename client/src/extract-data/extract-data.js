@@ -174,7 +174,10 @@ export default class ExtractData extends LightningElement {
             if (args.fields && args.fields.length > 0) {
                 this.fields = [...args.fields];
 
-                this.updateBroadLogIdAndLineIdField(this.eventDefinitionKey);
+                if (this.eventDefinitionKey != 'loading...')
+                    this.updateBroadLogIdAndLineIdField(
+                        this.eventDefinitionKey
+                    );
             }
         }
 
