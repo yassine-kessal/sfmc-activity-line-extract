@@ -35,7 +35,7 @@ cron.schedule('* * * * *', function () {
 
         db.query(
             `SELECT activities.activityId, activities.activityname, activities.filename FROM activities WHERE activities.activityId IN (
-                SELECT activityId FROM fields WHERE TIMESTAMPDIFF(SECOND, MAX(createdAt), NOW()) > 900
+                SELECT activityId FROM fields WHERE TIMESTAMPDIFF(SECOND, activities.lastUpdatedFieldAt, NOW()) > 900
             )`,
             function (errActivities, activities) {
                 if (errActivities) {
@@ -69,7 +69,7 @@ cron.schedule('* * * * *', function () {
                                 formattedFields,
                                 {
                                     header: true,
-                                    quote: true,
+                                    quoted: true,
                                     delimiter: ','
                                 },
                                 async function (err, data) {
@@ -87,18 +87,14 @@ cron.schedule('* * * * *', function () {
                                             user: process.env.FTP_USERNAME,
                                             password: process.env.FTP_PASSWORD
                                         });
-                                        await sftp.mkdir(
-                                            `${process.env.FTP_BASEPATH}${activity.activityname}`,
-                                            true
-                                        );
+
                                         const result = await sftp.put(
                                             Buffer.from(data),
-                                            `${process.env.FTP_BASEPATH}${activity.activityname}/${activity.filename}`
+                                            `${process.env.FTP_BASEPATH}/${activity.filename}`
                                         );
 
                                         console.log('sftp', result);
 
-                                        await sftp.end();
                                         db.connect(function (err) {
                                             if (err) logger.error(err);
 
@@ -108,6 +104,8 @@ cron.schedule('* * * * *', function () {
                                         });
                                     } catch (err) {
                                         logger.error('sftp error', err);
+                                    } finally {
+                                        await sftp.end();
                                     }
                                 }
                             );

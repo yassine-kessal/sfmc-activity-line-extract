@@ -93,6 +93,13 @@ app.post('/execute', function (req, res) {
         db.query(sqlString, function (err) {
             if (err) logger.error(err);
         });
+
+        db.query(
+            `UPDATE activities SET lastUpdatedFieldAt = NOW() WHERE activityId = '${activityId}'`,
+            function (err) {
+                if (err) logger.error(err);
+            }
+        );
     });
 
     return res.status(200).json({});
@@ -184,7 +191,7 @@ app.get('/generate', function (req, res) {
                                 formattedFields,
                                 {
                                     header: true,
-                                    quote: true,
+                                    quoted: true,
                                     delimiter: ','
                                 },
                                 async function (err, data) {
@@ -202,10 +209,7 @@ app.get('/generate', function (req, res) {
                                             user: process.env.FTP_USERNAME,
                                             password: process.env.FTP_PASSWORD
                                         });
-                                        // await sftp.mkdir(
-                                        //     `${process.env.FTP_BASEPATH}${activity.activityname}`,
-                                        //     true
-                                        // );
+
                                         const result = await sftp.put(
                                             Buffer.from(data),
                                             `${process.env.FTP_BASEPATH}/${activity.filename}`
