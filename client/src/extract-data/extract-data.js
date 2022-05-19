@@ -14,21 +14,25 @@ export default class ExtractData extends LightningElement {
     @track fields = [{
             id: 0,
             name: 'broadLogId',
+            disabled: true,
             value: ''
         },
         {
             id: 1,
             name: 'LineId',
+            disabled: true,
             value: ''
         },
         {
             id: 2,
             name: 'ActivityId',
+            disabled: false,
             value: ''
         },
         {
             id: 3,
             name: 'ActivityName',
+            disabled: false,
             value: ''
         }
     ];
@@ -132,6 +136,7 @@ export default class ExtractData extends LightningElement {
         this.fields.push({
             id: lastFieldId + 1,
             name: '',
+            disabled: false,
             value: ''
         });
     }

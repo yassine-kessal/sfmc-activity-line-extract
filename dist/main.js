@@ -12479,7 +12479,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       props: {
         "label": "Name",
-        "value": it.value.name
+        "value": it.value.name,
+        "disabled": it.value.disabled
       },
       key: 8,
       on: {
@@ -12492,7 +12493,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       props: {
         "label": "Value",
-        "value": it.value.value
+        "value": it.value.value,
+        "disabled": it.value.disabled
       },
       key: 12,
       on: {
@@ -12517,7 +12519,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   })]), api_element("div", stc15, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_2__["default"], {
     props: {
       "label": "Filename",
-      "value": $cmp.file.filename
+      "value": $cmp.file.filename,
+      "disabled": true
     },
     key: 18,
     on: {
@@ -12580,18 +12583,22 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     this.fields = [{
       id: 0,
       name: 'broadLogId',
+      disabled: true,
       value: ''
     }, {
       id: 1,
       name: 'LineId',
+      disabled: true,
       value: ''
     }, {
       id: 2,
       name: 'ActivityId',
+      disabled: false,
       value: ''
     }, {
       id: 3,
       name: 'ActivityName',
+      disabled: false,
       value: ''
     }];
     this.file = {
@@ -12673,6 +12680,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     this.fields.push({
       id: lastFieldId + 1,
       name: '',
+      disabled: false,
       value: ''
     });
   }
