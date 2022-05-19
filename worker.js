@@ -7,7 +7,9 @@ const cron = require('node-cron');
 const logger = require('./server/utils/logger');
 const mysql = require('mysql2');
 const sftpClient = require('ssh2-sftp-client');
-const { stringify } = require('csv-stringify');
+const {
+    stringify
+} = require('csv-stringify');
 var fs = require('fs');
 
 var groupBy = function (xs, key) {
@@ -35,7 +37,7 @@ cron.schedule('* * * * *', function () {
 
         db.query(
             `SELECT activities.activityId, activities.activityname, activities.filename FROM activities WHERE activities.activityId IN (
-                SELECT activityId FROM fields WHERE TIMESTAMPDIFF(SECOND, activities.lastUpdatedFieldAt, NOW()) > 900
+                SELECT activityId FROM fields WHERE TIMESTAMPDIFF(SECOND, activities.lastUpdatedFieldAt, NOW()) > 180
             )`,
             function (errActivities, activities) {
                 if (errActivities) {
@@ -66,8 +68,7 @@ cron.schedule('* * * * *', function () {
                             console.log(formattedFields);
 
                             stringify(
-                                formattedFields,
-                                {
+                                formattedFields, {
                                     header: true,
                                     quoted: true,
                                     delimiter: ','
