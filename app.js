@@ -110,7 +110,7 @@ sftp.connect({
                 // get headers
                 let headersStr =
                     headersQuery
-                        .split('|')
+                        .split(',')
                         .map((h) => '"' + h + '"')
                         .join(',') + '\n';
 

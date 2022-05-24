@@ -18,9 +18,9 @@ module.exports = function configJSON(req) {
                 url: 'https://sfmc-activity-extract-data.herokuapp.com/execute',
                 verb: 'POST',
                 timeout: 100000,
-                retryCount: 5,
+                retryCount: 3,
                 retryDelay: 10000,
-                concurrentRequests: 1
+                concurrentRequests: 2
             }
         },
         configurationArguments: {
