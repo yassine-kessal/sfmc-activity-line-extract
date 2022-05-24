@@ -82,7 +82,10 @@ sftp.connect({
             try {
                 const result = await sftp.append(
                     Buffer.from(data),
-                    `${process.env.FTP_BASEPATH}/${filename}`
+                    `${process.env.FTP_BASEPATH}/${filename.replace(
+                        '.csv',
+                        ''
+                    )}-${activityId}.csv`
                 );
             } catch (e) {
                 console.log(e);
@@ -92,7 +95,7 @@ sftp.connect({
             return res.status(200).json({});
         });
 
-        app.post('/publish', function (req, res) {
+        app.post('/publish', async function (req, res) {
             logger.info(JSON.stringify(req.body));
             logger.info(JSON.stringify(req.query));
 
@@ -114,12 +117,13 @@ sftp.connect({
                         .map((h) => '"' + h + '"')
                         .join(',') + '\n';
 
-                // TODO: verify duplicates (use a counter, hash, ts... ?)
-
                 // create file and append with headers
-                sftp.append(
+                await sftp.append(
                     Buffer.from(headersStr),
-                    `${process.env.FTP_BASEPATH}/${filename}`
+                    `${process.env.FTP_BASEPATH}/${filename.replace(
+                        '.csv',
+                        ''
+                    )}-${activityId}.csv`
                 );
             } catch (e) {
                 console.log(e);
