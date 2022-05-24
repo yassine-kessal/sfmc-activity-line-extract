@@ -15,7 +15,7 @@ module.exports = function configJSON(req) {
                     fields: []
                 }],
                 outArguments: [],
-                url: 'https://sfmc-activity-extract-data.herokuapp.com/execute',
+                url: `https://${req.headers.host}/execute`,
                 verb: 'POST',
                 timeout: 100000,
                 retryCount: 3,
@@ -25,7 +25,7 @@ module.exports = function configJSON(req) {
         },
         configurationArguments: {
             publish: {
-                url: 'https://sfmc-activity-extract-data.herokuapp.com/publish',
+                url: `https://${req.headers.host}/publish`,
                 verb: 'POST'
             }
         },
