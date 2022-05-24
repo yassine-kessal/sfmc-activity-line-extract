@@ -6,7 +6,7 @@ module.exports = function configJSON(req) {
             category: 'flow',
             isConfigured: true
         },
-        type: 'RESTDECISION',
+        type: 'REST',
         name: 'Line Extract',
         arguments: {
             execute: {
@@ -14,6 +14,7 @@ module.exports = function configJSON(req) {
                     file: {},
                     fields: []
                 }],
+                outArguments: [],
                 url: 'https://sfmc-activity-extract-data.herokuapp.com/execute',
                 verb: 'POST',
                 timeout: 100000,
