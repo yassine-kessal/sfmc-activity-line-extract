@@ -86,12 +86,12 @@ sftp.connect({
             } catch (e) {
                 console.log(e);
                 return res.status(403).json({
-                    result: 'failed'
+                    branchResult: 'failed'
                 });
             }
 
             return res.status(200).json({
-                result: 'success'
+                branchResult: 'success'
             });
         });
 

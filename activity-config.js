@@ -6,7 +6,7 @@ module.exports = function configJSON(req) {
             category: 'flow',
             isConfigured: true
         },
-        type: 'RESTDECISION',
+        type: 'REST',
         name: 'Line Extract',
         arguments: {
             execute: {
@@ -36,7 +36,7 @@ module.exports = function configJSON(req) {
         },
         outcomes: [{
                 arguments: {
-                    result: 'success'
+                    branchResult: 'success'
                 },
                 metaData: {
                     label: 'Success'
@@ -44,7 +44,7 @@ module.exports = function configJSON(req) {
             },
             {
                 arguments: {
-                    result: 'failed'
+                    branchResult: 'failed'
                 },
                 metaData: {
                     label: 'Failed'
