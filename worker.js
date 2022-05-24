@@ -27,23 +27,29 @@ sftp.connect(config)
                     /.tmp$/
                 );
 
+                /**
+                 * If tmp file has not been modified for less or equal then 2 minute, the extract process has been finished.
+                 * Then remove the .tmp extension of file
+                 */
                 files.forEach(async (file) => {
-                    console.log(
-                        path.join(process.env.FTP_BASEPATH, file.name),
-                        ' => ',
-                        path.join(
-                            process.env.FTP_BASEPATH,
-                            file.name.replace(/.tmp$/, '')
-                        )
-                    );
+                    if (new Date().getTime() >= file.modifyTime + 120 * 1000) {
+                        console.log(
+                            path.join(process.env.FTP_BASEPATH, file.name),
+                            ' => ',
+                            path.join(
+                                process.env.FTP_BASEPATH,
+                                file.name.replace(/.tmp$/, '')
+                            )
+                        );
 
-                    sftp.rename(
-                        path.join(process.env.FTP_BASEPATH, file.name),
-                        path.join(
-                            process.env.FTP_BASEPATH,
-                            file.name.replace(/.tmp$/, '')
-                        )
-                    );
+                        sftp.rename(
+                            path.join(process.env.FTP_BASEPATH, file.name),
+                            path.join(
+                                process.env.FTP_BASEPATH,
+                                file.name.replace(/.tmp$/, '')
+                            )
+                        );
+                    }
                 });
             } catch (e) {
                 console.log(e);
