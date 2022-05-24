@@ -1,5 +1,8 @@
 import setupTestMock from './../test/testMock';
-import { LightningElement, track } from 'lwc';
+import {
+    LightningElement,
+    track
+} from 'lwc';
 import Postmonger from 'postmonger';
 const connection = new Postmonger.Session();
 
@@ -8,10 +11,7 @@ export default class ExtractData extends LightningElement {
 
     @track payload;
 
-    @track objectActivityId = false;
-
-    @track fields = [
-        {
+    @track fields = [{
             id: 0,
             name: 'broadLogId',
             disabled: true,
@@ -102,11 +102,11 @@ export default class ExtractData extends LightningElement {
             } else if (fieldType == 'value') {
                 this.fields[indexOfField].value = event.target.value;
 
-                let activityId = this.fields.find((f) => f.name == 'ActivityId')
-                    ? this.fields[
-                          this.fields.findIndex((f) => f.name == 'ActivityId')
-                      ].value
-                    : false;
+                let activityId = this.fields.find((f) => f.name == 'ActivityId') ?
+                    this.fields[
+                        this.fields.findIndex((f) => f.name == 'ActivityId')
+                    ].value :
+                    false;
 
                 if (activityId) {
                     var date = new Date();
@@ -174,8 +174,6 @@ export default class ExtractData extends LightningElement {
             payload.arguments.execute.inArguments &&
             payload.arguments.execute.inArguments.length > 0
         ) {
-            this.objectActivityId = payload.id;
-
             let args = payload.arguments.execute.inArguments[0];
 
             if (args.file)
@@ -203,41 +201,41 @@ export default class ExtractData extends LightningElement {
 
     updateBroadLogIdAndLineIdField(edk) {
         let broadLogId = this.fields[
-            this.fields.findIndex((f) => f.name == 'broadLogId')
-        ]
-            ? this.fields[this.fields.findIndex((f) => f.name == 'broadLogId')]
-                  .value
-            : false;
+                this.fields.findIndex((f) => f.name == 'broadLogId')
+            ] ?
+            this.fields[this.fields.findIndex((f) => f.name == 'broadLogId')]
+            .value :
+            false;
 
         let lineId = this.fields[
-            this.fields.findIndex((f) => f.name == 'LineId')
-        ]
-            ? this.fields[this.fields.findIndex((f) => f.name == 'LineId')]
-                  .value
-            : false;
+                this.fields.findIndex((f) => f.name == 'LineId')
+            ] ?
+            this.fields[this.fields.findIndex((f) => f.name == 'LineId')]
+            .value :
+            false;
 
         if (broadLogId || broadLogId.trim() == '') {
             this.fields[
-                this.fields.findIndex((f) => f.name == 'broadLogId')
-            ].value =
-                broadLogId.trim() != ''
-                    ? broadLogId.replace(
-                          /{{Event.([^.]+).([^.{}]+)}}/,
-                          '{{Event.' + edk + '.$2}}'
-                      )
-                    : `{{Event.${edk}.ContactId}}`;
+                    this.fields.findIndex((f) => f.name == 'broadLogId')
+                ].value =
+                broadLogId.trim() != '' ?
+                broadLogId.replace(
+                    /{{Event.([^.]+).([^.{}]+)}}/,
+                    '{{Event.' + edk + '.$2}}'
+                ) :
+                `{{Event.${edk}.ContactId}}`;
         }
 
         if (lineId || lineId.trim() == '') {
             this.fields[
-                this.fields.findIndex((f) => f.name == 'LineId')
-            ].value =
-                lineId.trim() != ''
-                    ? lineId.replace(
-                          /{{Event.([^.]+).([^.{}]+)}}/,
-                          '{{Event.' + edk + '.$2}}'
-                      )
-                    : `{{Event.${edk}.Line_ID}}`;
+                    this.fields.findIndex((f) => f.name == 'LineId')
+                ].value =
+                lineId.trim() != '' ?
+                lineId.replace(
+                    /{{Event.([^.]+).([^.{}]+)}}/,
+                    '{{Event.' + edk + '.$2}}'
+                ) :
+                `{{Event.${edk}.Line_ID}}`;
         }
     }
 
