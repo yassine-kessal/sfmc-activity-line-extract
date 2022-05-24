@@ -6,7 +6,7 @@ module.exports = function configJSON(req) {
             category: 'flow',
             isConfigured: true
         },
-        type: 'REST',
+        type: 'RESTDECISION',
         name: 'Line Extract',
         arguments: {
             execute: {
