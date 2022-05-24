@@ -34,23 +34,6 @@ module.exports = function configJSON(req) {
                 size: 'medium'
             }
         },
-        outcomes: [{
-                arguments: {
-                    branchResult: 'success'
-                },
-                metaData: {
-                    label: 'Success'
-                }
-            },
-            {
-                arguments: {
-                    branchResult: 'failed'
-                },
-                metaData: {
-                    label: 'Failed'
-                }
-            }
-        ],
         editable: true,
         errors: []
     };
