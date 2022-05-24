@@ -1,5 +1,5 @@
 {
-    "name": "sfmc-activity-extract-data",
+    "name": "sfmc-activity-line-extract",
     "version": "1.0.0",
     "description": "Journey activity to extract data to a file on the sftp salesforce marketing cloud",
     "main": "app.js",
