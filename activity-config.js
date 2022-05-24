@@ -10,12 +10,10 @@ module.exports = function configJSON(req) {
         name: 'Line Extract',
         arguments: {
             execute: {
-                inArguments: [
-                    {
-                        file: {},
-                        fields: []
-                    }
-                ],
+                inArguments: [{
+                    file: {},
+                    fields: []
+                }],
                 url: 'https://sfmc-activity-extract-data.herokuapp.com/execute',
                 verb: 'POST',
                 timeout: 100000,
@@ -35,6 +33,23 @@ module.exports = function configJSON(req) {
                 size: 'medium'
             }
         },
+        outcomes: [{
+                arguments: {
+                    result: 'success'
+                },
+                metaData: {
+                    label: 'Success'
+                }
+            },
+            {
+                arguments: {
+                    result: 'failed'
+                },
+                metaData: {
+                    label: 'Failed'
+                }
+            }
+        ],
         editable: true,
         errors: []
     };

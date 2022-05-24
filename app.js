@@ -30,11 +30,11 @@ app.use(
 
 app.use(express.static(DIST_DIR));
 sftp.connect({
-    host: process.env.FTP_HOST,
-    port: process.env.FTP_PORT,
-    user: process.env.FTP_USERNAME,
-    password: process.env.FTP_PASSWORD
-})
+        host: process.env.FTP_HOST,
+        port: process.env.FTP_PORT,
+        user: process.env.FTP_USERNAME,
+        password: process.env.FTP_PASSWORD
+    })
     .then(function () {
         /**
          * Fronted application
@@ -85,10 +85,14 @@ sftp.connect({
                 );
             } catch (e) {
                 console.log(e);
-                return res.status(403).json({});
+                return res.status(403).json({
+                    result: 'failed'
+                });
             }
 
-            return res.status(200).json({});
+            return res.status(200).json({
+                result: 'success'
+            });
         });
 
         app.post('/publish', async function (req, res) {
@@ -109,9 +113,9 @@ sftp.connect({
                 // get headers
                 let headersStr =
                     headersQuery
-                        .split(',')
-                        .map((h) => '"' + h + '"')
-                        .join(',') + '\n';
+                    .split(',')
+                    .map((h) => '"' + h + '"')
+                    .join(',') + '\n';
 
                 // create file and append with headers
                 await sftp.append(
@@ -122,7 +126,9 @@ sftp.connect({
                 console.log(e);
                 return res
                     .status(503)
-                    .json({ message: 'sftp create file on publish failed' });
+                    .json({
+                        message: 'sftp create file on publish failed'
+                    });
             }
 
             return res.status(200).json({});
@@ -130,7 +136,9 @@ sftp.connect({
     })
     .catch(function (e) {
         console.log(e);
-        return res.status(503).json({ message: 'sftp connection failed' });
+        return res.status(503).json({
+            message: 'sftp connection failed'
+        });
     });
 
 if (process.env.NODE_ENV !== 'production') {
