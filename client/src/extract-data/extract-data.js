@@ -8,6 +8,8 @@ export default class ExtractData extends LightningElement {
 
     @track payload;
 
+    @track objectActivityId = false;
+
     @track fields = [
         {
             id: 0,
@@ -113,7 +115,7 @@ export default class ExtractData extends LightningElement {
                             .toISOString()
                             .replace('-', '')
                             .split('T')[0]
-                            .replace('-', '')}.csv`
+                            .replace('-', '')}__${this.objectActivityId}.csv`
                     };
                 }
             }
@@ -172,6 +174,8 @@ export default class ExtractData extends LightningElement {
             payload.arguments.execute.inArguments &&
             payload.arguments.execute.inArguments.length > 0
         ) {
+            this.objectActivityId = payload.id;
+
             let args = payload.arguments.execute.inArguments[0];
 
             if (args.file)

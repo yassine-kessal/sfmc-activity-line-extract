@@ -30,8 +30,8 @@
                         onchange={onFieldChange} value={it.value.value} disabled={it.value.disabled}></lightning-input>
                 </lightning-layout-item>
                 <lightning-layout-item flexibility="shrink" class="slds-p-horizontal_medium">
-                    <lightning-button-icon data-id={it.value.id} onclick={removeField} icon-name="utility:close"
-                        alternative-text="Remove" variant="border-filled">
+                    <lightning-button-icon disabled={it.value.disabled} data-id={it.value.id} onclick={removeField}
+                        icon-name="utility:close" alternative-text="Remove" variant="border-filled">
                     </lightning-button-icon>
                 </lightning-layout-item>
             </lightning-layout>

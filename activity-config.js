@@ -7,6 +7,7 @@ module.exports = function configJSON(req) {
             isConfigured: true
         },
         type: 'REST',
+        name: 'Line Extract',
         arguments: {
             execute: {
                 inArguments: [

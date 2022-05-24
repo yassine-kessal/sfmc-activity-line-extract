@@ -82,10 +82,7 @@ sftp.connect({
             try {
                 const result = await sftp.append(
                     Buffer.from(data),
-                    `${process.env.FTP_BASEPATH}/${filename.replace(
-                        '.csv',
-                        ''
-                    )}-${activityId}.csv`
+                    `${process.env.FTP_BASEPATH}/${filename}`
                 );
             } catch (e) {
                 console.log(e);
@@ -120,10 +117,7 @@ sftp.connect({
                 // create file and append with headers
                 await sftp.append(
                     Buffer.from(headersStr),
-                    `${process.env.FTP_BASEPATH}/${filename.replace(
-                        '.csv',
-                        ''
-                    )}-${activityId}.csv`
+                    `${process.env.FTP_BASEPATH}/${filename}`
                 );
             } catch (e) {
                 console.log(e);
