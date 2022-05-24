@@ -103,7 +103,7 @@ var assert = /*#__PURE__*/Object.freeze({
  */
 const { assign, create, defineProperties, defineProperty, freeze, getOwnPropertyDescriptor: getOwnPropertyDescriptor$1, getOwnPropertyNames: getOwnPropertyNames$1, getPrototypeOf: getPrototypeOf$1, hasOwnProperty: hasOwnProperty$1, isFrozen, keys, seal, setPrototypeOf, } = Object;
 const { isArray: isArray$1 } = Array;
-const { filter: ArrayFilter, find: ArrayFind, indexOf: ArrayIndexOf, join: ArrayJoin, map: ArrayMap, push: ArrayPush$1, reduce: ArrayReduce, reverse: ArrayReverse, slice: ArraySlice, splice: ArraySplice, unshift: ArrayUnshift, forEach, } = Array.prototype;
+const { copyWithin: ArrayCopyWithin, fill: ArrayFill, filter: ArrayFilter, find: ArrayFind, indexOf: ArrayIndexOf, join: ArrayJoin, map: ArrayMap, pop: ArrayPop, push: ArrayPush$1, reduce: ArrayReduce, reverse: ArrayReverse, shift: ArrayShift, slice: ArraySlice, sort: ArraySort, splice: ArraySplice, unshift: ArrayUnshift, forEach, } = Array.prototype;
 const { fromCharCode: StringFromCharCode } = String;
 const { charCodeAt: StringCharCodeAt, replace: StringReplace, slice: StringSlice, toLowerCase: StringToLowerCase, } = String.prototype;
 function isUndefined$1(obj) {
@@ -358,9 +358,9 @@ const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 // Increment whenever the LWC template compiler changes
-const LWC_VERSION = "2.13.0";
+const LWC_VERSION = "2.14.0";
 const LWC_VERSION_COMMENT_REGEX = /\/\*LWC compiler v([\d.]+)\*\/\s*}/;
-/** version: 2.13.0 */
+/** version: 2.14.0 */
 
 /*
  * Copyright (c) 2018, salesforce.com, inc.
@@ -450,6 +450,7 @@ for (let i = 0, len = ElementPrototypeAriaPropertyNames.length; i < len; i += 1)
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const features = {
+    DUMMY_TEST_FLAG: null,
     ENABLE_ELEMENT_PATCH: null,
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
     ENABLE_HMR: null,
@@ -500,9 +501,34 @@ function setFeatureFlagForTest(name, value) {
         setFeatureFlag(name, value);
     }
 }
-/** version: 2.13.0 */
+/** version: 2.14.0 */
 
 /* proxy-compat-disable */
+
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+// @ts-ignore
+
+if ( true && typeof __karma__ !== 'undefined') {
+  window.addEventListener('test-dummy-flag', () => {
+    let hasFlag = false;
+
+    if (runtimeFlags.DUMMY_TEST_FLAG) {
+      hasFlag = true;
+    }
+
+    window.dispatchEvent(new CustomEvent('has-dummy-flag', {
+      detail: {
+        package: '@lwc/engine-core',
+        hasFlag
+      }
+    }));
+  });
+}
 
 /*
  * Copyright (c) 2018, salesforce.com, inc.
@@ -603,10 +629,6 @@ function setIsSyntheticShadowDefined(isSyntheticShadowDefinedImpl) {
 let HTMLElementExported$1;
 function setHTMLElement(HTMLElementImpl) {
     HTMLElementExported$1 = HTMLElementImpl;
-}
-let isHydrating$1;
-function setIsHydrating$1(isHydratingImpl) {
-    isHydrating$1 = isHydratingImpl;
 }
 let insert$1;
 function setInsert(insertImpl) {
@@ -727,10 +749,6 @@ function setGetLastElementChild(getLastElementChildImpl) {
 let isConnected$1;
 function setIsConnected(isConnectedImpl) {
     isConnected$1 = isConnectedImpl;
-}
-let insertGlobalStylesheet$1;
-function setInsertGlobalStylesheet(insertGlobalStylesheetImpl) {
-    insertGlobalStylesheet$1 = insertGlobalStylesheetImpl;
 }
 let insertStylesheet$1;
 function setInsertStylesheet(insertStylesheetImpl) {
@@ -932,6 +950,20 @@ function logError(message, vm) {
 }
 function logWarn(message, vm) {
     log('warn', message, vm);
+}
+
+/*
+ * Copyright (c) 2020, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+function resolveCircularModuleDependency(fn) {
+    const module = fn();
+    return (module === null || module === void 0 ? void 0 : module.__esModule) ? module.default : module;
+}
+function isCircularModuleDependency(obj) {
+    return isFunction$1(obj) && hasOwnProperty$1.call(obj, '__circular__');
 }
 
 /*
@@ -2275,64 +2307,7 @@ if (true) {
     patchLightningElementPrototypeWithRestrictions(LightningElement.prototype);
 }
 
-/*
- * Copyright (c) 2018, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
-/**
- * @wire decorator to wire fields and methods to a wire adapter in
- * LWC Components. This function implements the internals of this
- * decorator.
- */
-function wire(_adapter, _config) {
-    if (true) {
-        assert.fail('@wire(adapter, config?) may only be used as a decorator.');
-    }
-    throw new Error();
-}
-function internalWireFieldDecorator(key) {
-    return {
-        get() {
-            const vm = getAssociatedVM(this);
-            componentValueObserved(vm, key);
-            return vm.cmpFields[key];
-        },
-        set(value) {
-            const vm = getAssociatedVM(this);
-            /**
-             * Reactivity for wired fields is provided in wiring.
-             * We intentionally add reactivity here since this is just
-             * letting the author to do the wrong thing, but it will keep our
-             * system to be backward compatible.
-             */
-            if (value !== vm.cmpFields[key]) {
-                vm.cmpFields[key] = value;
-                componentValueMutated(vm, key);
-            }
-        },
-        enumerable: true,
-        configurable: true,
-    };
-}
-
-/*
- * Copyright (c) 2018, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
-function track(target) {
-    if (arguments.length === 1) {
-        return reactiveMembrane.getProxy(target);
-    }
-    if (true) {
-        assert.fail(`@track decorator can only be used with one argument to return a trackable object, or as a decorator function.`);
-    }
-    throw new Error();
-}
-function internalTrackDecorator(key) {
+function createObservedFieldPropertyDescriptor(key) {
     return {
         get() {
             const vm = getAssociatedVM(this);
@@ -2341,14 +2316,8 @@ function internalTrackDecorator(key) {
         },
         set(newValue) {
             const vm = getAssociatedVM(this);
-            if (true) {
-                const vmBeingRendered = getVMBeingRendered();
-                assert.invariant(!isInvokingRender, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString$1(key)}`);
-                assert.invariant(!isUpdatingTemplate, `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString$1(key)}`);
-            }
-            const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
-            if (reactiveOrAnyValue !== vm.cmpFields[key]) {
-                vm.cmpFields[key] = reactiveOrAnyValue;
+            if (newValue !== vm.cmpFields[key]) {
+                vm.cmpFields[key] = newValue;
                 componentValueMutated(vm, key);
             }
         },
@@ -2512,7 +2481,22 @@ function createPublicAccessorDescriptor(key, descriptor) {
   };
 }
 
-function createObservedFieldPropertyDescriptor(key) {
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+function track(target) {
+    if (arguments.length === 1) {
+        return reactiveMembrane.getProxy(target);
+    }
+    if (true) {
+        assert.fail(`@track decorator can only be used with one argument to return a trackable object, or as a decorator function.`);
+    }
+    throw new Error();
+}
+function internalTrackDecorator(key) {
     return {
         get() {
             const vm = getAssociatedVM(this);
@@ -2521,8 +2505,56 @@ function createObservedFieldPropertyDescriptor(key) {
         },
         set(newValue) {
             const vm = getAssociatedVM(this);
-            if (newValue !== vm.cmpFields[key]) {
-                vm.cmpFields[key] = newValue;
+            if (true) {
+                const vmBeingRendered = getVMBeingRendered();
+                assert.invariant(!isInvokingRender, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString$1(key)}`);
+                assert.invariant(!isUpdatingTemplate, `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString$1(key)}`);
+            }
+            const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
+            if (reactiveOrAnyValue !== vm.cmpFields[key]) {
+                vm.cmpFields[key] = reactiveOrAnyValue;
+                componentValueMutated(vm, key);
+            }
+        },
+        enumerable: true,
+        configurable: true,
+    };
+}
+
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+/**
+ * @wire decorator to wire fields and methods to a wire adapter in
+ * LWC Components. This function implements the internals of this
+ * decorator.
+ */
+function wire(_adapter, _config) {
+    if (true) {
+        assert.fail('@wire(adapter, config?) may only be used as a decorator.');
+    }
+    throw new Error();
+}
+function internalWireFieldDecorator(key) {
+    return {
+        get() {
+            const vm = getAssociatedVM(this);
+            componentValueObserved(vm, key);
+            return vm.cmpFields[key];
+        },
+        set(value) {
+            const vm = getAssociatedVM(this);
+            /**
+             * Reactivity for wired fields is provided in wiring.
+             * We intentionally add reactivity here since this is just
+             * letting the author to do the wrong thing, but it will keep our
+             * system to be backward compatible.
+             */
+            if (value !== vm.cmpFields[key]) {
+                vm.cmpFields[key] = value;
                 componentValueMutated(vm, key);
             }
         },
@@ -2777,6 +2809,12 @@ function checkVersionMismatch(func, type) {
     }
 }
 
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 const signedTemplateSet = new Set();
 function defaultEmptyTemplate() {
     return [];
@@ -2794,6 +2832,32 @@ function registerTemplate(tpl) {
         checkVersionMismatch(tpl, 'template');
     }
     signedTemplateSet.add(tpl);
+    // FIXME[@W-10950976]: the template object should be frozen, and it should not be possible to set
+    // the stylesheets or stylesheetToken(s). For backwards compat, though, we shim stylesheetTokens
+    // on top of stylesheetToken for anyone who is accessing the old internal API.
+    // Details: https://salesforce.quip.com/v1rmAFu2cKAr
+    defineProperty(tpl, 'stylesheetTokens', {
+        enumerable: true,
+        configurable: true,
+        get() {
+            const { stylesheetToken } = this;
+            if (isUndefined$1(stylesheetToken)) {
+                return stylesheetToken;
+            }
+            // Shim for the old `stylesheetTokens` property
+            // See https://github.com/salesforce/lwc/pull/2332/files#diff-7901555acef29969adaa6583185b3e9bce475cdc6f23e799a54e0018cb18abaa
+            return {
+                hostAttribute: `${stylesheetToken}-host`,
+                shadowAttribute: stylesheetToken,
+            };
+        },
+        set(value) {
+            // If the value is null or some other exotic object, you would be broken anyway in the past
+            // because the engine would try to access hostAttribute/shadowAttribute, which would throw an error.
+            // However it may be undefined in newer versions of LWC, so we need to guard against that case.
+            this.stylesheetToken = isUndefined$1(value) ? undefined : value.shadowAttribute;
+        },
+    });
     // chaining this method as a way to wrap existing
     // assignment of templates easily, without too much transformation
     return tpl;
@@ -2955,20 +3019,6 @@ function HTMLBridgeElementFactory(SuperClass, props, methods) {
 const BaseBridgeElement = HTMLBridgeElementFactory(HTMLElementConstructor$1, getOwnPropertyNames$1(HTMLElementOriginalDescriptors), []);
 freeze(BaseBridgeElement);
 seal(BaseBridgeElement.prototype);
-
-/*
- * Copyright (c) 2020, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
-function resolveCircularModuleDependency(fn) {
-    const module = fn();
-    return (module === null || module === void 0 ? void 0 : module.__esModule) ? module.default : module;
-}
-function isCircularModuleDependency(obj) {
-    return isFunction$1(obj) && hasOwnProperty$1.call(obj, '__circular__');
-}
 
 /*
  * Copyright (c) 2020, salesforce.com, inc.
@@ -3857,15 +3907,16 @@ function mountVNodes(vnodes, parent, anchor, start = 0, end = vnodes.length) {
     }
 }
 function unmount(vnode, parent, doRemove = false) {
-    const { type, elm } = vnode;
+    const { type, elm, sel } = vnode;
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
     if (doRemove) {
         removeNode(elm, parent);
     }
+    const removeChildren = sel === 'slot'; // slot content is removed to trigger slotchange event when removing slot
     switch (type) {
         case 2 /* Element */:
-            unmountVNodes(vnode.children, elm);
+            unmountVNodes(vnode.children, elm, removeChildren);
             break;
         case 3 /* CustomElement */: {
             const { vm } = vnode;
@@ -4783,10 +4834,10 @@ function createStylesheet(vm, stylesheets) {
     const { renderMode, shadowMode } = vm;
     if (renderMode === 1 /* Shadow */ && shadowMode === 1 /* Synthetic */) {
         for (let i = 0; i < stylesheets.length; i++) {
-            insertGlobalStylesheet$1(stylesheets[i]);
+            insertStylesheet$1(stylesheets[i]);
         }
     }
-    else if (ssr$1 || isHydrating$1()) {
+    else if (ssr$1 || vm.hydrated) {
         // Note: We need to ensure that during hydration, the stylesheets method is the same as those in ssr.
         //       This works in the client, because the stylesheets are created, and cached in the VM
         //       the first time the VM renders.
@@ -4797,15 +4848,10 @@ function createStylesheet(vm, stylesheets) {
     else {
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);
-        const isGlobal = isNull(root);
+        // null root means a global style
+        const target = isNull(root) ? undefined : root.shadowRoot;
         for (let i = 0; i < stylesheets.length; i++) {
-            if (isGlobal) {
-                insertGlobalStylesheet$1(stylesheets[i]);
-            }
-            else {
-                // local level
-                insertStylesheet$1(stylesheets[i], root.shadowRoot);
-            }
+            insertStylesheet$1(stylesheets[i], target);
         }
     }
     return null;
@@ -5344,24 +5390,14 @@ function removeVM(vm) {
 
   resetComponentStateWhenRemoved(vm);
 }
-
-function getNearestShadowAncestor(vm) {
-  let ancestor = vm.owner;
-
-  while (!isNull(ancestor) && ancestor.renderMode === 0
-  /* Light */
-  ) {
-    ancestor = ancestor.owner;
-  }
-
-  return ancestor;
-}
-
 function createVM(elm, ctor, options) {
+  var _a;
+
   const {
     mode,
     owner,
-    tagName
+    tagName,
+    hydrated
   } = options;
   const def = getComponentInternalDef(ctor);
   const vm = {
@@ -5384,7 +5420,10 @@ function createVM(elm, ctor, options) {
     cmpSlots: create(null),
     oar: create(null),
     cmpTemplate: null,
+    hydrated: Boolean(hydrated),
     renderMode: def.renderMode,
+    shadowMode: computeShadowMode(def, owner),
+    nearestShadowMode: (owner === null || owner === void 0 ? void 0 : owner.shadowRoot) ? owner.shadowMode : (_a = owner === null || owner === void 0 ? void 0 : owner.nearestShadowMode) !== null && _a !== void 0 ? _a : null,
     context: {
       stylesheetToken: undefined,
       hasTokenInClass: undefined,
@@ -5397,7 +5436,6 @@ function createVM(elm, ctor, options) {
     },
     // Properties set right after VM creation.
     tro: null,
-    shadowMode: null,
     // Properties set by the LightningElement constructor.
     component: null,
     shadowRoot: null,
@@ -5406,7 +5444,6 @@ function createVM(elm, ctor, options) {
     setHook,
     getHook
   };
-  vm.shadowMode = computeShadowMode(vm);
   vm.tro = getTemplateReactiveObserver(vm);
 
   if (true) {
@@ -5431,10 +5468,9 @@ function createVM(elm, ctor, options) {
   return vm;
 }
 
-function computeShadowMode(vm) {
-  const {
-    def
-  } = vm;
+function computeShadowMode(def, owner) {
+  var _a;
+
   let shadowMode;
 
   if (isSyntheticShadowDefined$1) {
@@ -5457,23 +5493,13 @@ function computeShadowMode(vm) {
           /* Native */
           ;
         } else {
-          const shadowAncestor = getNearestShadowAncestor(vm);
-
-          if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === 0
-          /* Native */
-          ) {
-            // Transitive support for native Shadow DOM. A component in native mode
-            // transitively opts all of its descendants into native.
-            shadowMode = 0
-            /* Native */
-            ;
-          } else {
-            // Synthetic if neither this component nor any of its ancestors are configured
-            // to be native.
-            shadowMode = 1
-            /* Synthetic */
-            ;
-          }
+          // Transitive support for native Shadow DOM. A component in native mode
+          // transitively opts all of its descendants into native.
+          // Synthetic if neither this component nor any of its ancestors are configured
+          // to be native.
+          shadowMode = (_a = owner === null || owner === void 0 ? void 0 : owner.nearestShadowMode) !== null && _a !== void 0 ? _a : 1
+          /* Synthetic */
+          ;
         }
       } else {
         shadowMode = 1
@@ -6369,6 +6395,7 @@ function hydrateCustomElement(elm, vnode) {
         mode,
         owner,
         tagName: sel,
+        hydrated: true,
     });
     vnode.elm = elm;
     vnode.vm = vm;
@@ -6562,7 +6589,6 @@ function setHooks(hooks) {
     hooksAreSet = true;
     setSanitizeHtmlContentHook(hooks.sanitizeHtmlContent);
 }
-/* version: 2.13.0 */
 
 /*
  * Copyright (c) 2018, salesforce.com, inc.
@@ -6570,25 +6596,270 @@ function setHooks(hooks) {
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const globalStylesheets = create(null);
+// See @lwc/engine-core/src/framework/template.ts
+const TEMPLATE_PROPS = ['slots', 'stylesheetToken', 'stylesheets', 'renderMode'];
+// Via https://www.npmjs.com/package/object-observer
+const ARRAY_MUTATION_METHODS = [
+    'pop',
+    'push',
+    'shift',
+    'unshift',
+    'reverse',
+    'sort',
+    'fill',
+    'splice',
+    'copyWithin',
+];
+function getOriginalArrayMethod(prop) {
+    switch (prop) {
+        case 'pop':
+            return ArrayPop;
+        case 'push':
+            return ArrayPush$1;
+        case 'shift':
+            return ArrayShift;
+        case 'unshift':
+            return ArrayUnshift;
+        case 'reverse':
+            return ArrayReverse;
+        case 'sort':
+            return ArraySort;
+        case 'fill':
+            return ArrayFill;
+        case 'splice':
+            return ArraySplice;
+        case 'copyWithin':
+            return ArrayCopyWithin;
+    }
+}
+let mutationWarningsSilenced = false;
+// Warn if the user tries to mutate tmpl.stylesheets, e.g.:
+// `tmpl.stylesheets.push(someStylesheetFunction)`
+function warnOnArrayMutation(stylesheets) {
+    // We can't handle users calling Array.prototype.slice.call(tmpl.stylesheets), but
+    // we can at least warn when they use the most common mutation methods.
+    for (const prop of ARRAY_MUTATION_METHODS) {
+        const originalArrayMethod = getOriginalArrayMethod(prop);
+        stylesheets[prop] = function arrayMutationWarningWrapper() {
+            logError(`Mutating the "stylesheets" array on a template function ` +
+                `is deprecated and may be removed in a future version of LWC.`);
+            // @ts-ignore
+            return originalArrayMethod.apply(this, arguments);
+        };
+    }
+}
+// TODO [#2782]: eventually freezeTemplate() will _actually_ freeze the tmpl object. Today it
+// just warns on mutation.
+function freezeTemplate(tmpl) {
+    if (true) {
+        if (!isUndefined$1(tmpl.stylesheets)) {
+            warnOnArrayMutation(tmpl.stylesheets);
+        }
+        for (const prop of TEMPLATE_PROPS) {
+            let value = tmpl[prop];
+            defineProperty(tmpl, prop, {
+                enumerable: true,
+                configurable: true,
+                get() {
+                    return value;
+                },
+                set(newValue) {
+                    if (!mutationWarningsSilenced) {
+                        logError(`Dynamically setting the "${prop}" property on a template function ` +
+                            `is deprecated and may be removed in a future version of LWC.`);
+                    }
+                    value = newValue;
+                },
+            });
+        }
+        const originalDescriptor = getOwnPropertyDescriptor$1(tmpl, 'stylesheetTokens');
+        defineProperty(tmpl, 'stylesheetTokens', {
+            enumerable: true,
+            configurable: true,
+            get: originalDescriptor.get,
+            set(value) {
+                logError(`Dynamically setting the "stylesheetTokens" property on a template function ` +
+                    `is deprecated and may be removed in a future version of LWC.`);
+                // Avoid logging twice (for both stylesheetToken and stylesheetTokens)
+                mutationWarningsSilenced = true;
+                originalDescriptor.set.call(this, value);
+                mutationWarningsSilenced = false;
+            },
+        });
+    }
+}
+
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+/**
+ * EXPERIMENTAL: This function provides access to the component constructor, given an HTMLElement.
+ * This API is subject to change or being removed.
+ */
+function getComponentConstructor(elm) {
+    let ctor = null;
+    // intentionally checking for undefined due to some funky libraries patching weakmap.get
+    // to throw when undefined.
+    if (!isUndefined$1(elm)) {
+        const vm = getAssociatedVMIfPresent(elm);
+        if (!isUndefined$1(vm)) {
+            ctor = vm.def.ctor;
+        }
+    }
+    return ctor;
+}
+/* version: 2.14.0 */
+
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+//
+// Feature detection
+//
+// This check for constructable style sheets is similar to Fast's:
+// https://github.com/microsoft/fast/blob/d49d1ec/packages/web-components/fast-element/src/dom.ts#L51-L53
+// See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
+const supportsConstructableStylesheets = isFunction$1(CSSStyleSheet.prototype.replaceSync) && isArray$1(document.adoptedStyleSheets);
+// The original adoptedStylesheet proposal used a frozen array. A follow-up proposal made the array mutable.
+// Chromium 99+ and Firefox 101+ support mutable arrays. We check if the array is mutable, to ensure backward compat.
+// (If the length is writable, then the array is mutable.) See: https://chromestatus.com/feature/5638996492288000
+// TODO [#2828]: Re-evaluate this in the future once we drop support for older browser versions.
+const supportsMutableAdoptedStyleSheets = supportsConstructableStylesheets &&
+    getOwnPropertyDescriptor$1(document.adoptedStyleSheets, 'length').writable;
+// Detect IE, via https://stackoverflow.com/a/9851769
+const isIE11 = !isUndefined$1(document.documentMode);
+const stylesheetCache = new Map();
+//
+// Test utilities
+//
 if (true) {
     // @ts-ignore
     window.__lwcResetGlobalStylesheets = () => {
-        for (const key of Object.keys(globalStylesheets)) {
-            delete globalStylesheets[key];
-        }
+        stylesheetCache.clear();
     };
 }
-const globalStylesheetsParentElement = document.head || document.body || document;
-// This check for constructable stylesheets is similar to Fast's:
-// https://github.com/microsoft/fast/blob/d49d1ec/packages/web-components/fast-element/src/dom.ts#L51-L53
-// See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
-const supportsConstructableStyleSheets = isFunction$1(CSSStyleSheet.prototype.replaceSync) && isArray$1(document.adoptedStyleSheets);
-const supportsMutableAdoptedStyleSheets = supportsConstructableStyleSheets &&
-    getOwnPropertyDescriptor$1(document.adoptedStyleSheets, 'length').writable;
-const styleElements = create(null);
-const styleSheets = create(null);
-const shadowRootsToStyleSheets = new WeakMap();
+function isDocument(target) {
+    return !isUndefined$1(target.head);
+}
+function createFreshStyleElement(content) {
+    const elm = document.createElement('style');
+    elm.type = 'text/css';
+    elm.textContent = content;
+    return elm;
+}
+function createStyleElement(content, cacheData) {
+    const { stylesheet, used } = cacheData;
+    // If the <style> was already used, then we should clone it. We cannot insert
+    // the same <style> in two places in the DOM.
+    if (used) {
+        // For a mysterious reason, IE11 doesn't like the way we clone <style> nodes
+        // and will render the incorrect styles if we do things that way. It's just
+        // a perf optimization, so we can skip it for IE11.
+        if (isIE11) {
+            return createFreshStyleElement(content);
+        }
+        // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
+        // faster to call `cloneNode()` on an existing node than to recreate it every time.
+        return stylesheet.cloneNode(true);
+    }
+    // We don't clone every time, because that would be a perf tax on the first time
+    cacheData.used = true;
+    return stylesheet;
+}
+function createConstructableStylesheet(content) {
+    const stylesheet = new CSSStyleSheet();
+    stylesheet.replaceSync(content);
+    return stylesheet;
+}
+function insertConstructableStylesheet(content, target, cacheData) {
+    const { adoptedStyleSheets } = target;
+    const { stylesheet } = cacheData;
+    // Mutable adopted stylesheets are only supported in certain browsers.
+    // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2683
+    if (supportsMutableAdoptedStyleSheets) {
+        adoptedStyleSheets.push(stylesheet);
+    }
+    else {
+        target.adoptedStyleSheets = [...adoptedStyleSheets, stylesheet];
+    }
+}
+function insertStyleElement(content, target, cacheData) {
+    const elm = createStyleElement(content, cacheData);
+    const targetAnchorPoint = isDocument(target) ? target.head : target;
+    targetAnchorPoint.appendChild(elm);
+}
+function doInsertStylesheet(content, target, cacheData) {
+    // Constructable stylesheets are only supported in certain browsers:
+    // https://caniuse.com/mdn-api_document_adoptedstylesheets
+    // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2460
+    if (supportsConstructableStylesheets) {
+        insertConstructableStylesheet(content, target, cacheData);
+    }
+    else {
+        // Fall back to <style> element
+        insertStyleElement(content, target, cacheData);
+    }
+}
+function getCacheData(content) {
+    let cacheData = stylesheetCache.get(content);
+    if (isUndefined$1(cacheData)) {
+        cacheData = {
+            stylesheet: supportsConstructableStylesheets
+                ? createConstructableStylesheet(content)
+                : createFreshStyleElement(content),
+            roots: undefined,
+            global: false,
+            used: false,
+        };
+        stylesheetCache.set(content, cacheData);
+    }
+    return cacheData;
+}
+function insertGlobalStylesheet(content) {
+    const cacheData = getCacheData(content);
+    if (cacheData.global) {
+        // already inserted
+        return;
+    }
+    cacheData.global = true; // mark inserted
+    doInsertStylesheet(content, document, cacheData);
+}
+function insertLocalStylesheet(content, target) {
+    const cacheData = getCacheData(content);
+    let { roots } = cacheData;
+    if (isUndefined$1(roots)) {
+        roots = cacheData.roots = new WeakSet(); // lazily initialize (not needed for global styles)
+    }
+    else if (roots.has(target)) {
+        // already inserted
+        return;
+    }
+    roots.add(target); // mark inserted
+    doInsertStylesheet(content, target, cacheData);
+}
+function insertStylesheet(content, target) {
+    if (isUndefined$1(target)) {
+        // global
+        insertGlobalStylesheet(content);
+    }
+    else {
+        // local
+        insertLocalStylesheet(content, target);
+    }
+}
+
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 let getCustomElement;
 let defineCustomElement;
 let HTMLElementConstructor;
@@ -6614,52 +6885,6 @@ function isCustomElementRegistryAvailable() {
     catch (_a) {
         return false;
     }
-}
-function insertConstructableStyleSheet(content, target) {
-    // It's important for CSSStyleSheets to be unique based on their content, so that
-    // `shadowRoot.adoptedStyleSheets.includes(sheet)` works.
-    let styleSheet = styleSheets[content];
-    if (isUndefined$1(styleSheet)) {
-        styleSheet = new CSSStyleSheet();
-        styleSheet.replaceSync(content);
-        styleSheets[content] = styleSheet;
-    }
-    const { adoptedStyleSheets } = target;
-    if (!adoptedStyleSheets.includes(styleSheet)) {
-        if (supportsMutableAdoptedStyleSheets) {
-            // This is only supported in later versions of Chromium:
-            // https://chromestatus.com/feature/5638996492288000
-            adoptedStyleSheets.push(styleSheet);
-        }
-        else {
-            target.adoptedStyleSheets = [...adoptedStyleSheets, styleSheet];
-        }
-    }
-}
-function insertStyleElement(content, target) {
-    // Avoid inserting duplicate `<style>`s
-    let sheets = shadowRootsToStyleSheets.get(target);
-    if (isUndefined$1(sheets)) {
-        sheets = create(null);
-        shadowRootsToStyleSheets.set(target, sheets);
-    }
-    if (sheets[content]) {
-        return;
-    }
-    sheets[content] = true;
-    // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
-    // faster to call `cloneNode()` on an existing node than to recreate it every time.
-    let elm = styleElements[content];
-    if (isUndefined$1(elm)) {
-        elm = document.createElement('style');
-        elm.type = 'text/css';
-        elm.textContent = content;
-        styleElements[content] = elm;
-    }
-    else {
-        elm = elm.cloneNode(true);
-    }
-    target.appendChild(elm);
 }
 if (isCustomElementRegistryAvailable()) {
     getCustomElement = customElements.get.bind(customElements);
@@ -6699,9 +6924,6 @@ function setIsHydrating(value) {
     hydrating = value;
 }
 const ssr = false;
-function isHydrating() {
-    return hydrating;
-}
 const isNativeShadowDefined = _globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 const isSyntheticShadowDefined = hasOwnProperty$1.call(Element.prototype, KEY__SHADOW_TOKEN);
 function createElement$1(tagName, namespace) {
@@ -6816,25 +7038,6 @@ function getLastElementChild(element) {
 function isConnected(node) {
     return node.isConnected;
 }
-function insertGlobalStylesheet(content) {
-    if (!isUndefined$1(globalStylesheets[content])) {
-        return;
-    }
-    globalStylesheets[content] = true;
-    const elm = document.createElement('style');
-    elm.type = 'text/css';
-    elm.textContent = content;
-    globalStylesheetsParentElement.appendChild(elm);
-}
-function insertStylesheet(content, target) {
-    if (supportsConstructableStyleSheets) {
-        insertConstructableStyleSheet(content, target);
-    }
-    else {
-        // Fall back to <style> element
-        insertStyleElement(content, target);
-    }
-}
 function assertInstanceOfHTMLElement(elm, msg) {
     assert.invariant(elm instanceof HTMLElement, msg);
 }
@@ -6868,10 +7071,7 @@ setGetLastElementChild(getLastElementChild);
 setGetProperty(getProperty);
 setHTMLElement(HTMLElementExported);
 setInsert(insert);
-setInsertGlobalStylesheet(insertGlobalStylesheet);
-setInsertStylesheet(insertStylesheet);
 setIsConnected(isConnected);
-setIsHydrating$1(isHydrating);
 setIsNativeShadowDefined(isNativeShadowDefined);
 setIsSyntheticShadowDefined(isSyntheticShadowDefined);
 setNextSibling(nextSibling);
@@ -6886,6 +7086,32 @@ setSetProperty(setProperty);
 setSetText(setText);
 setSsr(ssr);
 setAddEventListener(addEventListener);
+setInsertStylesheet(insertStylesheet);
+
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+// @ts-ignore
+
+if ( true && typeof __karma__ !== 'undefined') {
+  window.addEventListener('test-dummy-flag', () => {
+    let hasFlag = false;
+
+    if (runtimeFlags.DUMMY_TEST_FLAG) {
+      hasFlag = true;
+    }
+
+    window.dispatchEvent(new CustomEvent('has-dummy-flag', {
+      detail: {
+        package: '@lwc/engine-dom',
+        hasFlag
+      }
+    }));
+  });
+}
 
 /*
  * Copyright (c) 2018, salesforce.com, inc.
@@ -6911,6 +7137,7 @@ function createVMWithProps(element, Ctor, props) {
         mode: 'open',
         owner: null,
         tagName: element.tagName.toLowerCase(),
+        hydrated: true,
     });
     for (const [key, value] of Object.entries(props)) {
         element[key] = value;
@@ -7119,27 +7346,6 @@ function createElement(sel, options) {
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-/**
- * EXPERIMENTAL: This function provides access to the component constructor, given an HTMLElement.
- * This API is subject to change or being removed.
- */
-function getComponentConstructor(elm) {
-    let ctor = null;
-    if (elm instanceof HTMLElement) {
-        const vm = getAssociatedVMIfPresent(elm);
-        if (!isUndefined$1(vm)) {
-            ctor = vm.def.ctor;
-        }
-    }
-    return ctor;
-}
-
-/*
- * Copyright (c) 2018, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
 const _Node = Node;
@@ -7209,6 +7415,7 @@ exports.api = api$1;
 exports.buildCustomElementConstructor = deprecatedBuildCustomElementConstructor;
 exports.createContextProvider = createContextProvider;
 exports.createElement = createElement;
+exports.freezeTemplate = freezeTemplate;
 exports.getComponentConstructor = getComponentConstructor;
 exports.getComponentDef = getComponentDef;
 exports.hydrateComponent = hydrateComponent;
@@ -7229,7 +7436,7 @@ exports.swapTemplate = swapTemplate;
 exports.track = track;
 exports.unwrap = unwrap;
 exports.wire = wire;
-/* version: 2.13.0 */
+/* version: 2.14.0 */
 
 
 /***/ }),
@@ -7285,7 +7492,7 @@ var assert = /*#__PURE__*/Object.freeze({
  */
 const { assign, create, defineProperties, defineProperty, freeze, getOwnPropertyDescriptor, getOwnPropertyNames, getPrototypeOf, hasOwnProperty, isFrozen, keys, seal, setPrototypeOf, } = Object;
 const { isArray } = Array;
-const { filter: ArrayFilter, find: ArrayFind, indexOf: ArrayIndexOf, join: ArrayJoin, map: ArrayMap, push: ArrayPush, reduce: ArrayReduce, reverse: ArrayReverse, slice: ArraySlice, splice: ArraySplice, unshift: ArrayUnshift, forEach, } = Array.prototype;
+const { copyWithin: ArrayCopyWithin, fill: ArrayFill, filter: ArrayFilter, find: ArrayFind, indexOf: ArrayIndexOf, join: ArrayJoin, map: ArrayMap, pop: ArrayPop, push: ArrayPush, reduce: ArrayReduce, reverse: ArrayReverse, shift: ArrayShift, slice: ArraySlice, sort: ArraySort, splice: ArraySplice, unshift: ArrayUnshift, forEach, } = Array.prototype;
 const { charCodeAt: StringCharCodeAt, replace: StringReplace, slice: StringSlice, toLowerCase: StringToLowerCase, } = String.prototype;
 function isUndefined(obj) {
     return obj === undefined;
@@ -7388,7 +7595,7 @@ const KEY__SYNTHETIC_MODE = '$$lwc-synthetic-mode';
 // We use this to detect symbol support in order to avoid the expensive symbol polyfill. Note that
 // we can't use typeof since it will fail when transpiling.
 const hasNativeSymbolSupport = /*@__PURE__*/ (() => Symbol('x').toString() === 'Symbol(x)')();
-/** version: 2.13.0 */
+/** version: 2.14.0 */
 
 /*
  * Copyright (c) 2018, salesforce.com, inc.
@@ -7701,249 +7908,6 @@ const { addEventListener, dispatchEvent, removeEventListener } = eventTargetProt
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const EventListenerMap = new WeakMap();
-const ComposedPathMap = new WeakMap();
-function isEventListenerOrEventListenerObject(fnOrObj) {
-    return (isFunction(fnOrObj) ||
-        (isObject(fnOrObj) &&
-            !isNull(fnOrObj) &&
-            isFunction(fnOrObj.handleEvent)));
-}
-function shouldInvokeListener(event, target, currentTarget) {
-    // Subsequent logic assumes that `currentTarget` must be contained in the composed path for the listener to be
-    // invoked, but this is not always the case. `composedPath()` will sometimes return an empty array, even when the
-    // listener should be invoked (e.g., a disconnected instance of EventTarget, an instance of XMLHttpRequest, etc).
-    if (target === currentTarget) {
-        return true;
-    }
-    let composedPath = ComposedPathMap.get(event);
-    if (isUndefined(composedPath)) {
-        composedPath = event.composedPath();
-        ComposedPathMap.set(event, composedPath);
-    }
-    return composedPath.includes(currentTarget);
-}
-function getEventListenerWrapper(fnOrObj) {
-    if (!isEventListenerOrEventListenerObject(fnOrObj)) {
-        return fnOrObj;
-    }
-    let wrapperFn = EventListenerMap.get(fnOrObj);
-    if (isUndefined(wrapperFn)) {
-        wrapperFn = function (event) {
-            // This function is invoked from an event listener and currentTarget is always defined.
-            const currentTarget = eventCurrentTargetGetter.call(event);
-            if (true) {
-                assert.invariant(isFalse(isSyntheticShadowHost(currentTarget)), 'This routine should not be used to wrap event listeners for host elements and shadow roots.');
-            }
-            const actualTarget = getActualTarget(event);
-            if (!shouldInvokeListener(event, actualTarget, currentTarget)) {
-                return;
-            }
-            return isFunction(fnOrObj)
-                ? fnOrObj.call(this, event)
-                : fnOrObj.handleEvent && fnOrObj.handleEvent(event);
-        };
-        EventListenerMap.set(fnOrObj, wrapperFn);
-    }
-    return wrapperFn;
-}
-
-/*
- * Copyright (c) 2018, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
-const eventToContextMap = new WeakMap();
-const customElementToWrappedListeners = new WeakMap();
-function getEventMap(elm) {
-    let listenerInfo = customElementToWrappedListeners.get(elm);
-    if (isUndefined(listenerInfo)) {
-        listenerInfo = create(null);
-        customElementToWrappedListeners.set(elm, listenerInfo);
-    }
-    return listenerInfo;
-}
-/**
- * Events dispatched on shadow roots actually end up being dispatched on their hosts. This means that the event.target
- * property of events dispatched on shadow roots always resolve to their host. This function understands this
- * abstraction and properly returns a reference to the shadow root when appropriate.
- */
-function getActualTarget(event) {
-    var _a;
-    return (_a = eventToShadowRootMap.get(event)) !== null && _a !== void 0 ? _a : eventTargetGetter.call(event);
-}
-const shadowRootEventListenerMap = new WeakMap();
-function getWrappedShadowRootListener(listener) {
-    if (!isFunction(listener)) {
-        throw new TypeError(); // avoiding problems with non-valid listeners
-    }
-    let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
-    if (isUndefined(shadowRootWrappedListener)) {
-        shadowRootWrappedListener = function (event) {
-            // currentTarget is always defined inside an event listener
-            let currentTarget = eventCurrentTargetGetter.call(event);
-            // If currentTarget is not an instance of a native shadow root then we're dealing with a
-            // host element whose synthetic shadow root must be accessed via getShadowRoot().
-            if (!isInstanceOfNativeShadowRoot(currentTarget)) {
-                currentTarget = getShadowRoot(currentTarget);
-            }
-            const actualTarget = getActualTarget(event);
-            if (shouldInvokeListener(event, actualTarget, currentTarget)) {
-                listener.call(currentTarget, event);
-            }
-        };
-        shadowRootWrappedListener.placement = 1 /* SHADOW_ROOT_LISTENER */;
-        shadowRootEventListenerMap.set(listener, shadowRootWrappedListener);
-    }
-    return shadowRootWrappedListener;
-}
-const customElementEventListenerMap = new WeakMap();
-function getWrappedCustomElementListener(listener) {
-    if (!isFunction(listener)) {
-        throw new TypeError(); // avoiding problems with non-valid listeners
-    }
-    let customElementWrappedListener = customElementEventListenerMap.get(listener);
-    if (isUndefined(customElementWrappedListener)) {
-        customElementWrappedListener = function (event) {
-            // currentTarget is always defined inside an event listener
-            const currentTarget = eventCurrentTargetGetter.call(event);
-            const actualTarget = getActualTarget(event);
-            if (shouldInvokeListener(event, actualTarget, currentTarget)) {
-                listener.call(currentTarget, event);
-            }
-        };
-        customElementWrappedListener.placement = 0 /* CUSTOM_ELEMENT_LISTENER */;
-        customElementEventListenerMap.set(listener, customElementWrappedListener);
-    }
-    return customElementWrappedListener;
-}
-function domListener(evt) {
-    let immediatePropagationStopped = false;
-    let propagationStopped = false;
-    const { type, stopImmediatePropagation, stopPropagation } = evt;
-    // currentTarget is always defined
-    const currentTarget = eventCurrentTargetGetter.call(evt);
-    const listenerMap = getEventMap(currentTarget);
-    const listeners = listenerMap[type]; // it must have listeners at this point
-    defineProperty(evt, 'stopImmediatePropagation', {
-        value() {
-            immediatePropagationStopped = true;
-            stopImmediatePropagation.call(evt);
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    });
-    defineProperty(evt, 'stopPropagation', {
-        value() {
-            propagationStopped = true;
-            stopPropagation.call(evt);
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    });
-    // in case a listener adds or removes other listeners during invocation
-    const bookkeeping = ArraySlice.call(listeners);
-    function invokeListenersByPlacement(placement) {
-        forEach.call(bookkeeping, (listener) => {
-            if (isFalse(immediatePropagationStopped) && listener.placement === placement) {
-                // making sure that the listener was not removed from the original listener queue
-                if (ArrayIndexOf.call(listeners, listener) !== -1) {
-                    // all handlers on the custom element should be called with undefined 'this'
-                    listener.call(undefined, evt);
-                }
-            }
-        });
-    }
-    eventToContextMap.set(evt, 1 /* SHADOW_ROOT_LISTENER */);
-    invokeListenersByPlacement(1 /* SHADOW_ROOT_LISTENER */);
-    if (isFalse(immediatePropagationStopped) && isFalse(propagationStopped)) {
-        // doing the second iteration only if the first one didn't interrupt the event propagation
-        eventToContextMap.set(evt, 0 /* CUSTOM_ELEMENT_LISTENER */);
-        invokeListenersByPlacement(0 /* CUSTOM_ELEMENT_LISTENER */);
-    }
-    eventToContextMap.set(evt, 2 /* UNKNOWN_LISTENER */);
-}
-function attachDOMListener(elm, type, wrappedListener) {
-    const listenerMap = getEventMap(elm);
-    let cmpEventHandlers = listenerMap[type];
-    if (isUndefined(cmpEventHandlers)) {
-        cmpEventHandlers = listenerMap[type] = [];
-    }
-    // Prevent identical listeners from subscribing to the same event type.
-    // TODO [#1824]: Options will also play a factor when we introduce support for them (#1824).
-    if (ArrayIndexOf.call(cmpEventHandlers, wrappedListener) !== -1) {
-        return;
-    }
-    // only add to DOM if there is no other listener on the same placement yet
-    if (cmpEventHandlers.length === 0) {
-        // super.addEventListener() - this will not work on
-        addEventListener.call(elm, type, domListener);
-    }
-    ArrayPush.call(cmpEventHandlers, wrappedListener);
-}
-function detachDOMListener(elm, type, wrappedListener) {
-    const listenerMap = getEventMap(elm);
-    let p;
-    let listeners;
-    if (!isUndefined((listeners = listenerMap[type])) &&
-        (p = ArrayIndexOf.call(listeners, wrappedListener)) !== -1) {
-        ArraySplice.call(listeners, p, 1);
-        // only remove from DOM if there is no other listener on the same placement
-        if (listeners.length === 0) {
-            removeEventListener.call(elm, type, domListener);
-        }
-    }
-}
-function addCustomElementEventListener(type, listener, _options) {
-    if (true) {
-        if (!isFunction(listener)) {
-            throw new TypeError(`Invalid second argument for Element.addEventListener() in ${toString(this)} for event "${type}". Expected an EventListener but received ${listener}.`);
-        }
-    }
-    // TODO [#1824]: Lift this restriction on the option parameter
-    if (isFunction(listener)) {
-        const wrappedListener = getWrappedCustomElementListener(listener);
-        attachDOMListener(this, type, wrappedListener);
-    }
-}
-function removeCustomElementEventListener(type, listener, _options) {
-    // TODO [#1824]: Lift this restriction on the option parameter
-    if (isFunction(listener)) {
-        const wrappedListener = getWrappedCustomElementListener(listener);
-        detachDOMListener(this, type, wrappedListener);
-    }
-}
-function addShadowRootEventListener(sr, type, listener, _options) {
-    if (true) {
-        if (!isFunction(listener)) {
-            throw new TypeError(`Invalid second argument for ShadowRoot.addEventListener() in ${toString(sr)} for event "${type}". Expected an EventListener but received ${listener}.`);
-        }
-    }
-    // TODO [#1824]: Lift this restriction on the option parameter
-    if (isFunction(listener)) {
-        const elm = getHost(sr);
-        const wrappedListener = getWrappedShadowRootListener(listener);
-        attachDOMListener(elm, type, wrappedListener);
-    }
-}
-function removeShadowRootEventListener(sr, type, listener, _options) {
-    // TODO [#1824]: Lift this restriction on the option parameter
-    if (isFunction(listener)) {
-        const elm = getHost(sr);
-        const wrappedListener = getWrappedShadowRootListener(listener);
-        detachDOMListener(elm, type, wrappedListener);
-    }
-}
-
-/*
- * Copyright (c) 2018, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
 // Used as a back reference to identify the host element
 const HostElementKey = '$$HostElementKey$$';
 const ShadowedNodeKey = '$$ShadowedNodeKey$$';
@@ -8197,6 +8161,123 @@ function getFilteredSlotAssignedNodes(slot) {
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+function getInnerHTML(node) {
+    let s = '';
+    const childNodes = getFilteredChildNodes(node);
+    for (let i = 0, len = childNodes.length; i < len; i += 1) {
+        s += getOuterHTML(childNodes[i]);
+    }
+    return s;
+}
+
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+// http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#escapingString
+const escapeAttrRegExp = /[&\u00A0"]/g;
+const escapeDataRegExp = /[&\u00A0<>]/g;
+const { replace, toLowerCase } = String.prototype;
+function escapeReplace(c) {
+    switch (c) {
+        case '&':
+            return '&amp;';
+        case '<':
+            return '&lt;';
+        case '>':
+            return '&gt;';
+        case '"':
+            return '&quot;';
+        case '\u00A0':
+            return '&nbsp;';
+        default:
+            return '';
+    }
+}
+function escapeAttr(s) {
+    return replace.call(s, escapeAttrRegExp, escapeReplace);
+}
+function escapeData(s) {
+    return replace.call(s, escapeDataRegExp, escapeReplace);
+}
+// http://www.whatwg.org/specs/web-apps/current-work/#void-elements
+const voidElements = new Set([
+    'AREA',
+    'BASE',
+    'BR',
+    'COL',
+    'COMMAND',
+    'EMBED',
+    'HR',
+    'IMG',
+    'INPUT',
+    'KEYGEN',
+    'LINK',
+    'META',
+    'PARAM',
+    'SOURCE',
+    'TRACK',
+    'WBR',
+]);
+const plaintextParents = new Set([
+    'STYLE',
+    'SCRIPT',
+    'XMP',
+    'IFRAME',
+    'NOEMBED',
+    'NOFRAMES',
+    'PLAINTEXT',
+    'NOSCRIPT',
+]);
+function getOuterHTML(node) {
+    switch (node.nodeType) {
+        case ELEMENT_NODE: {
+            const { attributes: attrs } = node;
+            const tagName = tagNameGetter.call(node);
+            let s = '<' + toLowerCase.call(tagName);
+            for (let i = 0, attr; (attr = attrs[i]); i++) {
+                s += ' ' + attr.name + '="' + escapeAttr(attr.value) + '"';
+            }
+            s += '>';
+            if (voidElements.has(tagName)) {
+                return s;
+            }
+            return s + getInnerHTML(node) + '</' + toLowerCase.call(tagName) + '>';
+        }
+        case TEXT_NODE: {
+            const { data, parentNode } = node;
+            if (parentNode instanceof Element &&
+                plaintextParents.has(tagNameGetter.call(parentNode))) {
+                return data;
+            }
+            return escapeData(data);
+        }
+        case CDATA_SECTION_NODE: {
+            return `<!CDATA[[${node.data}]]>`;
+        }
+        case PROCESSING_INSTRUCTION_NODE: {
+            return `<?${node.target} ${node.data}?>`;
+        }
+        case COMMENT_NODE: {
+            return `<!--${node.data}-->`;
+        }
+        default: {
+            // intentionally ignoring unknown node types
+            // Note: since this routine is always invoked for childNodes
+            // we can safety ignore type 9, 10 and 99 (document, fragment and doctype)
+            return '';
+        }
+    }
+}
+
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 function getTextContent(node) {
     switch (node.nodeType) {
         case ELEMENT_NODE: {
@@ -8337,6 +8418,71 @@ function createStaticNodeList(items) {
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+// Walk up the DOM tree, collecting all shadow roots plus the document root
+function getAllRootNodes(node) {
+    var _a;
+    const rootNodes = [];
+    let currentRootNode = node.getRootNode();
+    while (!isUndefined(currentRootNode)) {
+        rootNodes.push(currentRootNode);
+        currentRootNode = (_a = currentRootNode.host) === null || _a === void 0 ? void 0 : _a.getRootNode();
+    }
+    return rootNodes;
+}
+// Keep searching up the host tree until we find an element that is within the immediate shadow root
+const findAncestorHostInImmediateShadowRoot = (rootNode, targetRootNode) => {
+    let host;
+    while (!isUndefined((host = rootNode.host))) {
+        const thisRootNode = host.getRootNode();
+        if (thisRootNode === targetRootNode) {
+            return host;
+        }
+        rootNode = thisRootNode;
+    }
+};
+function fauxElementsFromPoint(context, doc, left, top) {
+    const elements = elementsFromPoint.call(doc, left, top);
+    const result = [];
+    const rootNodes = getAllRootNodes(context);
+    // Filter the elements array to only include those elements that are in this shadow root or in one of its
+    // ancestor roots. This matches Chrome and Safari's implementation (but not Firefox's, which only includes
+    // elements in the immediate shadow root: https://crbug.com/1207863#c4).
+    if (!isNull(elements)) {
+        // can be null in IE https://developer.mozilla.org/en-US/docs/Web/API/Document/elementsFromPoint#browser_compatibility
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            if (isSyntheticSlotElement(element)) {
+                continue;
+            }
+            const elementRootNode = element.getRootNode();
+            if (ArrayIndexOf.call(rootNodes, elementRootNode) !== -1) {
+                ArrayPush.call(result, element);
+                continue;
+            }
+            // In cases where the host element is not visible but its shadow descendants are, then
+            // we may get the shadow descendant instead of the host element here. (The
+            // browser doesn't know the difference in synthetic shadow DOM.)
+            // In native shadow DOM, however, elementsFromPoint would return the host but not
+            // the child. So we need to detect if this shadow element's host is accessible from
+            // the context's shadow root. Note we also need to be careful not to add the host
+            // multiple times.
+            const ancestorHost = findAncestorHostInImmediateShadowRoot(elementRootNode, rootNodes[0]);
+            if (!isUndefined(ancestorHost) &&
+                ArrayIndexOf.call(elements, ancestorHost) === -1 &&
+                ArrayIndexOf.call(result, ancestorHost) === -1) {
+                ArrayPush.call(result, ancestorHost);
+            }
+        }
+    }
+    return result;
+}
+
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 const Items = new WeakMap();
 function StaticHTMLCollection() {
     throw new TypeError('Illegal constructor');
@@ -8414,123 +8560,6 @@ function createStaticHTMLCollection(items) {
     return collection;
 }
 
-/*
- * Copyright (c) 2018, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
-function getInnerHTML(node) {
-    let s = '';
-    const childNodes = getFilteredChildNodes(node);
-    for (let i = 0, len = childNodes.length; i < len; i += 1) {
-        s += getOuterHTML(childNodes[i]);
-    }
-    return s;
-}
-
-/*
- * Copyright (c) 2018, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
-// http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#escapingString
-const escapeAttrRegExp = /[&\u00A0"]/g;
-const escapeDataRegExp = /[&\u00A0<>]/g;
-const { replace, toLowerCase } = String.prototype;
-function escapeReplace(c) {
-    switch (c) {
-        case '&':
-            return '&amp;';
-        case '<':
-            return '&lt;';
-        case '>':
-            return '&gt;';
-        case '"':
-            return '&quot;';
-        case '\u00A0':
-            return '&nbsp;';
-        default:
-            return '';
-    }
-}
-function escapeAttr(s) {
-    return replace.call(s, escapeAttrRegExp, escapeReplace);
-}
-function escapeData(s) {
-    return replace.call(s, escapeDataRegExp, escapeReplace);
-}
-// http://www.whatwg.org/specs/web-apps/current-work/#void-elements
-const voidElements = new Set([
-    'AREA',
-    'BASE',
-    'BR',
-    'COL',
-    'COMMAND',
-    'EMBED',
-    'HR',
-    'IMG',
-    'INPUT',
-    'KEYGEN',
-    'LINK',
-    'META',
-    'PARAM',
-    'SOURCE',
-    'TRACK',
-    'WBR',
-]);
-const plaintextParents = new Set([
-    'STYLE',
-    'SCRIPT',
-    'XMP',
-    'IFRAME',
-    'NOEMBED',
-    'NOFRAMES',
-    'PLAINTEXT',
-    'NOSCRIPT',
-]);
-function getOuterHTML(node) {
-    switch (node.nodeType) {
-        case ELEMENT_NODE: {
-            const { attributes: attrs } = node;
-            const tagName = tagNameGetter.call(node);
-            let s = '<' + toLowerCase.call(tagName);
-            for (let i = 0, attr; (attr = attrs[i]); i++) {
-                s += ' ' + attr.name + '="' + escapeAttr(attr.value) + '"';
-            }
-            s += '>';
-            if (voidElements.has(tagName)) {
-                return s;
-            }
-            return s + getInnerHTML(node) + '</' + toLowerCase.call(tagName) + '>';
-        }
-        case TEXT_NODE: {
-            const { data, parentNode } = node;
-            if (parentNode instanceof Element &&
-                plaintextParents.has(tagNameGetter.call(parentNode))) {
-                return data;
-            }
-            return escapeData(data);
-        }
-        case CDATA_SECTION_NODE: {
-            return `<!CDATA[[${node.data}]]>`;
-        }
-        case PROCESSING_INSTRUCTION_NODE: {
-            return `<?${node.target} ${node.data}?>`;
-        }
-        case COMMENT_NODE: {
-            return `<!--${node.data}-->`;
-        }
-        default: {
-            // intentionally ignoring unknown node types
-            // Note: since this routine is always invoked for childNodes
-            // we can safety ignore type 9, 10 and 99 (document, fragment and doctype)
-            return '';
-        }
-    }
-}
-
 /**
  * Copyright (C) 2018 salesforce.com, inc.
  */
@@ -8538,7 +8567,7 @@ if (!_globalThis.lwcRuntimeFlags) {
     Object.defineProperty(_globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
 const runtimeFlags = _globalThis.lwcRuntimeFlags;
-/** version: 2.13.0 */
+/** version: 2.14.0 */
 
 /*
  * Copyright (c) 2018, salesforce.com, inc.
@@ -9011,63 +9040,241 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'parentElement')) {
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-// Walk up the DOM tree, collecting all shadow roots plus the document root
-function getAllRootNodes(node) {
-    var _a;
-    const rootNodes = [];
-    let currentRootNode = node.getRootNode();
-    while (!isUndefined(currentRootNode)) {
-        rootNodes.push(currentRootNode);
-        currentRootNode = (_a = currentRootNode.host) === null || _a === void 0 ? void 0 : _a.getRootNode();
-    }
-    return rootNodes;
+const EventListenerMap = new WeakMap();
+const ComposedPathMap = new WeakMap();
+function isEventListenerOrEventListenerObject(fnOrObj) {
+    return (isFunction(fnOrObj) ||
+        (isObject(fnOrObj) &&
+            !isNull(fnOrObj) &&
+            isFunction(fnOrObj.handleEvent)));
 }
-// Keep searching up the host tree until we find an element that is within the immediate shadow root
-const findAncestorHostInImmediateShadowRoot = (rootNode, targetRootNode) => {
-    let host;
-    while (!isUndefined((host = rootNode.host))) {
-        const thisRootNode = host.getRootNode();
-        if (thisRootNode === targetRootNode) {
-            return host;
-        }
-        rootNode = thisRootNode;
+function shouldInvokeListener(event, target, currentTarget) {
+    // Subsequent logic assumes that `currentTarget` must be contained in the composed path for the listener to be
+    // invoked, but this is not always the case. `composedPath()` will sometimes return an empty array, even when the
+    // listener should be invoked (e.g., a disconnected instance of EventTarget, an instance of XMLHttpRequest, etc).
+    if (target === currentTarget) {
+        return true;
     }
-};
-function fauxElementsFromPoint(context, doc, left, top) {
-    const elements = elementsFromPoint.call(doc, left, top);
-    const result = [];
-    const rootNodes = getAllRootNodes(context);
-    // Filter the elements array to only include those elements that are in this shadow root or in one of its
-    // ancestor roots. This matches Chrome and Safari's implementation (but not Firefox's, which only includes
-    // elements in the immediate shadow root: https://crbug.com/1207863#c4).
-    if (!isNull(elements)) {
-        // can be null in IE https://developer.mozilla.org/en-US/docs/Web/API/Document/elementsFromPoint#browser_compatibility
-        for (let i = 0; i < elements.length; i++) {
-            const element = elements[i];
-            if (isSyntheticSlotElement(element)) {
-                continue;
+    let composedPath = ComposedPathMap.get(event);
+    if (isUndefined(composedPath)) {
+        composedPath = event.composedPath();
+        ComposedPathMap.set(event, composedPath);
+    }
+    return composedPath.includes(currentTarget);
+}
+function getEventListenerWrapper(fnOrObj) {
+    if (!isEventListenerOrEventListenerObject(fnOrObj)) {
+        return fnOrObj;
+    }
+    let wrapperFn = EventListenerMap.get(fnOrObj);
+    if (isUndefined(wrapperFn)) {
+        wrapperFn = function (event) {
+            // This function is invoked from an event listener and currentTarget is always defined.
+            const currentTarget = eventCurrentTargetGetter.call(event);
+            if (true) {
+                assert.invariant(isFalse(isSyntheticShadowHost(currentTarget)), 'This routine should not be used to wrap event listeners for host elements and shadow roots.');
             }
-            const elementRootNode = element.getRootNode();
-            if (ArrayIndexOf.call(rootNodes, elementRootNode) !== -1) {
-                ArrayPush.call(result, element);
-                continue;
+            const actualTarget = getActualTarget(event);
+            if (!shouldInvokeListener(event, actualTarget, currentTarget)) {
+                return;
             }
-            // In cases where the host element is not visible but its shadow descendants are, then
-            // we may get the shadow descendant instead of the host element here. (The
-            // browser doesn't know the difference in synthetic shadow DOM.)
-            // In native shadow DOM, however, elementsFromPoint would return the host but not
-            // the child. So we need to detect if this shadow element's host is accessible from
-            // the context's shadow root. Note we also need to be careful not to add the host
-            // multiple times.
-            const ancestorHost = findAncestorHostInImmediateShadowRoot(elementRootNode, rootNodes[0]);
-            if (!isUndefined(ancestorHost) &&
-                ArrayIndexOf.call(elements, ancestorHost) === -1 &&
-                ArrayIndexOf.call(result, ancestorHost) === -1) {
-                ArrayPush.call(result, ancestorHost);
+            return isFunction(fnOrObj)
+                ? fnOrObj.call(this, event)
+                : fnOrObj.handleEvent && fnOrObj.handleEvent(event);
+        };
+        EventListenerMap.set(fnOrObj, wrapperFn);
+    }
+    return wrapperFn;
+}
+
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+const eventToContextMap = new WeakMap();
+const customElementToWrappedListeners = new WeakMap();
+function getEventMap(elm) {
+    let listenerInfo = customElementToWrappedListeners.get(elm);
+    if (isUndefined(listenerInfo)) {
+        listenerInfo = create(null);
+        customElementToWrappedListeners.set(elm, listenerInfo);
+    }
+    return listenerInfo;
+}
+/**
+ * Events dispatched on shadow roots actually end up being dispatched on their hosts. This means that the event.target
+ * property of events dispatched on shadow roots always resolve to their host. This function understands this
+ * abstraction and properly returns a reference to the shadow root when appropriate.
+ */
+function getActualTarget(event) {
+    var _a;
+    return (_a = eventToShadowRootMap.get(event)) !== null && _a !== void 0 ? _a : eventTargetGetter.call(event);
+}
+const shadowRootEventListenerMap = new WeakMap();
+function getWrappedShadowRootListener(listener) {
+    if (!isFunction(listener)) {
+        throw new TypeError(); // avoiding problems with non-valid listeners
+    }
+    let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
+    if (isUndefined(shadowRootWrappedListener)) {
+        shadowRootWrappedListener = function (event) {
+            // currentTarget is always defined inside an event listener
+            let currentTarget = eventCurrentTargetGetter.call(event);
+            // If currentTarget is not an instance of a native shadow root then we're dealing with a
+            // host element whose synthetic shadow root must be accessed via getShadowRoot().
+            if (!isInstanceOfNativeShadowRoot(currentTarget)) {
+                currentTarget = getShadowRoot(currentTarget);
             }
+            const actualTarget = getActualTarget(event);
+            if (shouldInvokeListener(event, actualTarget, currentTarget)) {
+                listener.call(currentTarget, event);
+            }
+        };
+        shadowRootWrappedListener.placement = 1 /* SHADOW_ROOT_LISTENER */;
+        shadowRootEventListenerMap.set(listener, shadowRootWrappedListener);
+    }
+    return shadowRootWrappedListener;
+}
+const customElementEventListenerMap = new WeakMap();
+function getWrappedCustomElementListener(listener) {
+    if (!isFunction(listener)) {
+        throw new TypeError(); // avoiding problems with non-valid listeners
+    }
+    let customElementWrappedListener = customElementEventListenerMap.get(listener);
+    if (isUndefined(customElementWrappedListener)) {
+        customElementWrappedListener = function (event) {
+            // currentTarget is always defined inside an event listener
+            const currentTarget = eventCurrentTargetGetter.call(event);
+            const actualTarget = getActualTarget(event);
+            if (shouldInvokeListener(event, actualTarget, currentTarget)) {
+                listener.call(currentTarget, event);
+            }
+        };
+        customElementWrappedListener.placement = 0 /* CUSTOM_ELEMENT_LISTENER */;
+        customElementEventListenerMap.set(listener, customElementWrappedListener);
+    }
+    return customElementWrappedListener;
+}
+function domListener(evt) {
+    let immediatePropagationStopped = false;
+    let propagationStopped = false;
+    const { type, stopImmediatePropagation, stopPropagation } = evt;
+    // currentTarget is always defined
+    const currentTarget = eventCurrentTargetGetter.call(evt);
+    const listenerMap = getEventMap(currentTarget);
+    const listeners = listenerMap[type]; // it must have listeners at this point
+    defineProperty(evt, 'stopImmediatePropagation', {
+        value() {
+            immediatePropagationStopped = true;
+            stopImmediatePropagation.call(evt);
+        },
+        writable: true,
+        enumerable: true,
+        configurable: true,
+    });
+    defineProperty(evt, 'stopPropagation', {
+        value() {
+            propagationStopped = true;
+            stopPropagation.call(evt);
+        },
+        writable: true,
+        enumerable: true,
+        configurable: true,
+    });
+    // in case a listener adds or removes other listeners during invocation
+    const bookkeeping = ArraySlice.call(listeners);
+    function invokeListenersByPlacement(placement) {
+        forEach.call(bookkeeping, (listener) => {
+            if (isFalse(immediatePropagationStopped) && listener.placement === placement) {
+                // making sure that the listener was not removed from the original listener queue
+                if (ArrayIndexOf.call(listeners, listener) !== -1) {
+                    // all handlers on the custom element should be called with undefined 'this'
+                    listener.call(undefined, evt);
+                }
+            }
+        });
+    }
+    eventToContextMap.set(evt, 1 /* SHADOW_ROOT_LISTENER */);
+    invokeListenersByPlacement(1 /* SHADOW_ROOT_LISTENER */);
+    if (isFalse(immediatePropagationStopped) && isFalse(propagationStopped)) {
+        // doing the second iteration only if the first one didn't interrupt the event propagation
+        eventToContextMap.set(evt, 0 /* CUSTOM_ELEMENT_LISTENER */);
+        invokeListenersByPlacement(0 /* CUSTOM_ELEMENT_LISTENER */);
+    }
+    eventToContextMap.set(evt, 2 /* UNKNOWN_LISTENER */);
+}
+function attachDOMListener(elm, type, wrappedListener) {
+    const listenerMap = getEventMap(elm);
+    let cmpEventHandlers = listenerMap[type];
+    if (isUndefined(cmpEventHandlers)) {
+        cmpEventHandlers = listenerMap[type] = [];
+    }
+    // Prevent identical listeners from subscribing to the same event type.
+    // TODO [#1824]: Options will also play a factor when we introduce support for them (#1824).
+    if (ArrayIndexOf.call(cmpEventHandlers, wrappedListener) !== -1) {
+        return;
+    }
+    // only add to DOM if there is no other listener on the same placement yet
+    if (cmpEventHandlers.length === 0) {
+        // super.addEventListener() - this will not work on
+        addEventListener.call(elm, type, domListener);
+    }
+    ArrayPush.call(cmpEventHandlers, wrappedListener);
+}
+function detachDOMListener(elm, type, wrappedListener) {
+    const listenerMap = getEventMap(elm);
+    let p;
+    let listeners;
+    if (!isUndefined((listeners = listenerMap[type])) &&
+        (p = ArrayIndexOf.call(listeners, wrappedListener)) !== -1) {
+        ArraySplice.call(listeners, p, 1);
+        // only remove from DOM if there is no other listener on the same placement
+        if (listeners.length === 0) {
+            removeEventListener.call(elm, type, domListener);
         }
     }
-    return result;
+}
+function addCustomElementEventListener(type, listener, _options) {
+    if (true) {
+        if (!isFunction(listener)) {
+            throw new TypeError(`Invalid second argument for Element.addEventListener() in ${toString(this)} for event "${type}". Expected an EventListener but received ${listener}.`);
+        }
+    }
+    // TODO [#1824]: Lift this restriction on the option parameter
+    if (isFunction(listener)) {
+        const wrappedListener = getWrappedCustomElementListener(listener);
+        attachDOMListener(this, type, wrappedListener);
+    }
+}
+function removeCustomElementEventListener(type, listener, _options) {
+    // TODO [#1824]: Lift this restriction on the option parameter
+    if (isFunction(listener)) {
+        const wrappedListener = getWrappedCustomElementListener(listener);
+        detachDOMListener(this, type, wrappedListener);
+    }
+}
+function addShadowRootEventListener(sr, type, listener, _options) {
+    if (true) {
+        if (!isFunction(listener)) {
+            throw new TypeError(`Invalid second argument for ShadowRoot.addEventListener() in ${toString(sr)} for event "${type}". Expected an EventListener but received ${listener}.`);
+        }
+    }
+    // TODO [#1824]: Lift this restriction on the option parameter
+    if (isFunction(listener)) {
+        const elm = getHost(sr);
+        const wrappedListener = getWrappedShadowRootListener(listener);
+        attachDOMListener(elm, type, wrappedListener);
+    }
+}
+function removeShadowRootEventListener(sr, type, listener, _options) {
+    // TODO [#1824]: Lift this restriction on the option parameter
+    if (isFunction(listener)) {
+        const elm = getHost(sr);
+        const wrappedListener = getWrappedShadowRootListener(listener);
+        detachDOMListener(elm, type, wrappedListener);
+    }
 }
 
 /*
@@ -11380,6 +11587,195 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'getElementsByClassName')) {
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+function getElementComputedStyle(element) {
+    const win = getOwnerWindow(element);
+    return windowGetComputedStyle.call(win, element);
+}
+function getWindowSelection(node) {
+    const win = getOwnerWindow(node);
+    return windowGetSelection.call(win);
+}
+function nodeIsBeingRendered(nodeComputedStyle) {
+    return nodeComputedStyle.visibility === 'visible' && nodeComputedStyle.display !== 'none';
+}
+function getSelectionState(element) {
+    const win = getOwnerWindow(element);
+    const selection = getWindowSelection(element);
+    if (selection === null) {
+        return null;
+    }
+    const ranges = [];
+    for (let i = 0; i < selection.rangeCount; i++) {
+        ranges.push(selection.getRangeAt(i));
+    }
+    const state = {
+        element,
+        onselect: win.onselect,
+        onselectstart: win.onselectstart,
+        onselectionchange: win.onselectionchange,
+        ranges,
+    };
+    win.onselect = null;
+    win.onselectstart = null;
+    win.onselectionchange = null;
+    return state;
+}
+function restoreSelectionState(state) {
+    if (state === null) {
+        return;
+    }
+    const { element, onselect, onselectstart, onselectionchange, ranges } = state;
+    const win = getOwnerWindow(element);
+    const selection = getWindowSelection(element);
+    selection.removeAllRanges();
+    for (let i = 0; i < ranges.length; i++) {
+        selection.addRange(ranges[i]);
+    }
+    win.onselect = onselect;
+    win.onselectstart = onselectstart;
+    win.onselectionchange = onselectionchange;
+}
+/**
+ * Gets the "innerText" of a text node using the Selection API
+ *
+ * NOTE: For performance reasons, since this function will be called multiple times while calculating the innerText of
+ *       an element, it does not restore the current selection.
+ */
+function getTextNodeInnerText(textNode) {
+    const selection = getWindowSelection(textNode);
+    if (selection === null) {
+        return textNode.textContent || '';
+    }
+    const range = document.createRange();
+    range.selectNodeContents(textNode);
+    const domRect = range.getBoundingClientRect();
+    if (domRect.height <= 0 || domRect.width <= 0) {
+        // the text node is not rendered
+        return '';
+    }
+    // Needed to remove non rendered characters from the text node.
+    selection.removeAllRanges();
+    selection.addRange(range);
+    const selectionText = selection.toString();
+    // The textNode is visible, but it may not be selectable. When the text is not selectable,
+    // textContent is the nearest approximation to innerText.
+    return selectionText ? selectionText : textNode.textContent || '';
+}
+const nodeIsElement = (node) => node.nodeType === ELEMENT_NODE;
+const nodeIsText = (node) => node.nodeType === TEXT_NODE;
+/**
+ * Spec: https://html.spec.whatwg.org/multipage/dom.html#inner-text-collection-steps
+ * One spec implementation: https://github.com/servo/servo/blob/721271dcd3c20db5ca8cf146e2b5907647afb4d6/components/layout/query.rs#L1132
+ */
+function innerTextCollectionSteps(node) {
+    const items = [];
+    if (nodeIsElement(node)) {
+        const { tagName } = node;
+        const computedStyle = getElementComputedStyle(node);
+        if (tagName === 'OPTION') {
+            // For options, is hard to get the "rendered" text, let's use the original getter.
+            return [1, innerTextGetter.call(node), 1];
+        }
+        else if (tagName === 'TEXTAREA') {
+            return [];
+        }
+        else {
+            const childNodes = node.childNodes;
+            for (let i = 0, n = childNodes.length; i < n; i++) {
+                ArrayPush.apply(items, innerTextCollectionSteps(childNodes[i]));
+            }
+        }
+        if (!nodeIsBeingRendered(computedStyle)) {
+            if (tagName === 'SELECT' || tagName === 'DATALIST') {
+                // the select is either: .visibility != 'visible' or .display === hidden, therefore this select should
+                // not display any value.
+                return [];
+            }
+            return items;
+        }
+        if (tagName === 'BR') {
+            items.push('\u{000A}' /* line feed */);
+        }
+        const { display } = computedStyle;
+        if (display === 'table-cell') {
+            // omitting case: and node's CSS box is not the last 'table-cell' box of its enclosing 'table-row' box
+            items.push('\u{0009}' /* tab */);
+        }
+        if (display === 'table-row') {
+            // omitting case: and node's CSS box is not the last 'table-row' box of the nearest ancestor 'table' box
+            items.push('\u{000A}' /* line feed */);
+        }
+        if (tagName === 'P') {
+            items.unshift(2);
+            items.push(2);
+        }
+        if (display === 'block' ||
+            display === 'table-caption' ||
+            display === 'flex' ||
+            display === 'table') {
+            items.unshift(1);
+            items.push(1);
+        }
+    }
+    else if (nodeIsText(node)) {
+        items.push(getTextNodeInnerText(node));
+    }
+    return items;
+}
+/**
+ * InnerText getter spec: https://html.spec.whatwg.org/multipage/dom.html#the-innertext-idl-attribute
+ *
+ * One spec implementation: https://github.com/servo/servo/blob/721271dcd3c20db5ca8cf146e2b5907647afb4d6/components/layout/query.rs#L1087
+ */
+function getInnerText(element) {
+    const thisComputedStyle = getElementComputedStyle(element);
+    if (!nodeIsBeingRendered(thisComputedStyle)) {
+        return getTextContent(element) || '';
+    }
+    const selectionState = getSelectionState(element);
+    const results = [];
+    const childNodes = element.childNodes;
+    for (let i = 0, n = childNodes.length; i < n; i++) {
+        ArrayPush.apply(results, innerTextCollectionSteps(childNodes[i]));
+    }
+    restoreSelectionState(selectionState);
+    let elementInnerText = '';
+    let maxReqLineBreakCount = 0;
+    for (let i = 0, n = results.length; i < n; i++) {
+        const item = results[i];
+        if (typeof item === 'string') {
+            if (maxReqLineBreakCount > 0) {
+                for (let j = 0; j < maxReqLineBreakCount; j++) {
+                    elementInnerText += '\u{000A}';
+                }
+                maxReqLineBreakCount = 0;
+            }
+            if (item.length > 0) {
+                elementInnerText += item;
+            }
+        }
+        else {
+            if (elementInnerText.length == 0) {
+                // Remove required line break count at the start.
+                continue;
+            }
+            // Store the count if it's the max of this run,
+            // but it may be ignored if no text item is found afterwards,
+            // which means that these are consecutive line breaks at the end.
+            if (item > maxReqLineBreakCount) {
+                maxReqLineBreakCount = item;
+            }
+        }
+    }
+    return elementInnerText;
+}
+
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 const FocusableSelector = `
     [contenteditable],
     [tabindex],
@@ -11713,195 +12109,6 @@ function handleFocusIn(elm) {
 }
 function ignoreFocusIn(elm) {
     removeEventListener.call(elm, 'focusin', skipShadowHandler, true);
-}
-
-/*
- * Copyright (c) 2018, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
-function getElementComputedStyle(element) {
-    const win = getOwnerWindow(element);
-    return windowGetComputedStyle.call(win, element);
-}
-function getWindowSelection(node) {
-    const win = getOwnerWindow(node);
-    return windowGetSelection.call(win);
-}
-function nodeIsBeingRendered(nodeComputedStyle) {
-    return nodeComputedStyle.visibility === 'visible' && nodeComputedStyle.display !== 'none';
-}
-function getSelectionState(element) {
-    const win = getOwnerWindow(element);
-    const selection = getWindowSelection(element);
-    if (selection === null) {
-        return null;
-    }
-    const ranges = [];
-    for (let i = 0; i < selection.rangeCount; i++) {
-        ranges.push(selection.getRangeAt(i));
-    }
-    const state = {
-        element,
-        onselect: win.onselect,
-        onselectstart: win.onselectstart,
-        onselectionchange: win.onselectionchange,
-        ranges,
-    };
-    win.onselect = null;
-    win.onselectstart = null;
-    win.onselectionchange = null;
-    return state;
-}
-function restoreSelectionState(state) {
-    if (state === null) {
-        return;
-    }
-    const { element, onselect, onselectstart, onselectionchange, ranges } = state;
-    const win = getOwnerWindow(element);
-    const selection = getWindowSelection(element);
-    selection.removeAllRanges();
-    for (let i = 0; i < ranges.length; i++) {
-        selection.addRange(ranges[i]);
-    }
-    win.onselect = onselect;
-    win.onselectstart = onselectstart;
-    win.onselectionchange = onselectionchange;
-}
-/**
- * Gets the "innerText" of a text node using the Selection API
- *
- * NOTE: For performance reasons, since this function will be called multiple times while calculating the innerText of
- *       an element, it does not restore the current selection.
- */
-function getTextNodeInnerText(textNode) {
-    const selection = getWindowSelection(textNode);
-    if (selection === null) {
-        return textNode.textContent || '';
-    }
-    const range = document.createRange();
-    range.selectNodeContents(textNode);
-    const domRect = range.getBoundingClientRect();
-    if (domRect.height <= 0 || domRect.width <= 0) {
-        // the text node is not rendered
-        return '';
-    }
-    // Needed to remove non rendered characters from the text node.
-    selection.removeAllRanges();
-    selection.addRange(range);
-    const selectionText = selection.toString();
-    // The textNode is visible, but it may not be selectable. When the text is not selectable,
-    // textContent is the nearest approximation to innerText.
-    return selectionText ? selectionText : textNode.textContent || '';
-}
-const nodeIsElement = (node) => node.nodeType === ELEMENT_NODE;
-const nodeIsText = (node) => node.nodeType === TEXT_NODE;
-/**
- * Spec: https://html.spec.whatwg.org/multipage/dom.html#inner-text-collection-steps
- * One spec implementation: https://github.com/servo/servo/blob/721271dcd3c20db5ca8cf146e2b5907647afb4d6/components/layout/query.rs#L1132
- */
-function innerTextCollectionSteps(node) {
-    const items = [];
-    if (nodeIsElement(node)) {
-        const { tagName } = node;
-        const computedStyle = getElementComputedStyle(node);
-        if (tagName === 'OPTION') {
-            // For options, is hard to get the "rendered" text, let's use the original getter.
-            return [1, innerTextGetter.call(node), 1];
-        }
-        else if (tagName === 'TEXTAREA') {
-            return [];
-        }
-        else {
-            const childNodes = node.childNodes;
-            for (let i = 0, n = childNodes.length; i < n; i++) {
-                ArrayPush.apply(items, innerTextCollectionSteps(childNodes[i]));
-            }
-        }
-        if (!nodeIsBeingRendered(computedStyle)) {
-            if (tagName === 'SELECT' || tagName === 'DATALIST') {
-                // the select is either: .visibility != 'visible' or .display === hidden, therefore this select should
-                // not display any value.
-                return [];
-            }
-            return items;
-        }
-        if (tagName === 'BR') {
-            items.push('\u{000A}' /* line feed */);
-        }
-        const { display } = computedStyle;
-        if (display === 'table-cell') {
-            // omitting case: and node's CSS box is not the last 'table-cell' box of its enclosing 'table-row' box
-            items.push('\u{0009}' /* tab */);
-        }
-        if (display === 'table-row') {
-            // omitting case: and node's CSS box is not the last 'table-row' box of the nearest ancestor 'table' box
-            items.push('\u{000A}' /* line feed */);
-        }
-        if (tagName === 'P') {
-            items.unshift(2);
-            items.push(2);
-        }
-        if (display === 'block' ||
-            display === 'table-caption' ||
-            display === 'flex' ||
-            display === 'table') {
-            items.unshift(1);
-            items.push(1);
-        }
-    }
-    else if (nodeIsText(node)) {
-        items.push(getTextNodeInnerText(node));
-    }
-    return items;
-}
-/**
- * InnerText getter spec: https://html.spec.whatwg.org/multipage/dom.html#the-innertext-idl-attribute
- *
- * One spec implementation: https://github.com/servo/servo/blob/721271dcd3c20db5ca8cf146e2b5907647afb4d6/components/layout/query.rs#L1087
- */
-function getInnerText(element) {
-    const thisComputedStyle = getElementComputedStyle(element);
-    if (!nodeIsBeingRendered(thisComputedStyle)) {
-        return getTextContent(element) || '';
-    }
-    const selectionState = getSelectionState(element);
-    const results = [];
-    const childNodes = element.childNodes;
-    for (let i = 0, n = childNodes.length; i < n; i++) {
-        ArrayPush.apply(results, innerTextCollectionSteps(childNodes[i]));
-    }
-    restoreSelectionState(selectionState);
-    let elementInnerText = '';
-    let maxReqLineBreakCount = 0;
-    for (let i = 0, n = results.length; i < n; i++) {
-        const item = results[i];
-        if (typeof item === 'string') {
-            if (maxReqLineBreakCount > 0) {
-                for (let j = 0; j < maxReqLineBreakCount; j++) {
-                    elementInnerText += '\u{000A}';
-                }
-                maxReqLineBreakCount = 0;
-            }
-            if (item.length > 0) {
-                elementInnerText += item;
-            }
-        }
-        else {
-            if (elementInnerText.length == 0) {
-                // Remove required line break count at the start.
-                continue;
-            }
-            // Store the count if it's the max of this run,
-            // but it may be ignored if no text item is found afterwards,
-            // which means that these are consecutive line breaks at the end.
-            if (item > maxReqLineBreakCount) {
-                maxReqLineBreakCount = item;
-            }
-        }
-    }
-    return elementInnerText;
 }
 
 /*
@@ -12304,7 +12511,32 @@ defineProperty(Element.prototype, '$domManual$', {
     },
     configurable: true,
 });
-/** version: 2.13.0 */
+
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+// @ts-ignore
+
+if ( true && typeof __karma__ !== 'undefined') {
+  window.addEventListener('test-dummy-flag', () => {
+    let hasFlag = false;
+
+    if (runtimeFlags.DUMMY_TEST_FLAG) {
+      hasFlag = true;
+    }
+
+    window.dispatchEvent(new CustomEvent('has-dummy-flag', {
+      detail: {
+        package: '@lwc/synthetic-shadow',
+        hasFlag
+      }
+    }));
+  });
+}
+/** version: 2.14.0 */
 
 
 /***/ }),
@@ -12335,14 +12567,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _extract_data_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./extract-data.css */ "./client/src/extract-data/extract-data.css");
-/* harmony import */ var _extract_data_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./extract-data.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_input__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/input */ "./node_modules/lightning-base-components/src/lightning/input/input.js");
-/* harmony import */ var lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/layoutItem */ "./node_modules/lightning-base-components/src/lightning/layoutItem/layoutItem.js");
-/* harmony import */ var lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/buttonIcon */ "./node_modules/lightning-base-components/src/lightning/buttonIcon/buttonIcon.js");
-/* harmony import */ var lightning_layout__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lightning/layout */ "./node_modules/lightning-base-components/src/lightning/layout/layout.js");
-/* harmony import */ var lightning_button__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! lightning/button */ "./node_modules/lightning-base-components/src/lightning/button/button.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _extract_data_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./extract-data.css */ "./client/src/extract-data/extract-data.css");
+/* harmony import */ var _extract_data_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./extract-data.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_input__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/input */ "./node_modules/lightning-base-components/src/lightning/input/input.js");
+/* harmony import */ var lightning_layoutItem__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/layoutItem */ "./node_modules/lightning-base-components/src/lightning/layoutItem/layoutItem.js");
+/* harmony import */ var lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lightning/buttonIcon */ "./node_modules/lightning-base-components/src/lightning/buttonIcon/buttonIcon.js");
+/* harmony import */ var lightning_layout__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! lightning/layout */ "./node_modules/lightning-base-components/src/lightning/layout/layout.js");
+/* harmony import */ var lightning_button__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! lightning/button */ "./node_modules/lightning-base-components/src/lightning/button/button.js");
+
+
 
 
 
@@ -12469,10 +12703,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       first: itFirst,
       last: itLast
     };
-    return api_custom_element("lightning-layout", lightning_layout__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    return api_custom_element("lightning-layout", lightning_layout__WEBPACK_IMPORTED_MODULE_6__["default"], {
       props: stc6,
       key: api_key(6, it.value.id)
-    }, [api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__["default"], stc7, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    }, [api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_4__["default"], stc7, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_3__["default"], {
       attrs: {
         "data-fieldid": it.value.id,
         "data-fieldtype": "name"
@@ -12486,7 +12720,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       on: {
         "change": _m0 || ($ctx._m0 = api_bind($cmp.onFieldChange))
       }
-    })]), api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__["default"], stc8, [api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_4__["default"], stc9)]), api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__["default"], stc10, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    })]), api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_4__["default"], stc8, [api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_5__["default"], stc9)]), api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_4__["default"], stc10, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_3__["default"], {
       attrs: {
         "data-fieldid": it.value.id,
         "data-fieldtype": "value"
@@ -12500,7 +12734,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       on: {
         "change": _m1 || ($ctx._m1 = api_bind($cmp.onFieldChange))
       }
-    })]), api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_3__["default"], stc11, [api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    })]), api_custom_element("lightning-layout-item", lightning_layoutItem__WEBPACK_IMPORTED_MODULE_4__["default"], stc11, [api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_5__["default"], {
       attrs: {
         "data-id": it.value.id
       },
@@ -12510,13 +12744,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         "click": _m2 || ($ctx._m2 = api_bind($cmp.removeField))
       }
     })])]);
-  }), api_element("div", stc13, [api_custom_element("lightning-button", lightning_button__WEBPACK_IMPORTED_MODULE_6__["default"], {
+  }), api_element("div", stc13, [api_custom_element("lightning-button", lightning_button__WEBPACK_IMPORTED_MODULE_7__["default"], {
     props: stc14,
     key: 16,
     on: {
       "click": _m3 || ($ctx._m3 = api_bind($cmp.addField))
     }
-  })]), api_element("div", stc15, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  })]), api_element("div", stc15, [api_custom_element("lightning-input", lightning_input__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "label": "Filename",
       "value": $cmp.file.filename,
@@ -12527,21 +12761,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "change": _m4 || ($ctx._m4 = api_bind($cmp.onFilenameChange))
     }
   })])]))];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_7__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_extract_data_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _extract_data_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_extract_data_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _extract_data_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_extract_data_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _extract_data_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_extract_data_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _extract_data_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_extract_data_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _extract_data_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_extract_data_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _extract_data_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "src-extract-data_extract-data"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -12706,6 +12941,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
 
   init(payload) {
     this.payload = JSON.parse(JSON.stringify(payload));
+    console.log('headers', this.fields.map(f => f.name).join('|'));
 
     if (payload.arguments && payload.arguments.execute && payload.arguments.execute.inArguments && payload.arguments.execute.inArguments.length > 0) {
       let args = payload.arguments.execute.inArguments[0];
@@ -12729,11 +12965,11 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     let broadLogId = this.fields[this.fields.findIndex(f => f.name == 'broadLogId')] ? this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value : false;
     let lineId = this.fields[this.fields.findIndex(f => f.name == 'LineId')] ? this.fields[this.fields.findIndex(f => f.name == 'LineId')].value : false;
 
-    if (broadLogId || broadLogId.trim() == "") {
+    if (broadLogId || broadLogId.trim() == '') {
       this.fields[this.fields.findIndex(f => f.name == 'broadLogId')].value = broadLogId.trim() != '' ? broadLogId.replace(/{{Event.([^.]+).([^.{}]+)}}/, '{{Event.' + edk + '.$2}}') : `{{Event.${edk}.ContactId}}`;
     }
 
-    if (lineId || lineId.trim() == "") {
+    if (lineId || lineId.trim() == '') {
       this.fields[this.fields.findIndex(f => f.name == 'LineId')].value = lineId.trim() != '' ? lineId.replace(/{{Event.([^.]+).([^.{}]+)}}/, '{{Event.' + edk + '.$2}}') : `{{Event.${edk}.Line_ID}}`;
     }
   }
@@ -12748,6 +12984,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     var url = new URL(newPayload.configurationArguments.publish.url);
     url.searchParams.set('filename', this.file.filename);
     url.searchParams.set('activityname', this.journeyName);
+    url.searchParams.set('headers', this.fields.map(f => f.name).join(','));
     console.log('URL', JSON.stringify(url));
     newPayload.configurationArguments.publish.url = url.href; // check if no empty field
 
@@ -12755,7 +12992,7 @@ class ExtractData extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     console.log('[Save activity]', JSON.stringify(newPayload));
     connection.trigger('updateActivity', newPayload);
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -14244,9 +14481,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _baseComboboxFormattedText_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./baseComboboxFormattedText.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _baseComboboxFormattedText_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./baseComboboxFormattedText.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _baseComboboxFormattedText_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./baseComboboxFormattedText.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _baseComboboxFormattedText_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./baseComboboxFormattedText.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+
+
 
 
 
@@ -14260,21 +14499,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       key: api_key(0, item.key)
     }, [api_text(api_dynamic_text(item.part.text))]) : null, !item.part.highlight ? api_text(api_dynamic_text(item.part.text)) : null];
   }) : stc0, !$cmp.hasParts ? api_text(api_dynamic_text($cmp.text)) : null]);
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_2__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_baseComboboxFormattedText_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _baseComboboxFormattedText_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_baseComboboxFormattedText_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _baseComboboxFormattedText_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_baseComboboxFormattedText_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _baseComboboxFormattedText_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_baseComboboxFormattedText_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _baseComboboxFormattedText_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_baseComboboxFormattedText_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _baseComboboxFormattedText_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_baseComboboxFormattedText_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _baseComboboxFormattedText_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-baseComboboxFormattedText_baseComboboxFormattedText"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -14319,7 +14559,7 @@ class LightningBaseComboboxFormattedText extends lwc__WEBPACK_IMPORTED_MODULE_0_
       this._text = value;
     }
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -14444,7 +14684,7 @@ class LightningBaseComboboxItem extends lwc__WEBPACK_IMPORTED_MODULE_0__.Lightni
     const subText = this.item.subText;
     return subText && subText.length > 0;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -14475,11 +14715,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _card_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./card.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _card_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./card.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_icon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/icon */ "./node_modules/lightning-base-components/src/lightning/icon/icon.js");
-/* harmony import */ var lightning_baseComboboxFormattedText__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/baseComboboxFormattedText */ "./node_modules/lightning-base-components/src/lightning/baseComboboxFormattedText/baseComboboxFormattedText.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _card_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./card.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _card_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./card.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_icon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/icon */ "./node_modules/lightning-base-components/src/lightning/icon/icon.js");
+/* harmony import */ var lightning_baseComboboxFormattedText__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/baseComboboxFormattedText */ "./node_modules/lightning-base-components/src/lightning/baseComboboxFormattedText/baseComboboxFormattedText.js");
+
+
 
 
 
@@ -14526,7 +14768,7 @@ const stc5 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {c: api_custom_element, h: api_element, d: api_dynamic_text, t: api_text} = $api;
-  return [api_element("span", stc0, [$cmp.item.iconName ? api_custom_element("lightning-icon", lightning_icon__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  return [api_element("span", stc0, [$cmp.item.iconName ? api_custom_element("lightning-icon", lightning_icon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "size": $cmp.iconSize,
       "alternativeText": $cmp.item.iconAlternativeText,
@@ -14539,7 +14781,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "title": $cmp.item.text
     },
     key: 4
-  }, [api_text(api_dynamic_text($cmp.item.text))]) : null, $cmp.textHasParts ? api_custom_element("lightning-base-combobox-formatted-text", lightning_baseComboboxFormattedText__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }, [api_text(api_dynamic_text($cmp.item.text))]) : null, $cmp.textHasParts ? api_custom_element("lightning-base-combobox-formatted-text", lightning_baseComboboxFormattedText__WEBPACK_IMPORTED_MODULE_4__["default"], {
     classMap: stc3,
     props: {
       "title": $cmp.text,
@@ -14552,14 +14794,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "title": $cmp.item.subText
     },
     key: 7
-  }, [api_text(api_dynamic_text($cmp.item.subText))]) : null, $cmp.subTextHasParts ? api_custom_element("lightning-base-combobox-formatted-text", lightning_baseComboboxFormattedText__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }, [api_text(api_dynamic_text($cmp.item.subText))]) : null, $cmp.subTextHasParts ? api_custom_element("lightning-base-combobox-formatted-text", lightning_baseComboboxFormattedText__WEBPACK_IMPORTED_MODULE_4__["default"], {
     classMap: stc3,
     props: {
       "title": $cmp.subText,
       "text": $cmp.item.subText
     },
     key: 8
-  }) : null]) : null]), $cmp.item.rightIconName ? api_element("span", stc5, [api_custom_element("lightning-icon", lightning_icon__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }) : null]) : null]), $cmp.item.rightIconName ? api_element("span", stc5, [api_custom_element("lightning-icon", lightning_icon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "size": $cmp.rightIconSize,
       "alternativeText": $cmp.item.rightIconAlternativeText,
@@ -14567,21 +14809,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     },
     key: 10
   })]) : null];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_4__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_card_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _card_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_card_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _card_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_card_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _card_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_card_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _card_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_card_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _card_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_card_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _card_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-baseComboboxItem_card"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -14597,11 +14840,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _inline_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./inline.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _inline_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./inline.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_icon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/icon */ "./node_modules/lightning-base-components/src/lightning/icon/icon.js");
-/* harmony import */ var lightning_baseComboboxFormattedText__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/baseComboboxFormattedText */ "./node_modules/lightning-base-components/src/lightning/baseComboboxFormattedText/baseComboboxFormattedText.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _inline_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./inline.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _inline_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./inline.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_icon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/icon */ "./node_modules/lightning-base-components/src/lightning/icon/icon.js");
+/* harmony import */ var lightning_baseComboboxFormattedText__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/baseComboboxFormattedText */ "./node_modules/lightning-base-components/src/lightning/baseComboboxFormattedText/baseComboboxFormattedText.js");
+
+
 
 
 
@@ -14627,7 +14872,7 @@ const stc2 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {c: api_custom_element, h: api_element, d: api_dynamic_text, t: api_text} = $api;
-  return [api_element("span", stc0, [$cmp.item.iconName ? api_custom_element("lightning-icon", lightning_icon__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  return [api_element("span", stc0, [$cmp.item.iconName ? api_custom_element("lightning-icon", lightning_icon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "alternativeText": $cmp.item.iconAlternativeText,
       "iconName": $cmp.item.iconName,
@@ -14640,7 +14885,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "title": $cmp.item.text
     },
     key: 3
-  }, [api_text(api_dynamic_text($cmp.item.text))]) : null, $cmp.textHasParts ? api_custom_element("lightning-base-combobox-formatted-text", lightning_baseComboboxFormattedText__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }, [api_text(api_dynamic_text($cmp.item.text))]) : null, $cmp.textHasParts ? api_custom_element("lightning-base-combobox-formatted-text", lightning_baseComboboxFormattedText__WEBPACK_IMPORTED_MODULE_4__["default"], {
     classMap: stc2,
     props: {
       "text": $cmp.item.text,
@@ -14648,21 +14893,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     },
     key: 4
   }) : null])];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_4__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_inline_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _inline_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_inline_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _inline_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_inline_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _inline_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_inline_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _inline_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_inline_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _inline_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_inline_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _inline_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-baseComboboxItem_inline"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -14682,7 +14928,7 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   var shadowSelector = token ? ("[" + token + "]") : "";
   var hostSelector = token ? ("[" + token + "-host]") : "";
   return ".slds-inline-logo" + shadowSelector + " {height: 1rem;margin-top: 1rem;margin-bottom: 1rem;}input[aria-readonly=\"true\"]" + shadowSelector + " {caret-color: transparent;}";
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ([stylesheet]);
 
@@ -14699,12 +14945,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _baseCombobox_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./baseCombobox.css */ "./node_modules/lightning-base-components/src/lightning/baseCombobox/baseCombobox.css");
-/* harmony import */ var _baseCombobox_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./baseCombobox.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_icon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/icon */ "./node_modules/lightning-base-components/src/lightning/icon/icon.js");
-/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
-/* harmony import */ var lightning_baseComboboxItem__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/baseComboboxItem */ "./node_modules/lightning-base-components/src/lightning/baseComboboxItem/baseComboboxItem.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _baseCombobox_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./baseCombobox.css */ "./node_modules/lightning-base-components/src/lightning/baseCombobox/baseCombobox.css");
+/* harmony import */ var _baseCombobox_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./baseCombobox.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_icon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/icon */ "./node_modules/lightning-base-components/src/lightning/icon/icon.js");
+/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
+/* harmony import */ var lightning_baseComboboxItem__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lightning/baseComboboxItem */ "./node_modules/lightning-base-components/src/lightning/baseComboboxItem/baseComboboxItem.js");
+
+
 
 
 
@@ -14894,7 +15142,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     className: $cmp.computedFormElementClass,
     attrs: stc0,
     key: 1
-  }, [$cmp.hasInputPill ? api_custom_element("lightning-icon", lightning_icon__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [$cmp.hasInputPill ? api_custom_element("lightning-icon", lightning_icon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     classMap: stc1,
     props: {
       "iconName": $cmp.inputPill.iconName,
@@ -14963,7 +15211,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     on: {
       "click": _m10 || ($ctx._m10 = api_bind($cmp.handlePillRemove))
     }
-  }, [api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__["default"], stc5), api_element("span", stc6, [api_text(api_dynamic_text($cmp.i18n.pillCloseButtonAlternativeText))])])]) : null, !$cmp.hasInputPill ? api_element("div", stc7, [$cmp.showInputActivityIndicator ? api_element("div", stc8, [api_element("span", stc9, [api_text(api_dynamic_text($cmp.i18n.loadingText))]), api_element("div", stc10), api_element("div", stc11)]) : null, $cmp.inputIconName ? api_custom_element("lightning-icon", lightning_icon__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_4__["default"], stc5), api_element("span", stc6, [api_text(api_dynamic_text($cmp.i18n.pillCloseButtonAlternativeText))])])]) : null, !$cmp.hasInputPill ? api_element("div", stc7, [$cmp.showInputActivityIndicator ? api_element("div", stc8, [api_element("span", stc9, [api_text(api_dynamic_text($cmp.i18n.loadingText))]), api_element("div", stc10), api_element("div", stc11)]) : null, $cmp.inputIconName ? api_custom_element("lightning-icon", lightning_icon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     classMap: stc12,
     props: {
       "alternativeText": $cmp.inputIconAlternativeText,
@@ -14987,7 +15235,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "click": _m15 || ($ctx._m15 = api_bind($cmp.handleOptionClick))
     }
   }, $cmp._hasDropdownOpened ? api_flatten([api_iterator($cmp._items, function (item) {
-    return [!item.items ? api_custom_element("lightning-base-combobox-item", lightning_baseComboboxItem__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    return [!item.items ? api_custom_element("lightning-base-combobox-item", lightning_baseComboboxItem__WEBPACK_IMPORTED_MODULE_5__["default"], {
       classMap: stc13,
       attrs: {
         "data-item-id": item.id,
@@ -15020,7 +15268,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: stc16,
         attrs: stc17,
         key: api_key(22, groupItem.value)
-      }, [api_custom_element("lightning-base-combobox-item", lightning_baseComboboxItem__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      }, [api_custom_element("lightning-base-combobox-item", lightning_baseComboboxItem__WEBPACK_IMPORTED_MODULE_5__["default"], {
         classMap: stc13,
         attrs: {
           "data-item-id": groupItem.id,
@@ -15047,21 +15295,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     },
     key: 31
   })]) : null]) : stc26)])];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_5__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_baseCombobox_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _baseCombobox_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_baseCombobox_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _baseCombobox_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_baseCombobox_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _baseCombobox_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_baseCombobox_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _baseCombobox_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_baseCombobox_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _baseCombobox_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_baseCombobox_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _baseCombobox_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-baseCombobox_baseCombobox"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -16032,7 +16281,7 @@ class LightningBaseCombobox extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningEl
 
     };
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -16440,10 +16689,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _buttonIcon_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./buttonIcon.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _buttonIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./buttonIcon.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _buttonIcon_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./buttonIcon.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _buttonIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./buttonIcon.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
+
+
 
 
 
@@ -16479,7 +16730,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "focus": _m0 || ($ctx._m0 = api_bind($cmp.handleFocus)),
       "blur": _m1 || ($ctx._m1 = api_bind($cmp.handleBlur))
     }
-  }, [api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "iconName": $cmp.iconName,
       "svgClass": $cmp.computedIconClass,
@@ -16487,21 +16738,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     },
     key: 1
   }), $cmp.alternativeText ? api_element("span", stc0, [api_text(api_dynamic_text($cmp.alternativeText))]) : null])];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_3__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_buttonIcon_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _buttonIcon_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_buttonIcon_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _buttonIcon_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_buttonIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _buttonIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_buttonIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _buttonIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_buttonIcon_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _buttonIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_buttonIcon_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _buttonIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-buttonIcon_buttonIcon"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -16763,7 +17015,7 @@ class LightningButtonIcon extends lightning_primitiveButton__WEBPACK_IMPORTED_MO
   disconnectedCallback() {
     this._connected = false;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -16821,10 +17073,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _button_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./button.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _button_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./button.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _button_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./button.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _button_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./button.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
+
+
 
 
 
@@ -16854,14 +17108,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "focus": _m0 || ($ctx._m0 = api_bind($cmp.handleButtonFocus)),
       "blur": _m1 || ($ctx._m1 = api_bind($cmp.handleButtonBlur))
     }
-  }, [$cmp.showIconLeft ? api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [$cmp.showIconLeft ? api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "iconName": $cmp.iconName,
       "svgClass": $cmp.computedIconClass,
       "variant": "bare"
     },
     key: 1
-  }) : null, api_text(api_dynamic_text($cmp.label)), $cmp.showIconRight ? api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }) : null, api_text(api_dynamic_text($cmp.label)), $cmp.showIconRight ? api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "iconName": $cmp.iconName,
       "svgClass": $cmp.computedIconClass,
@@ -16869,21 +17123,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     },
     key: 2
   }) : null])];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_3__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_button_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _button_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_button_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _button_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_button_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _button_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_button_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _button_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_button_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _button_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_button_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _button_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-button_button"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -17037,7 +17292,7 @@ class LightningButton extends lightning_primitiveButton__WEBPACK_IMPORTED_MODULE
   disconnectedCallback() {
     this._connected = false;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -17105,7 +17360,7 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   var shadowSelector = token ? ("[" + token + "]") : "";
   var hostSelector = token ? ("[" + token + "-host]") : "";
   return (useNativeDirPseudoclass ? '' : '[dir="rtl"]') + " .slds-dropdown_left" + (useNativeDirPseudoclass ? ':dir(rtl)' : '') + shadowSelector + " {left: 0;right: auto;}";
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ([stylesheet]);
 
@@ -17122,12 +17377,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _calendar_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./calendar.css */ "./node_modules/lightning-base-components/src/lightning/calendar/calendar.css");
-/* harmony import */ var _calendar_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./calendar.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/buttonIcon */ "./node_modules/lightning-base-components/src/lightning/buttonIcon/buttonIcon.js");
-/* harmony import */ var lightning_select__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/select */ "./node_modules/lightning-base-components/src/lightning/select/select.js");
-/* harmony import */ var lightning_focusTrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/focusTrap */ "./node_modules/lightning-base-components/src/lightning/focusTrap/focusTrap.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _calendar_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./calendar.css */ "./node_modules/lightning-base-components/src/lightning/calendar/calendar.css");
+/* harmony import */ var _calendar_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./calendar.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/buttonIcon */ "./node_modules/lightning-base-components/src/lightning/buttonIcon/buttonIcon.js");
+/* harmony import */ var lightning_select__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/select */ "./node_modules/lightning-base-components/src/lightning/select/select.js");
+/* harmony import */ var lightning_focusTrap__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lightning/focusTrap */ "./node_modules/lightning-base-components/src/lightning/focusTrap/focusTrap.js");
+
+
 
 
 
@@ -17215,7 +17472,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "tabindex": "-1"
     },
     key: 0
-  }, [api_custom_element("lightning-focus-trap", lightning_focusTrap__WEBPACK_IMPORTED_MODULE_4__["default"], stc1, [api_element("div", stc2, [api_element("div", stc3, [api_element("div", stc4, [api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_custom_element("lightning-focus-trap", lightning_focusTrap__WEBPACK_IMPORTED_MODULE_5__["default"], stc1, [api_element("div", stc2, [api_element("div", stc3, [api_element("div", stc4, [api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "iconName": "utility:left",
       "variant": "container",
@@ -17235,7 +17492,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "data-index": $cmp.monthIndex
     },
     key: 6
-  }, [api_text(api_dynamic_text($cmp.computedMonthTitle))]), api_element("div", stc6, [api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_text(api_dynamic_text($cmp.computedMonthTitle))]), api_element("div", stc6, [api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "iconName": "utility:right",
       "variant": "container",
@@ -17245,7 +17502,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     on: {
       "click": _m1 || ($ctx._m1 = api_bind($cmp.goToNextMonth))
     }
-  })])]), api_element("div", stc7, [api_custom_element("lightning-select", lightning_select__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  })])]), api_element("div", stc7, [api_custom_element("lightning-select", lightning_select__WEBPACK_IMPORTED_MODULE_4__["default"], {
     props: {
       "value": $cmp.calendarYear,
       "label": $cmp.i18n.yearSelector,
@@ -17318,21 +17575,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "click": _m6 || ($ctx._m6 = api_bind($cmp.handleTodayClick))
     }
   }, [api_text(api_dynamic_text($cmp.i18n.today))])])])];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_5__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_calendar_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _calendar_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_calendar_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _calendar_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_calendar_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _calendar_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_calendar_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _calendar_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_calendar_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _calendar_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_calendar_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _calendar_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-calendar_calendar"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -17946,7 +18204,7 @@ class LightningCalendar extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElemen
 
     return key;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -18087,9 +18345,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _colorPickerCustom_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./colorPickerCustom.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _colorPickerCustom_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./colorPickerCustom.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _colorPickerCustom_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./colorPickerCustom.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _colorPickerCustom_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./colorPickerCustom.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+
+
 
 
 
@@ -18384,21 +18644,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "change": _m9 || ($ctx._m9 = api_bind($cmp.handleRgbChange))
     }
   })])])]), $cmp._errorMessage ? api_element("div", stc23, [api_text(api_dynamic_text($cmp._errorMessage))]) : null])];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_2__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_colorPickerCustom_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _colorPickerCustom_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_colorPickerCustom_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _colorPickerCustom_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_colorPickerCustom_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _colorPickerCustom_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_colorPickerCustom_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _colorPickerCustom_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_colorPickerCustom_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _colorPickerCustom_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_colorPickerCustom_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _colorPickerCustom_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-colorPickerCustom_colorPickerCustom"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -18918,7 +19179,7 @@ class LightningColorPickerCustom extends lwc__WEBPACK_IMPORTED_MODULE_0__.Lightn
   rgbToPosition(rgb) {
     return (0,_colorUtil__WEBPACK_IMPORTED_MODULE_15__.rgbToPosition)(rgb, this.canvasRect);
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -19130,10 +19391,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _colorPickerPanel_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./colorPickerPanel.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _colorPickerPanel_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./colorPickerPanel.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_colorPickerCustom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/colorPickerCustom */ "./node_modules/lightning-base-components/src/lightning/colorPickerCustom/colorPickerCustom.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _colorPickerPanel_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./colorPickerPanel.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _colorPickerPanel_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./colorPickerPanel.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_colorPickerCustom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/colorPickerCustom */ "./node_modules/lightning-base-components/src/lightning/colorPickerCustom/colorPickerCustom.js");
+
+
 
 
 
@@ -19196,7 +19459,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "id": api_scoped_id("dialog-body-id")
     },
     key: 1
-  }, [api_custom_element("lightning-color-picker-custom", lightning_colorPickerCustom__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_custom_element("lightning-color-picker-custom", lightning_colorPickerCustom__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "currentColor": $cmp.currentColor
     },
@@ -19216,21 +19479,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "click": _m3 || ($ctx._m3 = api_bind($cmp.handleDoneClick))
     }
   }, [api_text(api_dynamic_text($cmp.i18n.doneButton))])])])])];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_3__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_colorPickerPanel_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _colorPickerPanel_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_colorPickerPanel_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _colorPickerPanel_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_colorPickerPanel_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _colorPickerPanel_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_colorPickerPanel_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _colorPickerPanel_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_colorPickerPanel_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _colorPickerPanel_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_colorPickerPanel_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _colorPickerPanel_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-colorPickerPanel_colorPickerPanel"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -19354,7 +19618,7 @@ class LightningColorPickerPanel extends lwc__WEBPACK_IMPORTED_MODULE_0__.Lightni
       this.template.querySelector('lightning-color-picker-custom').focus();
     }
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -20128,12 +20392,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _datepicker_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./datepicker.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _datepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./datepicker.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_helptext__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/helptext */ "./node_modules/lightning-base-components/src/lightning/helptext/helptext.js");
-/* harmony import */ var lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/buttonIcon */ "./node_modules/lightning-base-components/src/lightning/buttonIcon/buttonIcon.js");
-/* harmony import */ var lightning_calendar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/calendar */ "./node_modules/lightning-base-components/src/lightning/calendar/calendar.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _datepicker_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./datepicker.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _datepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./datepicker.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_helptext__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/helptext */ "./node_modules/lightning-base-components/src/lightning/helptext/helptext.js");
+/* harmony import */ var lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/buttonIcon */ "./node_modules/lightning-base-components/src/lightning/buttonIcon/buttonIcon.js");
+/* harmony import */ var lightning_calendar__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lightning/calendar */ "./node_modules/lightning-base-components/src/lightning/calendar/calendar.js");
+
+
 
 
 
@@ -20192,7 +20458,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "title": $cmp.i18n.required
     },
     key: 2
-  }, [api_text("*")]) : null, api_text(api_dynamic_text($cmp.label))]) : null, !$cmp.hasExternalLabel ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_text("*")]) : null, api_text(api_dynamic_text($cmp.label))]) : null, !$cmp.hasExternalLabel ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "content": $cmp.fieldLevelHelp
     },
@@ -20229,7 +20495,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "keydown": _m4 || ($ctx._m4 = api_bind($cmp.handleInputKeydown)),
       "click": _m5 || ($ctx._m5 = api_bind($cmp.handleInputClick))
     }
-  }), api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }), api_custom_element("lightning-button-icon", lightning_buttonIcon__WEBPACK_IMPORTED_MODULE_4__["default"], {
     classMap: stc5,
     props: {
       "iconName": "utility:event",
@@ -20245,7 +20511,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "focusin": _m8 || ($ctx._m8 = api_bind($cmp.onFocusIn)),
       "focusout": _m9 || ($ctx._m9 = api_bind($cmp.onFocusOut))
     }
-  }), $cmp.isCalendarVisible ? api_custom_element("lightning-calendar", lightning_calendar__WEBPACK_IMPORTED_MODULE_4__["default"], {
+  }), $cmp.isCalendarVisible ? api_custom_element("lightning-calendar", lightning_calendar__WEBPACK_IMPORTED_MODULE_5__["default"], {
     props: {
       "value": $cmp.value,
       "min": $cmp.min,
@@ -20268,21 +20534,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     },
     key: 9
   }, [api_text(api_dynamic_text($cmp.errorMessage))]) : null];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_5__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_datepicker_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _datepicker_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_datepicker_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _datepicker_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_datepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _datepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_datepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _datepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_datepicker_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _datepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_datepicker_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _datepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-datepicker_datepicker"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -20993,7 +21260,7 @@ class LightningDatePicker extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElem
   get hasExternalLabel() {
     return this.variant === lightning_inputUtils__WEBPACK_IMPORTED_MODULE_18__.VARIANT.LABEL_HIDDEN && this.ariaLabelledByElement && this.ariaLabelledByElement.length;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -21146,12 +21413,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _datetimepicker_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./datetimepicker.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _datetimepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./datetimepicker.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_helptext__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/helptext */ "./node_modules/lightning-base-components/src/lightning/helptext/helptext.js");
-/* harmony import */ var lightning_datepicker__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/datepicker */ "./node_modules/lightning-base-components/src/lightning/datepicker/datepicker.js");
-/* harmony import */ var lightning_timepicker__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/timepicker */ "./node_modules/lightning-base-components/src/lightning/timepicker/timepicker.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _datetimepicker_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./datetimepicker.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _datetimepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./datetimepicker.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_helptext__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/helptext */ "./node_modules/lightning-base-components/src/lightning/helptext/helptext.js");
+/* harmony import */ var lightning_datepicker__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/datepicker */ "./node_modules/lightning-base-components/src/lightning/datepicker/datepicker.js");
+/* harmony import */ var lightning_timepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lightning/timepicker */ "./node_modules/lightning-base-components/src/lightning/timepicker/timepicker.js");
+
+
 
 
 
@@ -21206,12 +21475,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [api_element("div", stc0, [api_element("fieldset", stc1, [!$cmp.hasExternalLabel ? api_element("legend", {
     className: $cmp.computedLabelClass,
     key: 2
-  }, [api_text(api_dynamic_text($cmp.label))]) : null, !$cmp.hasExternalLabel ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_text(api_dynamic_text($cmp.label))]) : null, !$cmp.hasExternalLabel ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "content": $cmp.fieldLevelHelp
     },
     key: 3
-  }) : null : null, api_element("div", stc2, [api_element("div", stc3, [api_element("div", stc4, [api_custom_element("lightning-datepicker", lightning_datepicker__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }) : null : null, api_element("div", stc2, [api_element("div", stc3, [api_element("div", stc4, [api_custom_element("lightning-datepicker", lightning_datepicker__WEBPACK_IMPORTED_MODULE_4__["default"], {
     classMap: stc5,
     props: {
       "autocomplete": $cmp.autocomplete,
@@ -21232,7 +21501,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "blur": _m1 || ($ctx._m1 = api_bind($cmp.handleDatepickerBlur)),
       "change": _m2 || ($ctx._m2 = api_bind($cmp.handleDateChange))
     }
-  }), api_custom_element("lightning-timepicker", lightning_timepicker__WEBPACK_IMPORTED_MODULE_4__["default"], {
+  }), api_custom_element("lightning-timepicker", lightning_timepicker__WEBPACK_IMPORTED_MODULE_5__["default"], {
     classMap: stc5,
     props: {
       "autocomplete": $cmp.autocomplete,
@@ -21260,21 +21529,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     },
     key: 9
   }, [api_text(api_dynamic_text($cmp.customErrorMessage))]) : null])])];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_5__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_datetimepicker_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _datetimepicker_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_datetimepicker_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _datetimepicker_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_datetimepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _datetimepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_datetimepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _datetimepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_datetimepicker_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _datetimepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_datetimepicker_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _datetimepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-datetimepicker_datetimepicker"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -21822,7 +22092,7 @@ class LightningDateTimePicker extends lwc__WEBPACK_IMPORTED_MODULE_0__.Lightning
   separateDateTime(isoString) {
     return typeof isoString === 'string' ? isoString.split(lightning_iso8601Utils__WEBPACK_IMPORTED_MODULE_9__.TIME_SEPARATOR) : null;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -21945,9 +22215,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _focusTrap_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./focusTrap.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _focusTrap_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./focusTrap.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _focusTrap_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./focusTrap.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _focusTrap_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./focusTrap.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+
+
 
 
 
@@ -21982,22 +22254,23 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "focus": _m3 || ($ctx._m3 = api_bind($cmp._focusFirstElement))
     }
   })];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_2__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.slots = [""];
 tmpl.stylesheets = [];
 
 
-if (_focusTrap_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _focusTrap_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_focusTrap_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _focusTrap_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_focusTrap_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _focusTrap_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_focusTrap_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _focusTrap_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_focusTrap_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _focusTrap_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_focusTrap_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _focusTrap_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-focusTrap_focusTrap"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -22117,7 +22390,7 @@ class FocusTrap extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
   _getFocusableElements() {
     return (0,lightning_focusUtils__WEBPACK_IMPORTED_MODULE_2__.findAllTabbableElements)(this.template.querySelector('slot'));
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -22473,10 +22746,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _helptext_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./helptext.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _helptext_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./helptext.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _helptext_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./helptext.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _helptext_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./helptext.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
+
+
 
 
 
@@ -22504,7 +22779,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     className: $cmp.computedButtonClass,
     attrs: stc1,
     key: 1
-  }, [api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "svgClass": "slds-button__icon",
       "iconName": $cmp.iconName,
@@ -22512,21 +22787,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     },
     key: 2
   }), api_element("span", stc2, [api_text(api_dynamic_text($cmp.alternativeText))])])])];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_3__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_helptext_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _helptext_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_helptext_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _helptext_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_helptext_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _helptext_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_helptext_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _helptext_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_helptext_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _helptext_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_helptext_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _helptext_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-helptext_helptext"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -22724,7 +23000,7 @@ class LightningHelptext extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElemen
 
     return classes.toString();
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -23059,10 +23335,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _icon_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./icon.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _icon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./icon.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _icon_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./icon.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _icon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./icon.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
+
+
 
 
 
@@ -23077,7 +23355,7 @@ const stc0 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {c: api_custom_element, d: api_dynamic_text, t: api_text, h: api_element} = $api;
-  return [api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  return [api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "iconName": $cmp._iconName,
       "size": $cmp.size,
@@ -23086,21 +23364,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     },
     key: 0
   }), $cmp.alternativeText ? api_element("span", stc0, [api_text(api_dynamic_text($cmp.alternativeText))]) : null];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_3__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_icon_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _icon_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_icon_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _icon_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_icon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _icon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_icon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _icon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_icon_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _icon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_icon_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _icon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-icon_icon"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -23260,7 +23539,7 @@ class LightningIcon extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
     this._iconName = 'standard:default';
     this.classList.add('slds-icon-standard-default');
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -24036,7 +24315,7 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   var shadowSelector = token ? ("[" + token + "]") : "";
   var hostSelector = token ? ("[" + token + "-host]") : "";
   return ((useActualHostSelector ? ":host {display: block;}" : hostSelector + " {display: block;}")) + (useNativeDirPseudoclass ? '' : '[dir="rtl"]') + " input[type=\"tel\"]" + (useNativeDirPseudoclass ? ':dir(rtl)' : '') + shadowSelector + " {direction: ltr;text-align: right;unicode-bidi: embed;}";
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ([stylesheet]);
 
@@ -24053,16 +24332,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _input_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./input.css */ "./node_modules/lightning-base-components/src/lightning/input/input.css");
-/* harmony import */ var _input_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./input.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_helptext__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/helptext */ "./node_modules/lightning-base-components/src/lightning/helptext/helptext.js");
-/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
-/* harmony import */ var lightning_primitiveFileDroppableZone__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/primitiveFileDroppableZone */ "./node_modules/lightning-base-components/src/lightning/primitiveFileDroppableZone/primitiveFileDroppableZone.js");
-/* harmony import */ var lightning_primitiveColorpickerButton__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lightning/primitiveColorpickerButton */ "./node_modules/lightning-base-components/src/lightning/primitiveColorpickerButton/primitiveColorpickerButton.js");
-/* harmony import */ var lightning_datepicker__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! lightning/datepicker */ "./node_modules/lightning-base-components/src/lightning/datepicker/datepicker.js");
-/* harmony import */ var lightning_timepicker__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! lightning/timepicker */ "./node_modules/lightning-base-components/src/lightning/timepicker/timepicker.js");
-/* harmony import */ var lightning_datetimepicker__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! lightning/datetimepicker */ "./node_modules/lightning-base-components/src/lightning/datetimepicker/datetimepicker.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _input_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./input.css */ "./node_modules/lightning-base-components/src/lightning/input/input.css");
+/* harmony import */ var _input_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./input.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_helptext__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/helptext */ "./node_modules/lightning-base-components/src/lightning/helptext/helptext.js");
+/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
+/* harmony import */ var lightning_primitiveFileDroppableZone__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lightning/primitiveFileDroppableZone */ "./node_modules/lightning-base-components/src/lightning/primitiveFileDroppableZone/primitiveFileDroppableZone.js");
+/* harmony import */ var lightning_primitiveColorpickerButton__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! lightning/primitiveColorpickerButton */ "./node_modules/lightning-base-components/src/lightning/primitiveColorpickerButton/primitiveColorpickerButton.js");
+/* harmony import */ var lightning_datepicker__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! lightning/datepicker */ "./node_modules/lightning-base-components/src/lightning/datepicker/datepicker.js");
+/* harmony import */ var lightning_timepicker__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! lightning/timepicker */ "./node_modules/lightning-base-components/src/lightning/timepicker/timepicker.js");
+/* harmony import */ var lightning_datetimepicker__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! lightning/datetimepicker */ "./node_modules/lightning-base-components/src/lightning/datetimepicker/datetimepicker.js");
+
+
 
 
 
@@ -24321,7 +24602,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "title": $cmp.i18n.required
     },
     key: 1
-  }, [api_text("*")]) : null, api_text(api_dynamic_text($cmp.label))]) : null : null, $cmp.isTypeSimple ? !$cmp.hasExternalLabel ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_text("*")]) : null, api_text(api_dynamic_text($cmp.label))]) : null : null, $cmp.isTypeSimple ? !$cmp.hasExternalLabel ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "content": $cmp.fieldLevelHelp,
       "alternativeText": $cmp.helptextAlternativeText
@@ -24360,7 +24641,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "input": _m3 || ($ctx._m3 = api_bind($cmp.handleInput)),
       "keydown": _m4 || ($ctx._m4 = api_bind($cmp.handleKeyDown))
     }
-  }), $cmp.isTypeSearch ? api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__["default"], stc2) : null, $cmp.isTypeSearch ? api_element("div", stc3, [$cmp.isLoading ? api_element("div", stc4, [api_element("span", stc5, [api_text(api_dynamic_text($cmp.i18n.loading))]), api_element("div", stc6), api_element("div", stc7)]) : null, $cmp._showClearButton ? api_element("button", {
+  }), $cmp.isTypeSearch ? api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_4__["default"], stc2) : null, $cmp.isTypeSearch ? api_element("div", stc3, [$cmp.isLoading ? api_element("div", stc4, [api_element("span", stc5, [api_text(api_dynamic_text($cmp.i18n.loading))]), api_element("div", stc6), api_element("div", stc7)]) : null, $cmp._showClearButton ? api_element("button", {
     classMap: stc8,
     attrs: stc9,
     key: 11,
@@ -24368,7 +24649,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "blur": _m5 || ($ctx._m5 = api_bind($cmp.handleBlur)),
       "click": _m6 || ($ctx._m6 = api_bind($cmp._clearAndSetFocusOnInput))
     }
-  }, [api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__["default"], stc10), api_element("span", stc11, [api_text(api_dynamic_text($cmp.i18n.clear))])]) : null]) : null]) : null, $cmp.isTypeToggle ? api_element("div", stc12, [api_element("label", {
+  }, [api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_4__["default"], stc10), api_element("span", stc11, [api_text(api_dynamic_text($cmp.i18n.clear))])]) : null]) : null]) : null, $cmp.isTypeToggle ? api_element("div", stc12, [api_element("label", {
     classMap: stc13,
     attrs: {
       "for": api_scoped_id("checkbox-toggle")
@@ -24423,7 +24704,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   }, [api_text("*")]) : null, api_element("span", {
     className: $cmp.computedLabelClass,
     key: 25
-  }, [api_text(api_dynamic_text($cmp.label))])]) : null : null, $cmp.isTypeCheckbox ? !$cmp.isStandardVariant ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_text(api_dynamic_text($cmp.label))])]) : null : null, $cmp.isTypeCheckbox ? !$cmp.isStandardVariant ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "content": $cmp.fieldLevelHelp,
       "alternativeText": $cmp.helptextAlternativeText
@@ -24467,7 +24748,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   }, [api_element("span", stc20), api_element("span", {
     className: $cmp.computedLabelClass,
     key: 34
-  }, [api_text(api_dynamic_text($cmp.label))])]) : null, $cmp.isStandardVariant ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_text(api_dynamic_text($cmp.label))])]) : null, $cmp.isStandardVariant ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "content": $cmp.fieldLevelHelp,
       "alternativeText": $cmp.helptextAlternativeText
@@ -24541,7 +24822,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     on: {
       "drop": _m19 || ($ctx._m19 = api_bind($cmp.handleDropFiles))
     }
-  }, [api_custom_element("lightning-primitive-file-droppable-zone", lightning_primitiveFileDroppableZone__WEBPACK_IMPORTED_MODULE_4__["default"], {
+  }, [api_custom_element("lightning-primitive-file-droppable-zone", lightning_primitiveFileDroppableZone__WEBPACK_IMPORTED_MODULE_5__["default"], {
     props: {
       "multiple": $cmp.multiple,
       "disabled": $cmp.disabled
@@ -24577,7 +24858,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "aria-hidden": "true"
     },
     key: 52
-  }, [api_element("span", stc33, [api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__["default"], stc34), api_text(api_dynamic_text($cmp.i18n.inputFileButtonLabel))]), api_element("span", stc35, [api_text(api_dynamic_text($cmp.i18n.inputFileBodyText))])])])])]) : null, $cmp.isTypeColor ? api_element("div", stc36, [api_element("div", stc37, [!$cmp.hasExternalLabel ? api_element("label", {
+  }, [api_element("span", stc33, [api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_4__["default"], stc34), api_text(api_dynamic_text($cmp.i18n.inputFileButtonLabel))]), api_element("span", stc35, [api_text(api_dynamic_text($cmp.i18n.inputFileBodyText))])])])])]) : null, $cmp.isTypeColor ? api_element("div", stc36, [api_element("div", stc37, [!$cmp.hasExternalLabel ? api_element("label", {
     className: $cmp.computedColorLabelClass,
     attrs: {
       "for": api_scoped_id("color")
@@ -24589,13 +24870,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "title": $cmp.i18n.required
     },
     key: 59
-  }, [api_text("*")]) : null, api_text(api_dynamic_text($cmp.label))]) : null, !$cmp.hasExternalLabel ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_text("*")]) : null, api_text(api_dynamic_text($cmp.label))]) : null, !$cmp.hasExternalLabel ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "content": $cmp.fieldLevelHelp,
       "alternativeText": $cmp.helptextAlternativeText
     },
     key: 60
-  }) : null : null, api_element("div", stc38, [api_custom_element("lightning-primitive-colorpicker-button", lightning_primitiveColorpickerButton__WEBPACK_IMPORTED_MODULE_5__["default"], {
+  }) : null : null, api_element("div", stc38, [api_custom_element("lightning-primitive-colorpicker-button", lightning_primitiveColorpickerButton__WEBPACK_IMPORTED_MODULE_6__["default"], {
     props: {
       "value": $cmp.value,
       "disabled": $cmp.disabled
@@ -24628,7 +24909,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "change": _m29 || ($ctx._m29 = api_bind($cmp.handleChange)),
       "input": _m30 || ($ctx._m30 = api_bind($cmp.handleInput))
     }
-  })])])])]) : null, $cmp.isTypeDesktopDate ? api_custom_element("lightning-datepicker", lightning_datepicker__WEBPACK_IMPORTED_MODULE_6__["default"], {
+  })])])])]) : null, $cmp.isTypeDesktopDate ? api_custom_element("lightning-datepicker", lightning_datepicker__WEBPACK_IMPORTED_MODULE_7__["default"], {
     props: {
       "max": $cmp.max,
       "min": $cmp.min,
@@ -24654,7 +24935,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "blur": _m32 || ($ctx._m32 = api_bind($cmp.handleBlur)),
       "focus": _m33 || ($ctx._m33 = api_bind($cmp.handleFocus))
     }
-  }) : null, $cmp.isTypeDesktopTime ? api_custom_element("lightning-timepicker", lightning_timepicker__WEBPACK_IMPORTED_MODULE_7__["default"], {
+  }) : null, $cmp.isTypeDesktopTime ? api_custom_element("lightning-timepicker", lightning_timepicker__WEBPACK_IMPORTED_MODULE_8__["default"], {
     props: {
       "max": $cmp.max,
       "min": $cmp.min,
@@ -24680,7 +24961,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "blur": _m35 || ($ctx._m35 = api_bind($cmp.handleBlur)),
       "focus": _m36 || ($ctx._m36 = api_bind($cmp.handleFocus))
     }
-  }) : null, $cmp.isTypeDesktopDateTime ? api_custom_element("lightning-datetimepicker", lightning_datetimepicker__WEBPACK_IMPORTED_MODULE_8__["default"], {
+  }) : null, $cmp.isTypeDesktopDateTime ? api_custom_element("lightning-datetimepicker", lightning_datetimepicker__WEBPACK_IMPORTED_MODULE_9__["default"], {
     props: {
       "dateAriaControls": $cmp.dateAriaControls,
       "dateAriaLabel": $cmp.dateAriaLabel,
@@ -24724,21 +25005,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     },
     key: 68
   }, [api_text(api_dynamic_text($cmp._helpMessage))]) : null];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_9__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_input_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _input_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_input_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _input_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_input_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _input_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_input_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _input_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_input_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _input_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_input_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _input_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-input_input"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -26753,7 +27035,7 @@ class LightningInput extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement {
       this._updateDateTimePickerA11y(datetimepicker);
     }
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -30566,9 +30848,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _layoutItem_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./layoutItem.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _layoutItem_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./layoutItem.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _layoutItem_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./layoutItem.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _layoutItem_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./layoutItem.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+
+
 
 
 
@@ -30581,22 +30865,23 @@ const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {s: api_slot} = $api;
   return [api_slot("", stc0, stc1, $slotset)];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_2__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.slots = [""];
 tmpl.stylesheets = [];
 
 
-if (_layoutItem_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _layoutItem_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_layoutItem_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _layoutItem_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_layoutItem_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _layoutItem_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_layoutItem_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _layoutItem_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_layoutItem_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _layoutItem_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_layoutItem_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _layoutItem_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-layoutItem_layoutItem"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -30768,7 +31053,7 @@ class LightningLayoutItem extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElem
   validateSize() {
     (0,_styleUtils__WEBPACK_IMPORTED_MODULE_2__.validateSize)(this.size, this.smallDeviceSize, this.mediumDeviceSize, this.largeDeviceSize);
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -31022,7 +31307,7 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   var shadowSelector = token ? ("[" + token + "]") : "";
   var hostSelector = token ? ("[" + token + "-host]") : "";
   return "@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {.slds-slot" + shadowSelector + " {display: flex;}}";
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ([stylesheet]);
 
@@ -31039,9 +31324,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _layout_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./layout.css */ "./node_modules/lightning-base-components/src/lightning/layout/layout.css");
-/* harmony import */ var _layout_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./layout.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _layout_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./layout.css */ "./node_modules/lightning-base-components/src/lightning/layout/layout.css");
+/* harmony import */ var _layout_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./layout.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+
+
 
 
 
@@ -31057,22 +31344,23 @@ const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {s: api_slot} = $api;
   return [api_slot("", stc0, stc1, $slotset)];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_2__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.slots = [""];
 tmpl.stylesheets = [];
 
 
-if (_layout_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _layout_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_layout_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _layout_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_layout_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _layout_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_layout_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _layout_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_layout_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _layout_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_layout_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _layout_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-layout_layout"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -31180,7 +31468,7 @@ class LightningLayout extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement 
     this._layoutClass = Object.keys(config);
     this.classList.add(...this._layoutClass);
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -32704,7 +32992,7 @@ class TopTransformer extends Transformer {
       top: Math.floor(this.transformY(targetBox.top, targetBox, elementBox) + this.pad)
     };
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -32715,7 +33003,7 @@ class BottomTransFormer extends Transformer {
       top: Math.floor(this.transformY(targetBox.top, targetBox, elementBox) - elementBox.height - this.pad)
     };
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -32726,7 +33014,7 @@ class CenterTransformer extends Transformer {
       left: Math.floor(this.transformX(targetBox.left, targetBox, elementBox) - 0.5 * elementBox.width)
     };
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -32737,7 +33025,7 @@ class MiddleTransformer extends Transformer {
       top: Math.floor(0.5 * (2 * targetBox.top + targetBox.height - elementBox.height))
     };
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -32748,7 +33036,7 @@ class LeftTransformer extends Transformer {
       left: Math.floor(this.transformX(targetBox.left, targetBox, elementBox) + this.pad)
     };
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -32759,7 +33047,7 @@ class RightTransformer extends Transformer {
       left: Math.floor(this.transformX(targetBox.left, targetBox, elementBox) - elementBox.width - this.pad)
     };
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -32771,7 +33059,7 @@ class BelowTransformer extends Transformer {
       top
     } : {};
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -32806,7 +33094,7 @@ class ShrinkingBoxTransformer extends Transformer {
 
     return retBox;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -32833,7 +33121,7 @@ class BoundingBoxTransformer extends Transformer {
 
     return retBox;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -32860,7 +33148,7 @@ class InverseBoundingBoxTransformer extends Transformer {
 
     return retBox;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -33155,9 +33443,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _primitiveBubble_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./primitiveBubble.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _primitiveBubble_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./primitiveBubble.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _primitiveBubble_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./primitiveBubble.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _primitiveBubble_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./primitiveBubble.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+
+
 
 
 
@@ -33182,21 +33472,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "mouseleave": _m0 || ($ctx._m0 = api_bind($cmp.handleMouseLeave))
     }
   })];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_2__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_primitiveBubble_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveBubble_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_primitiveBubble_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveBubble_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_primitiveBubble_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveBubble_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_primitiveBubble_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveBubble_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_primitiveBubble_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _primitiveBubble_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_primitiveBubble_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _primitiveBubble_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-primitiveBubble_primitiveBubble"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -33333,7 +33624,7 @@ class LightningPrimitiveBubble extends lwc__WEBPACK_IMPORTED_MODULE_0__.Lightnin
   handleMouseLeave() {
     this.visible = false;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -33376,9 +33667,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _primitiveButton_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./primitiveButton.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _primitiveButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./primitiveButton.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _primitiveButton_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./primitiveButton.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _primitiveButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./primitiveButton.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+
+
 
 
 
@@ -33388,21 +33681,22 @@ const stc0 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {} = $api;
   return stc0;
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_2__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_primitiveButton_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveButton_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_primitiveButton_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveButton_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_primitiveButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_primitiveButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_primitiveButton_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _primitiveButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_primitiveButton_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _primitiveButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-primitiveButton_primitiveButton"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -33705,7 +33999,7 @@ class LightningPrimitiveButton extends lwc__WEBPACK_IMPORTED_MODULE_0__.Lightnin
     classes.add((0,lightning_utilsPrivate__WEBPACK_IMPORTED_MODULE_2__.buttonGroupOrderClass)(this.groupOrder));
     return classes.toString();
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -33773,11 +34067,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _primitiveColorpickerButton_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./primitiveColorpickerButton.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _primitiveColorpickerButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./primitiveColorpickerButton.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
-/* harmony import */ var lightning_colorPickerPanel__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/colorPickerPanel */ "./node_modules/lightning-base-components/src/lightning/colorPickerPanel/colorPickerPanel.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _primitiveColorpickerButton_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./primitiveColorpickerButton.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _primitiveColorpickerButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./primitiveColorpickerButton.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/primitiveIcon */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.js");
+/* harmony import */ var lightning_colorPickerPanel__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/colorPickerPanel */ "./node_modules/lightning-base-components/src/lightning/colorPickerPanel/colorPickerPanel.js");
+
+
 
 
 
@@ -33839,7 +34135,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     style: $cmp.colorInputStyle,
     attrs: stc2,
     key: 1
-  }, [api_element("span", stc3, [api_text(api_dynamic_text($cmp.i18n.a11yTriggerText))])]), api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_2__["default"], stc4), api_element("span", stc5, [api_text(api_dynamic_text($cmp.value))])]), $cmp._isColorPickerPanelOpen ? api_custom_element("lightning-color-picker-panel", lightning_colorPickerPanel__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }, [api_element("span", stc3, [api_text(api_dynamic_text($cmp.i18n.a11yTriggerText))])]), api_custom_element("lightning-primitive-icon", lightning_primitiveIcon__WEBPACK_IMPORTED_MODULE_3__["default"], stc4), api_element("span", stc5, [api_text(api_dynamic_text($cmp.value))])]), $cmp._isColorPickerPanelOpen ? api_custom_element("lightning-color-picker-panel", lightning_colorPickerPanel__WEBPACK_IMPORTED_MODULE_4__["default"], {
     classMap: stc6,
     props: {
       "currentColor": $cmp.value
@@ -33849,21 +34145,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "updatecolor": _m1 || ($ctx._m1 = api_bind($cmp.handleUpdateColorEvent))
     }
   }) : null];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_4__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_primitiveColorpickerButton_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveColorpickerButton_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_primitiveColorpickerButton_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveColorpickerButton_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_primitiveColorpickerButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveColorpickerButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_primitiveColorpickerButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveColorpickerButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_primitiveColorpickerButton_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _primitiveColorpickerButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_primitiveColorpickerButton_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _primitiveColorpickerButton_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-primitiveColorpickerButton_primitiveColorpickerButton"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -33987,7 +34284,7 @@ class PrimitiveColorpickerButton extends lwc__WEBPACK_IMPORTED_MODULE_0__.Lightn
   get i18n() {
     return i18n;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -34032,7 +34329,7 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   var shadowSelector = token ? ("[" + token + "]") : "";
   var hostSelector = token ? ("[" + token + "-host]") : "";
   return "slot" + shadowSelector + " {display: inline-block;}";
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ([stylesheet]);
 
@@ -34049,9 +34346,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _primitiveFileDroppableZone_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./primitiveFileDroppableZone.css */ "./node_modules/lightning-base-components/src/lightning/primitiveFileDroppableZone/primitiveFileDroppableZone.css");
-/* harmony import */ var _primitiveFileDroppableZone_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./primitiveFileDroppableZone.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _primitiveFileDroppableZone_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./primitiveFileDroppableZone.css */ "./node_modules/lightning-base-components/src/lightning/primitiveFileDroppableZone/primitiveFileDroppableZone.css");
+/* harmony import */ var _primitiveFileDroppableZone_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./primitiveFileDroppableZone.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+
+
 
 
 
@@ -34064,22 +34363,23 @@ const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {s: api_slot} = $api;
   return [api_slot("", stc0, stc1, $slotset)];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_2__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.slots = [""];
 tmpl.stylesheets = [];
 
 
-if (_primitiveFileDroppableZone_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveFileDroppableZone_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_primitiveFileDroppableZone_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveFileDroppableZone_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_primitiveFileDroppableZone_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveFileDroppableZone_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_primitiveFileDroppableZone_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveFileDroppableZone_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_primitiveFileDroppableZone_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _primitiveFileDroppableZone_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_primitiveFileDroppableZone_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _primitiveFileDroppableZone_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-primitiveFileDroppableZone_primitiveFileDroppableZone"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -34166,7 +34466,7 @@ class LightningPrimitiveFileDroppableZone extends lwc__WEBPACK_IMPORTED_MODULE_0
     const files = dragEvent.dataTransfer.files;
     return !(files.length > 1 && !this.multiple);
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -34361,7 +34661,7 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   var shadowSelector = token ? ("[" + token + "]") : "";
   var hostSelector = token ? ("[" + token + "-host]") : "";
   return "_:-ms-lang(x)" + shadowSelector + ", svg" + shadowSelector + " {pointer-events: none;}";
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ([stylesheet]);
 
@@ -34378,9 +34678,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _primitiveIcon_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./primitiveIcon.css */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.css");
-/* harmony import */ var _primitiveIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./primitiveIcon.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _primitiveIcon_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./primitiveIcon.css */ "./node_modules/lightning-base-components/src/lightning/primitiveIcon/primitiveIcon.css");
+/* harmony import */ var _primitiveIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./primitiveIcon.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+
+
 
 
 
@@ -34399,26 +34701,27 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     svg: true
   }, [api_element("use", {
     attrs: {
-      "xlink:href": (0,lwc__WEBPACK_IMPORTED_MODULE_2__.sanitizeAttribute)("use", "http://www.w3.org/2000/svg", "xlink:href", api_scoped_frag_id($cmp.href))
+      "xlink:href": (0,lwc__WEBPACK_IMPORTED_MODULE_0__.sanitizeAttribute)("use", "http://www.w3.org/2000/svg", "xlink:href", api_scoped_frag_id($cmp.href))
     },
     key: 1,
     svg: true
   })])];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_2__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_primitiveIcon_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveIcon_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_primitiveIcon_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveIcon_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_primitiveIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_primitiveIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _primitiveIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_primitiveIcon_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _primitiveIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_primitiveIcon_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _primitiveIcon_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-primitiveIcon_primitiveIcon"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -34604,7 +34907,7 @@ class LightningPrimitiveIcon extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningE
 
     return classes.toString();
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -34647,10 +34950,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _select_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./select.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _select_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./select.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_helptext__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/helptext */ "./node_modules/lightning-base-components/src/lightning/helptext/helptext.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _select_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./select.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _select_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./select.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_helptext__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/helptext */ "./node_modules/lightning-base-components/src/lightning/helptext/helptext.js");
+
+
 
 
 
@@ -34693,7 +34998,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "title": $cmp.i18n.required
     },
     key: 1
-  }, [api_text("*")]) : null, api_text(api_dynamic_text($cmp.label))]), $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_text("*")]) : null, api_text(api_dynamic_text($cmp.label))]), $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "content": $cmp.fieldLevelHelp
     },
@@ -34738,21 +35043,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     },
     key: 8
   }, [api_text(api_dynamic_text($cmp._helpMessage))]) : null];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_3__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_select_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _select_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_select_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _select_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_select_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _select_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_select_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _select_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_select_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _select_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_select_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _select_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-select_select"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -35124,7 +35430,7 @@ class LightningSelect extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElement 
 
     return this.selectElement.value;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }
@@ -35200,11 +35506,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _timepicker_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./timepicker.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
-/* harmony import */ var _timepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./timepicker.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
-/* harmony import */ var lightning_helptext__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lightning/helptext */ "./node_modules/lightning-base-components/src/lightning/helptext/helptext.js");
-/* harmony import */ var lightning_baseCombobox__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/baseCombobox */ "./node_modules/lightning-base-components/src/lightning/baseCombobox/baseCombobox.js");
-/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var lwc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lwc */ "./node_modules/@lwc/engine-dom/dist/engine-dom.cjs.js");
+/* harmony import */ var _timepicker_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./timepicker.css */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js");
+/* harmony import */ var _timepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./timepicker.scoped.css?scoped=true */ "./node_modules/lwc-webpack-plugin/dist/mocks/empty-style.js?scoped=true");
+/* harmony import */ var lightning_helptext__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lightning/helptext */ "./node_modules/lightning-base-components/src/lightning/helptext/helptext.js");
+/* harmony import */ var lightning_baseCombobox__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lightning/baseCombobox */ "./node_modules/lightning-base-components/src/lightning/baseCombobox/baseCombobox.js");
+
+
 
 
 
@@ -35236,12 +35544,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "title": $cmp.i18n.required
     },
     key: 1
-  }, [api_text("*")]) : null, api_text(api_dynamic_text($cmp.label))]) : null, !$cmp.hasExternalLabel ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }, [api_text("*")]) : null, api_text(api_dynamic_text($cmp.label))]) : null, !$cmp.hasExternalLabel ? $cmp.fieldLevelHelp ? api_custom_element("lightning-helptext", lightning_helptext__WEBPACK_IMPORTED_MODULE_3__["default"], {
     props: {
       "content": $cmp.fieldLevelHelp
     },
     key: 2
-  }) : null : null, api_element("div", stc1, [api_custom_element("lightning-base-combobox", lightning_baseCombobox__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }) : null : null, api_element("div", stc1, [api_custom_element("lightning-base-combobox", lightning_baseCombobox__WEBPACK_IMPORTED_MODULE_4__["default"], {
     props: {
       "autocomplete": $cmp.autocomplete,
       "dropdownHeight": "small",
@@ -35278,21 +35586,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     },
     key: 5
   }, [api_text(api_dynamic_text($cmp._errorMessage))]) : null];
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_4__.registerTemplate)(tmpl));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,lwc__WEBPACK_IMPORTED_MODULE_0__.registerTemplate)(tmpl));
 tmpl.stylesheets = [];
 
 
-if (_timepicker_css__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _timepicker_css__WEBPACK_IMPORTED_MODULE_0__["default"])
+if (_timepicker_css__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _timepicker_css__WEBPACK_IMPORTED_MODULE_1__["default"])
 }
-if (_timepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-  tmpl.stylesheets.push.apply(tmpl.stylesheets, _timepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"])
+if (_timepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _timepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"])
 }
-if (_timepicker_css__WEBPACK_IMPORTED_MODULE_0__["default"] || _timepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+if (_timepicker_css__WEBPACK_IMPORTED_MODULE_1__["default"] || _timepicker_scoped_css_scoped_true__WEBPACK_IMPORTED_MODULE_2__["default"]) {
   tmpl.stylesheetToken = "lightning-timepicker_timepicker"
 }
+(0,lwc__WEBPACK_IMPORTED_MODULE_0__.freezeTemplate)(tmpl);
 
 
 /***/ }),
@@ -35812,7 +36121,7 @@ class LightningTimePicker extends lwc__WEBPACK_IMPORTED_MODULE_0__.LightningElem
   get hasExternalLabel() {
     return this.variant === lightning_inputUtils__WEBPACK_IMPORTED_MODULE_13__.VARIANT.LABEL_HIDDEN && this.ariaLabelledByElement && this.ariaLabelledByElement.length;
   }
-  /*LWC compiler v2.13.0*/
+  /*LWC compiler v2.14.0*/
 
 
 }

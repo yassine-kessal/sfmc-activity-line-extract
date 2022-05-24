@@ -1,8 +1,5 @@
 import setupTestMock from './../test/testMock';
-import {
-    LightningElement,
-    track
-} from 'lwc';
+import { LightningElement, track } from 'lwc';
 import Postmonger from 'postmonger';
 const connection = new Postmonger.Session();
 
@@ -11,7 +8,8 @@ export default class ExtractData extends LightningElement {
 
     @track payload;
 
-    @track fields = [{
+    @track fields = [
+        {
             id: 0,
             name: 'broadLogId',
             disabled: true,
@@ -102,11 +100,11 @@ export default class ExtractData extends LightningElement {
             } else if (fieldType == 'value') {
                 this.fields[indexOfField].value = event.target.value;
 
-                let activityId = this.fields.find((f) => f.name == 'ActivityId') ?
-                    this.fields[
-                        this.fields.findIndex((f) => f.name == 'ActivityId')
-                    ].value :
-                    false;
+                let activityId = this.fields.find((f) => f.name == 'ActivityId')
+                    ? this.fields[
+                          this.fields.findIndex((f) => f.name == 'ActivityId')
+                      ].value
+                    : false;
 
                 if (activityId) {
                     var date = new Date();
@@ -166,6 +164,8 @@ export default class ExtractData extends LightningElement {
     init(payload) {
         this.payload = JSON.parse(JSON.stringify(payload));
 
+        console.log('headers', this.fields.map((f) => f.name).join('|'));
+
         if (
             payload.arguments &&
             payload.arguments.execute &&
@@ -198,35 +198,42 @@ export default class ExtractData extends LightningElement {
     }
 
     updateBroadLogIdAndLineIdField(edk) {
-        let broadLogId =
-            this.fields[this.fields.findIndex((f) => f.name == 'broadLogId')] ? this.fields[this.fields.findIndex((f) => f.name == 'broadLogId')].value : false;
+        let broadLogId = this.fields[
+            this.fields.findIndex((f) => f.name == 'broadLogId')
+        ]
+            ? this.fields[this.fields.findIndex((f) => f.name == 'broadLogId')]
+                  .value
+            : false;
 
-        let lineId =
-            this.fields[this.fields.findIndex((f) => f.name == 'LineId')] ? this.fields[this.fields.findIndex((f) => f.name == 'LineId')].value : false;
+        let lineId = this.fields[
+            this.fields.findIndex((f) => f.name == 'LineId')
+        ]
+            ? this.fields[this.fields.findIndex((f) => f.name == 'LineId')]
+                  .value
+            : false;
 
-        if (broadLogId || broadLogId.trim() == "") {
-
+        if (broadLogId || broadLogId.trim() == '') {
             this.fields[
-                    this.fields.findIndex((f) => f.name == 'broadLogId')
-                ].value =
-                broadLogId.trim() != '' ?
-                broadLogId.replace(
-                    /{{Event.([^.]+).([^.{}]+)}}/,
-                    '{{Event.' + edk + '.$2}}'
-                ) :
-                `{{Event.${edk}.ContactId}}`;
+                this.fields.findIndex((f) => f.name == 'broadLogId')
+            ].value =
+                broadLogId.trim() != ''
+                    ? broadLogId.replace(
+                          /{{Event.([^.]+).([^.{}]+)}}/,
+                          '{{Event.' + edk + '.$2}}'
+                      )
+                    : `{{Event.${edk}.ContactId}}`;
         }
 
-        if (lineId || lineId.trim() == "") {
+        if (lineId || lineId.trim() == '') {
             this.fields[
-                    this.fields.findIndex((f) => f.name == 'LineId')
-                ].value =
-                lineId.trim() != '' ?
-                lineId.replace(
-                    /{{Event.([^.]+).([^.{}]+)}}/,
-                    '{{Event.' + edk + '.$2}}'
-                ) :
-                `{{Event.${edk}.Line_ID}}`;
+                this.fields.findIndex((f) => f.name == 'LineId')
+            ].value =
+                lineId.trim() != ''
+                    ? lineId.replace(
+                          /{{Event.([^.]+).([^.{}]+)}}/,
+                          '{{Event.' + edk + '.$2}}'
+                      )
+                    : `{{Event.${edk}.Line_ID}}`;
         }
     }
 
@@ -244,6 +251,10 @@ export default class ExtractData extends LightningElement {
 
         url.searchParams.set('filename', this.file.filename);
         url.searchParams.set('activityname', this.journeyName);
+        url.searchParams.set(
+            'headers',
+            this.fields.map((f) => f.name).join(',')
+        );
 
         console.log('URL', JSON.stringify(url));
 
