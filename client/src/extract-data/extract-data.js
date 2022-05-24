@@ -115,7 +115,7 @@ export default class ExtractData extends LightningElement {
                             .toISOString()
                             .replace('-', '')
                             .split('T')[0]
-                            .replace('-', '')}__${this.objectActivityId}.csv`
+                            .replace('-', '')}__${new Date().getTime()}.csv`
                     };
                 }
             }

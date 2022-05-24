@@ -7,8 +7,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const activityConfig = require('./activity-config');
-const logger = require('./server/utils/logger');
 const sftpClient = require('ssh2-sftp-client');
+const path = require('path').posix;
 
 const sftp = new sftpClient();
 
@@ -52,7 +52,7 @@ sftp.connect({
          * Backend application
          */
         app.post('/execute', async function (req, res) {
-            logger.info(JSON.stringify(req.body));
+            console.log(JSON.stringify(req.body));
 
             const file = req.body.inArguments[0].file,
                 fields = req.body.inArguments[0].fields,
@@ -80,9 +80,9 @@ sftp.connect({
                 });
 
             try {
-                const result = await sftp.append(
+                await sftp.append(
                     Buffer.from(data),
-                    `${process.env.FTP_BASEPATH}/${filename}`
+                    `${path.join(process.env.FTP_BASEPATH, filename)}.tmp`
                 );
             } catch (e) {
                 console.log(e);
@@ -93,8 +93,8 @@ sftp.connect({
         });
 
         app.post('/publish', async function (req, res) {
-            logger.info(JSON.stringify(req.body));
-            logger.info(JSON.stringify(req.query));
+            console.log(JSON.stringify(req.body));
+            console.log(JSON.stringify(req.query));
 
             const isPublished = req.body.isPublished,
                 activityId = req.body.activityObjectID,
@@ -117,7 +117,7 @@ sftp.connect({
                 // create file and append with headers
                 await sftp.append(
                     Buffer.from(headersStr),
-                    `${process.env.FTP_BASEPATH}/${filename}`
+                    `${path.join(process.env.FTP_BASEPATH, filename)}.tmp`
                 );
             } catch (e) {
                 console.log(e);
