@@ -5,7 +5,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
 const activityConfig = require('./activity-config');
 const sftpClient = require('ssh2-sftp-client');
 const path = require('path').posix;
